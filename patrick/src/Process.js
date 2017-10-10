@@ -54,7 +54,7 @@ class Process {
 
   // Returns this process's `this.stateChanged` property
   isStateChanged() {
-
+    return this.stateChanged;
   }
 
   // Gets this process's pid
