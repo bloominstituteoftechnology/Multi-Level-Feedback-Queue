@@ -13,6 +13,16 @@
         "type": "git",
         "url": "git+https://github.com/LambdaSchool/Multi-Level-Feedback-Queue.git"
     },
+    "jest": {
+        "reporters": [
+            [
+                "jest-nyan-reporter",
+                {
+                    "suppressErrorReporter": false
+                }
+            ]
+        ]
+    },
     "author": "Sean Chen",
     "license": "ISC",
     "devDependencies": {
@@ -23,6 +33,7 @@
         "eslint-plugin-jsx-a11y": "^4.0.0",
         "eslint-plugin-react": "^6.10.3",
         "jest": "^19.0.2",
+        "jest-nyan-reporter": "^1.0.2",
         "regenerator-runtime": "^0.10.3",
         "sinon": "^4.0.1"
     },

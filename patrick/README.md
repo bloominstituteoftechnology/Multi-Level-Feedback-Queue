@@ -32,6 +32,8 @@ Nothing special here. Just run `npm install` in the root directory, then start w
 using the provided skeleton code and comments for guidance / pointers. Run `npm test` when you want to check
 your code against the test suite, or `npm test:watch` if you'd like to keep the tests running as you work.
 
+I am very, very saddened: https://www.npmjs.com/package/jest-nyan-reporter  
+
 ### Architecture
 ![alt text](./assets/mlfq_diagram.png)
 
