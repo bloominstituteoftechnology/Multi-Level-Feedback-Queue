@@ -18,7 +18,7 @@ class Process {
   // Sets this process's `this.queue` property
   setParentQueue(queue) {
     if (this.queue === null) {
-      this.queue
+      this.queue = new Que
     }
   }
 
