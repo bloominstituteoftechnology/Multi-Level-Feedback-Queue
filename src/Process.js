@@ -31,7 +31,9 @@ class Process {
     // Also toggle its `this.stateChanged` property to `true`
     // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
     executeProcess(time) {
-
+        this.stateChanged = false;
+        this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
+        this.stateChanged = false;
    }
 
    // Decrement this process's `this.blockingTimeNeeded` by the input `time`
@@ -43,12 +45,12 @@ class Process {
 
     // Returns this process's `this.stateChanged` property
     isStateChanged() {
-        
+        return true;
     }
 
     // Gets this process's pid
     get pid() {
-        
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
