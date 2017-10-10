@@ -34,7 +34,7 @@ class Scheduler {
 
     // Checks that all queues have no processes 
     allEmpty() {
-        
+        return true;
     }
 
     // Adds a new process to the highest priority level running queue
