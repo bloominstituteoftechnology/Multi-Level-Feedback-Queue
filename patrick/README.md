@@ -27,7 +27,7 @@ before finally getting around to the long, low priority processes. Oftentimes, t
 processes only get allocated CPU time when your computer is idle, since otherwise, new processes are constantly
 being added to the scheduling queue.
 
-### Setup
+### Setup - DONE √
 Nothing special here. Just run `npm install` in the root directory, then start working on your implementation,
 using the provided skeleton code and comments for guidance / pointers. Run `npm test` when you want to check
 your code against the test suite, or `npm test:watch` if you'd like to keep the tests running as you work.
