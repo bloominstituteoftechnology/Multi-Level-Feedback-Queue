@@ -28,7 +28,7 @@ class Queue {
   // Removes the least-recently added process from the list of processes
   // Return the newly-removed process
   dequeue() {
-
+    return this.processes.shift();
   }
 
   // Return the least-recently added process without removing it from the list of processes
