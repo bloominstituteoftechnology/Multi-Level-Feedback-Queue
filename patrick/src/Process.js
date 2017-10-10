@@ -53,7 +53,7 @@ class Process {
 
   // Private function used for testing; DO NOT MODIFY
   _getParentQueue() {
-      return this.queue;
+    return this.queue;
   }
 }
 
