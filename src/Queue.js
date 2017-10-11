@@ -22,6 +22,7 @@ class Queue {
     enqueue(process) {
         this.processes.push(process);
         // set input process parent queue to this queue
+        process.setParentQueue(this);
         return process;
     }
 
@@ -63,16 +64,21 @@ class Queue {
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
-        if (this.stateChanged === true) this.quantumClock = 0;
-        this.quantumClock += time;
+        if (currentProcess.isStateChanged() === true) {
+            return this.quantumClock = 0;
+        } else {
+            this.quantumClock += time;
+        }
         if (this.quantumClock > this.quantum) {
             this.quantumClock = 0;
             this.dequeue();
             // move to lower prio queue ???
         }
-            if(currentProcess.isFinished() === false) {
-                currentProcess.blocking = SchedulerInterrupt.LOWER_PRIORITY;
-            }
+        if(currentProcess.isFinished() === false) {
+            currentProcess.blocking = SchedulerInterrupt.LOWER_PRIORITY;
+        } else {
+            return;
+        }
     }
 
     // Execute a non-blocking process
@@ -80,13 +86,15 @@ class Queue {
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
         this.peek().executeProcess(time);
+        this.manageTimeSlice(this.peek(), time);
     }
 
     // Execute a blocking process
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
-        
+        this.peek().executeBlockProcess(time);
+        this.manageTimeSlice(this.peek(), time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
