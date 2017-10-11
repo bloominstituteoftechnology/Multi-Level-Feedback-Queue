@@ -33,7 +33,7 @@ class Queue {
 
   // Return the least-recently added process without removing it from the list of processes
   peek() {
-    let len = this.processes.length;
+    const len = this.processes.length;
     return this.processes[0];
   }
 
@@ -81,25 +81,6 @@ class Queue {
     }
   }
 
-/*
-manageTimeSlice(currentProcess, time) {
-  if (currentProcess.stateChanged === true) {
-    this.quantumClock = 0;
-    return;
-  } else {
-    this.quantumClock += time;
-    if (this.quantumClock > this.quantum) {
-      // execute next process in queue
-      currentProcess.executeProcess(this.processes[0]);
-      this.quantumClock = 0;
-      this.dequeue;
-    }
-    this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
-  }
-}
-*/
-
-
   // Execute a non-blocking process
   // Peeks the next process and runs its `executeProcess` method with input `time`
   // Call `this.manageTimeSlice` with the peeked process and input `time`
@@ -127,7 +108,7 @@ manageTimeSlice(currentProcess, time) {
     let index = this.processes.indexOf(source);
     this.processes.splice(index, 1);
     if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) this.scheduler.emitInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
-    if (interrupt === SchedulerInterrupt.PROCESS_READY) this.scheduler.emitInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+    if (interrupt === SchedulerInterrupt.PROCESS_READY) this.scheduler.emitInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
   }
 }
 
