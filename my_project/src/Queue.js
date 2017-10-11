@@ -28,8 +28,7 @@ class Queue {
     // Removes the least-recently added process from the list of processes
     // Return the newly-removed process
     dequeue() {
-        this.processes.pop(process);
-        return this.processes[this.processes.length-1];
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
@@ -86,15 +85,12 @@ class Queue {
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
-        SchedulerInterrupt.PROCESS_READY;
-        this.manageTimeSlice.peek(time);
     }
 
     // Execute a blocking process
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
-        SchedulerInterrupt.PROCESS_BLOCKED;
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue

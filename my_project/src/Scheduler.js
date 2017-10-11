@@ -29,7 +29,11 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        
+        while(processes){
+            let ttime = Date.now();
+            workTime = ttime-this.clock;
+            this.clock = ttime;
+        }
     }
 
     // Checks that all queues have no processes 
@@ -49,7 +53,19 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
-        
+        switch(interrupt) {
+            case 'PROCESS_BLOCKED':
+                this.processes.push(process);
+            case 'PROCESS_READY':
+                this.quantum;
+            case 'LOWER_PRIORITY':
+                if(runningQueues) {
+
+                }
+                if(blockingQueue) {
+
+                }
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
