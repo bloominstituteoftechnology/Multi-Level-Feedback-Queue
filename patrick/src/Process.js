@@ -34,8 +34,10 @@ class Process {
   executeProcess(time) {
     this.stateChanged = false;
     if (this.blockingTimeNeeded !== 0) {
-      // emit queue interrupt?
-      this.blocking = true;
+      // emit queue interrupt? this.queue.emitInterrupt(this, SchedulerInterrupt)
+      // this.blocking = true;
+      // this.blocking = SchedulerInterrupt.PROCESS_READY;
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
       this.stateChanged = true;
     }
     this.cpuTimeNeeded -= time;
@@ -47,7 +49,9 @@ class Process {
   executeBlockingProcess(time) {
     this.blockingTimeNeeded -= time;
     if (this.blockingTimeNeeded <= 0){
-      this.blocking = true;
+      // this.blocking = true;
+      // this.blocking = SchedulerInterrupt.PROCESS_READY;
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
       this.stateChanged = true;
     }
   }
