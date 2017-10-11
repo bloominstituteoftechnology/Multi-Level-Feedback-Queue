@@ -8,6 +8,8 @@ After talking about one of the most popular scheduling algorithms used by operat
 let's implement it! This will be an implementation that simulates an actual multi-level feedback queue processing
 blocking and non-blocking processes with multiple priority levels.
 
+blocking processes go to blocking queue >> blocking time needed? counter: how much time it needs
+
 ### Reiterating on How Scheduling Works
 One of the main jobs of operating system kernels is that they need to be able to execute all of the processes
 running on your computer efficiently such that high priority processes are completed as quickly as possible,
@@ -27,10 +29,12 @@ before finally getting around to the long, low priority processes. Oftentimes, t
 processes only get allocated CPU time when your computer is idle, since otherwise, new processes are constantly
 being added to the scheduling queue.
 
-### Setup
+### Setup - DONE √
 Nothing special here. Just run `npm install` in the root directory, then start working on your implementation,
 using the provided skeleton code and comments for guidance / pointers. Run `npm test` when you want to check
 your code against the test suite, or `npm test:watch` if you'd like to keep the tests running as you work.
+
+I am very, very saddened: https://www.npmjs.com/package/jest-nyan-reporter
 
 ### Architecture
 ![alt text](./assets/mlfq_diagram.png)

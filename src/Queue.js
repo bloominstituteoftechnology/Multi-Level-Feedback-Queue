@@ -15,7 +15,6 @@ class Queue {
         this.quantumClock = 0;
         this.queueType = queueType;
     }
-
     // Adds the input process to the queue's list of processes
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
