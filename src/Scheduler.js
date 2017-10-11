@@ -48,7 +48,7 @@ class Scheduler {
     // In the case of a LOWER_PRIORITY interrupt, check to see if the input queue is a running queue or blocking queue
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
-    emitInterrupt(queue, process, interrupt) {
+    handleInterrupt(queue, process, interrupt) {
         
     }
 
