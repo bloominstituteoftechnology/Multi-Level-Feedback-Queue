@@ -39,7 +39,7 @@ class Queue {
 
   // Checks to see if there are any processes in the list of processes
   isEmpty() {
-    return (this.processes === 0);
+    return (this.processes.length === 0);
   }
 
   // Return this queue's priority level
@@ -99,8 +99,14 @@ class Queue {
   emitInterrupt(source, interrupt) {
     let index = this.processes.indexOf(source);
     this.processes.splice(index, 1);
-    if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) SchedulerInterrupt.PROCESS_BLOCKED;
-    if (interrupt === SchedulerInterrupt.PROCESS_READY) SchedulerInterrupt.PROCESS_READY;
+    // WTAF ????????????
+    // emit the input interrupt to the scheduler
+    // if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) SchedulerInterrupt.PROCESS_BLOCKED;
+    // if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) SchedulerInterrupt.LOWER_PRIORITY;
+    if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) SchedulerInterrupt.PROCESS_READY;
+    // if (interrupt === SchedulerInterrupt.PROCESS_READY) SchedulerInterrupt.PROCESS_READY;
+    // if (interrupt === SchedulerInterrupt.PROCESS_READY) SchedulerInterrupt.PROCESS_BLOCKED;
+    if (interrupt === SchedulerInterrupt.PROCESS_READY) SchedulerInterrupt.LOWER_PRIORITY;
   }
 }
 
