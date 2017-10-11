@@ -28,33 +28,38 @@ class Scheduler {
     // Once that is done, check to see if the queues are empty
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
+    checkrQ(rQ) {
+        for (let i = 0; i < 3; i++) {
+            if (this.runningQueues[i].processes.length > 0) {
+                rQ = true;
+            }
+        }
+    }
+    findProcess(workTime) {
+        for (let i = 0; i < 3; i++) {
+            if (this.runningQueues[i].processes.length > 0) {
+                this.runningQueues[i].doCPUWork(workTime);
+            }
+        }
+    }
     run() {
         let rQ = false;
-        function checkrQ(rQ) {
-            for (let i = 0; i < 3; i++) {
-                if (this.runningQueues[i].processes.length > 0) {
-                    rQ = true;
-                }
-            }
-        }
-        function findProcess() {
-            for (let i = 0; i < 3; i++) {
-                if (this.runningQueues[i].processes.length > 0) {
-                    const currentRunning = this.runningQueues[i].enqueue();
-                    currentRunning.execute(workTime);
-                }
-            }
-        }
-        checkrQ(rQ);
-        while(this.blockingQueue.processes.length > 0 || rQ) {
+        this.checkrQ(rQ);
+        while(true) {
             let time = Date.now();
             let workTime = time - this.clock;
             this.clock = time;
-            if(this.blockingQueue.processes.length > 0) {
-                const currentBlocking = this.blockingQueue.enqueue();
-                currentBlocking.execute(workTime);
+            console.log(this.blockingQueue);
+            if(!this.blockingQueue.isEmpty()) {
+                console.log('Blocking*************************************');
+                this.blockingQueue.doBlockingWork(workTime);
             }
-
+            this.findProcess(workTime);
+            this.checkrQ(rQ);
+            if (this.allEmpty()) {
+                console.log('DONE******************************');
+                break;
+            }
         }
     }
 

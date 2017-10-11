@@ -50,7 +50,7 @@ class Process {
     executeBlockingProcess(time) {
         this.blockingTimeNeeded -= time;
         if (this.blockingTimeNeeded <= 0) {
-            this.queue.scheduler.emitInterrupt(this.queue, this, SchedulerInterrupt.PROCESS_READY); // check this out too
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY); // check this out too
             this.stateChanged = true;
         }
     }
