@@ -64,37 +64,56 @@ class Queue {
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
-        if (currentProcess.isStateChanged() === true) {
-            return this.quantumClock = 0;
-        } else {
-            this.quantumClock += time;
-        }
-        if (this.quantumClock > this.quantum) {
+        // if (currentProcess.isStateChanged() === true) {
+        //     return this.quantumClock = 0;
+        // }
+        // this.quantumClock += time;
+        // if (this.quantumClock > this.quantum) {
+        //     this.quantumClock = 0;
+        //     this.dequeue();
+        //     // move to lower prio queue ???
+        // }
+        // if(currentProcess.isFinished() === false) {
+        //     // commenting out next line does nothing for tests
+        //     currentProcess.queue.scheduler.emitInterrupt(currentProcess.queue, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+        // } else {
+        //     return;
+        // }
+
+// // // // // // // // // // // // // // //
+        if (currentProcess.isStateChanged()) {
             this.quantumClock = 0;
-            this.dequeue();
-            // move to lower prio queue ???
-        }
-        if(currentProcess.isFinished() === false) {
-            currentProcess.blocking = SchedulerInterrupt.LOWER_PRIORITY;
-        } else {
             return;
         }
+
+        this.quantumClock += time;
+        if (this.quantumClock > this.quantum) {
+            this.quantumClock = 0;
+            const thingy = this.dequeue();
+
+            if (!thingy.isFinished()) {
+                  this.scheduler.emitInterrupt(this, thingy, SchedulerInterrupt.LOWER_PRIORITY);
+            }
+        }
+
     }
 
     // Execute a non-blocking process
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
-        this.peek().executeProcess(time);
-        this.manageTimeSlice(this.peek(), time);
+        let theProcess = this.peek();
+        theProcess.executeProcess(time);
+        this.manageTimeSlice(theProcess, time);
     }
 
     // Execute a blocking process
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
-        this.peek().executeBlockProcess(time);
-        this.manageTimeSlice(this.peek(), time);
+        let theProcess = this.peek();
+        theProcess.executeBlockProcess(time);
+        this.manageTimeSlice(theProcess, time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
@@ -103,8 +122,34 @@ class Queue {
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt
     emitInterrupt(source, interrupt) {
+    //     for (let i = 0; i < this.processes.length; i++) {
+    //         if (this.processes[i] === source) {
+    //             this.processes.splice(i, 1);
+    //         }
+    //     }
+    //     if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) {
+    //         this.scheduler.emitInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+    //     } else if (interrupt === SchedulerInterrupt.PROCESS_READY) {
+    //         this.scheduler.emitInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+    //     }
+    // }
 
+    // // // // // // // // // //
+    const SourceIndex = this.processes.indexOf(source);
+    this.processes.splice(SourceIndex, 1);
+
+    switch(interrupt) {
+      case 'PROCESS_BLOCKED':
+        this.scheduler.emitInterrupt(this, source, 'PROCESS_BLOCKED');
+        break;
+      case 'PROCESS_READY':
+        this.scheduler.emitInterrupt(this, source, 'PROCESS_READY');
+        break;
+      default:
+        break;
     }
+  }
+
 }
 
 module.exports = Queue;

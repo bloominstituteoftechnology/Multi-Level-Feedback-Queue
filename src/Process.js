@@ -35,7 +35,7 @@ class Process {
         this.stateChanged = false;
         if (this.blockingTimeNeeded) {
             // queue interrupt required
-            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.queue.emitInterrupt(this, 'PROCESS_BLOCKED');
             this.stateChanged = true;
         } else {
             this.cpuTimeNeeded -= time;
@@ -50,7 +50,7 @@ class Process {
         this.blockingTimeNeeded -= time;
         if (this.blockingTimeNeeded <= 0) {
             // queue interrupt needed
-            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            this.queue.emitInterrupt(this, 'PROCESS_READY');
             this.stateChanged = true;
         }
     }
