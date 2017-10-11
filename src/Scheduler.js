@@ -61,7 +61,7 @@ class Scheduler {
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-        
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string

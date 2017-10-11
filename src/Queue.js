@@ -76,8 +76,8 @@ class Queue {
           if (process.isFinished()) {
             this.scheduler.emitInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
           }
-        } else {
-          console.log('Sean says the process is complete');
+        // } else {
+        //   console.log('Sean says the process is complete');
         }
       }
 
