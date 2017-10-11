@@ -17,12 +17,14 @@ class Process {
     
     // Sets this process's `this.queue` property
     setParentQueue(queue) {
-        
+        const process = new Process(50);
+        this.queue = process._getParentQueue();
     }
 
     // Checks that this process no longer has any more CPU or blocking time it needs
     isFinished() {
-        
+        const process = new Process(0, 50);
+
     }
 
     // Sets this process's `this.stateChanged` property to `false`
@@ -32,14 +34,21 @@ class Process {
     // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
     executeProcess(time) {
         this.stateChanged = false;
-        this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
-        this.stateChanged = false;
+        if(this.blockingTimeNeeded !== 0) {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            this.stateChanged = true;
+        }
+        this.cpuTimeNeeded -= time;
    }
 
    // Decrement this process's `this.blockingTimeNeeded` by the input `time`
    // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying 
    // the process is ready and toggle `this.stateChanged` to `true`
     executeBlockingProcess(time) {
+       if (this.blockingTimeNeeded <= 0 ) {
+           this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+           this.stateChanged = true;
+       }
 
     }
 
