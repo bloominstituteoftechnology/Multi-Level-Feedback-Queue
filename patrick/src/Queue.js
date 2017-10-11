@@ -63,21 +63,32 @@ class Queue {
   // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
   // needs to be moved to a lower priority queue
   manageTimeSlice(currentProcess, time) {
-
+    if (currentProcess.stateChanged === true) {
+      this.quantumClock = 0;
+      return;
+    } else {
+      this.quantumClock += time;
+    }
+    if (this.quantumClock > this.quantum) {
+      this.quantumClock = 0;
+      this.dequeue();
+    } else {
+      currentProcess.blocking = true;
+    }
   }
 
   // Execute a non-blocking process
   // Peeks the next process and runs its `executeProcess` method with input `time`
   // Call `this.manageTimeSlice` with the peeked process and input `time`
   doCPUWork(time) {
-
+    this.manageTimeSlice(peek().executeProcess(time), time);
   }
 
   // Execute a blocking process
   // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
   // Call `this.manageTimeSlice` with the peeked process and input `time`
   doBlockingWork(time) {
-
+    this.manageTimeSlice(peek().executeBlockingProcess(time), time);
   }
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
@@ -86,7 +97,8 @@ class Queue {
   // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt
   // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt
   emitInterrupt(source, interrupt) {
-
+    index = this.processes.indexOf(source);
+    this.processes.splice(index, 1);
   }
 }
 
