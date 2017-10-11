@@ -76,7 +76,7 @@ class Queue {
                 // execute next process in queue
                 currentProcess.executeProcess(this.processes[0]);
                 this.quantumClock = 0;
-                this.processes.dequeue();
+                this.dequeue;
             }
             this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
         }
@@ -105,11 +105,11 @@ class Queue {
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt
     emitInterrupt(source, interrupt) {
         switch (interrupt) {
-            case PROCESS_BLOCKED : this.scheduler.emitInterrupt(source, this, SchedulerInterrupt.PROCESS_BLOCKED);
+            case SchedulerInterrupt.PROCESS_BLOCKED : this.scheduler.emitInterrupt(source, this, SchedulerInterrupt.PROCESS_BLOCKED);
             break;
-            case PROCESS_READY : this.scheduler.emitInterrupt(source, this, SchedulerInterrupt.PROCESS_READY);
+            case SchedulerInterrupt.PROCESS_READY : this.scheduler.emitInterrupt(source, this, SchedulerInterrupt.PROCESS_READY);
             break;
-            case LOWER_PRIORITY : this.scheduler.emitInterrupt(source, this, SchedulerInterrupt.LOWER_PRIORITY);
+            case SchedulerInterrupt.LOWER_PRIORITY : this.scheduler.emitInterrupt(source, this, SchedulerInterrupt.LOWER_PRIORITY);
             break;
             default :
             break;
