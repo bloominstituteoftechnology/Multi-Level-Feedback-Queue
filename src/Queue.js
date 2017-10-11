@@ -63,18 +63,23 @@ class Queue {
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
-        if (currentProcess.stateChanged === true) {
-            return this.quantumClock = 0;
+        if (currentProcess.isStateChanged() === true) {
+          this.quantumClock = 0;
+          return;
         } else {
-            this.quantumClock += time;
+          this.quantumClock += time;
         }
         if (this.quantumClock > this.quantum) {
-            this.quantumClock = 0;
-            this.dequeue();
+          this.quantumClock = 0;
+          const process = this.dequeue();
+    
+          if (process.isFinished()) {
+            this.scheduler.emitInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
+          }
         } else {
-            currentProcess.blocking = true;
+          console.log('Sean says the process is complete');
         }
-    }
+      }
 
     // Execute a non-blocking process
     // Peeks the next process and runs its `executeProcess` method with input `time`
@@ -100,8 +105,8 @@ class Queue {
     emitInterrupt(source, interrupt) {
         let index = this.processes.indexOf(source);
         this.processes.splice(index, 1);
-        if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) SchedulerInterrupt.PROCESS_BLOCKED;
-        if (interrupt === SchedulerInterrupt.PROCESS_READY) SchedulerInterrupt.PROCESS_READY;
+        if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED)this.scheduler.emitInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+        if (interrupt === SchedulerInterrupt.PROCESS_READY) this.scheduler.emitInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
     }
 }
 
