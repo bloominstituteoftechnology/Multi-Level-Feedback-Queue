@@ -35,7 +35,7 @@ describe('Queue', () => {
         expect(queue.peek()).toBe(process);
     });
 
-    it('should return the most recently added process when peeking', () => {
+    it('should return the least recently added process when peeking', () => {
         const process1 = new Process(0);
         const process2 = new Process(1);
         queue.enqueue(process1);
