@@ -73,10 +73,11 @@ class Queue {
       this.quantumClock = 0;
       const process = this.dequeue();
 
-      if (process.isFinished()) {
+      if (!process.isFinished()) {
         this.scheduler.emitInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
       }
     } else {
+      /* eslint no-console: 0 */
       console.log('Sean says the process is complete');
     }
   }

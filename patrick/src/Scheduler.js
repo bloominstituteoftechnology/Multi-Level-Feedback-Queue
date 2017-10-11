@@ -5,12 +5,13 @@ const {
 } = require('./constants/index');
 
 // A class representing the scheduler
-// It holds a single blocking queue for blocking processes and three running queues
-// for non-blocking processes
+// It holds 1 blocking queue for blocking processes and
+// it holds 3 running queues for non-blocking processes
 class Scheduler {
   constructor() {
     this.clock = Date.now();
     this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
+    //             constructor(scheduler, quantum, priorityLevel, queueType) {
     this.runningQueues = [];
 
     for (let i = 0; i < PRIORITY_LEVELS; i++) {
@@ -22,6 +23,7 @@ class Scheduler {
   // Initialize a variable with the current time and subtract current time by `this.clock` to get the `workTime`
   // `workTime` will be the amount of time each queue will be given to execute their processes for
   // Update `this.clock` with the new current time
+
   // First, check to see if there are processes in the blocking queue
   // If there are, execute a blocking process for the amount of time given by `workTime`
   // Then, iterate through all of the running queues and execute processes on those queues for the amount of time given by `workTime`
@@ -29,12 +31,34 @@ class Scheduler {
   // If yes, then break out of the infinite loop
   // Otherwise, perform another loop iteration
   run() {
-
+    while (this.runningQueues.length > 0) {
+      const resTime = Date.now();
+      const workTime = resTime - this.clock;
+      this.clock = resTime;
+      if (!this.blockingQueue.isEmpty()) { // First, check to see if there are processes in the blocking queue
+        this.blockingQueue.doBlockingWork(workTime); // If there are, execute a blocking process for the amount of time given by `workTime`
+      }
+      for (let i = 0; i < this.runningQueues.length; i++) { // Then, iterate through all of the running queues and
+        if (!this.runningQueues[i].isEmpty()) {
+          this.runningQueues[i].doCPUWork(workTime); // execute processes on those queues for the amount of time given by `workTime`
+          break;
+        }
+      }
+      if  (this.allEmpty()) { // Once that is done, check to see if the queues are empty
+        console.log('Sean is VERY disappointed with us');
+        break;
+      }
+    }
   }
 
   // Checks that all queues have no processes
   allEmpty() {
-
+    for (let i = 0; i < this.runningQueues.length; i++) {
+      if (!this.runningQueues[i].isEmpty()) {
+        return false;
+      }
+    }
+    return (this.blockingQueue.isEmpty());
   }
 
   // Adds a new process to the highest priority level running queue
