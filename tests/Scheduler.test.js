@@ -15,11 +15,11 @@ describe('Queue', () => {
        queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
     });
 
-    it('should have the methods "run", "allEmpty", "addNewProcess", and "emitInterrupt"', () => {
+    it('should have the methods "run", "allEmpty", "addNewProcess", and "handlInterrupt"', () => {
         expect(Object.getPrototypeOf(scheduler).hasOwnProperty('run')).toBe(true);
         expect(Object.getPrototypeOf(scheduler).hasOwnProperty('allEmpty')).toBe(true);
         expect(Object.getPrototypeOf(scheduler).hasOwnProperty('addNewProcess')).toBe(true);
-        expect(Object.getPrototypeOf(scheduler).hasOwnProperty('emitInterrupt')).toBe(true);
+        expect(Object.getPrototypeOf(scheduler).hasOwnProperty('handleInterrupt')).toBe(true);
     });
 
     it('should return true when "allEmpty" is called with no processes in any queues', () => {
@@ -55,10 +55,10 @@ describe('Queue', () => {
         const topLevelQueue = scheduler._getCPUQueue(0);
         const nextLevelQueue = scheduler._getCPUQueue(1);
         const blockingQueue = scheduler._getBlockingQueue();
-        scheduler.emitInterrupt(topLevelQueue, process1, SchedulerInterrupt.LOWER_PRIORITY);
+        scheduler.handleInterrupt(topLevelQueue, process1, SchedulerInterrupt.LOWER_PRIORITY);
         expect(nextLevelQueue.peek()).toBe(process1);
 
-        scheduler.emitInterrupt(blockingQueue, process2, SchedulerInterrupt.LOWER_PRIORITY);
+        scheduler.handleInterrupt(blockingQueue, process2, SchedulerInterrupt.LOWER_PRIORITY);
         expect(blockingQueue.peek()).toBe(process2);
     });
 

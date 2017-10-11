@@ -80,8 +80,8 @@ class Queue {
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
     // Receives a source process and an interrupt string
     // Find the index of the source process in `this.processes` and splice the process out of the array
-    // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt
-    // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt
+    // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
+    // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
 
     }
