@@ -29,12 +29,34 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        
+        while (this.runningQueues.length > 0) {
+            const resTime = Date.now();
+            const workTime = resTime - this.clock;
+            this.clock = resTime;
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+            for (let i = 0; i < this.runningQueues.length; i++) {
+                if (!this.runningQueues[i].isEmpty()) {
+                    this.runningQueues[i].doCPUWork(workTime);
+                    break;
+                }
+            }
+            if (this.allEmpty()) {
+                break;
+            }
+        }
     }
+    
 
     // Checks that all queues have no processes 
     allEmpty() {
-        
+        for (let i = 0; i < this.runningQueues.length; i ++) {
+            if (!this.runningQueues[i].isEmpty()) {
+                return false;
+            }
+        }
+        return (this.blockingQueue.isEmpty());
     }
 
     // Adds a new process to the highest priority level running queue
