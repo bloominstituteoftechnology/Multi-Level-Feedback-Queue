@@ -29,7 +29,33 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        
+        let rQ = false;
+        function checkrQ(rQ) {
+            for (let i = 0; i < 3; i++) {
+                if (this.runningQueues[i].processes.length > 0) {
+                    rQ = true;
+                }
+            }
+        }
+        function findProcess() {
+            for (let i = 0; i < 3; i++) {
+                if (this.runningQueues[i].processes.length > 0) {
+                    const currentRunning = this.runningQueues[i].enqueue();
+                    currentRunning.execute(workTime);
+                }
+            }
+        }
+        checkrQ(rQ);
+        while(this.blockingQueue.processes.length > 0 || rQ) {
+            let time = Date.now();
+            let workTime = time - this.clock;
+            this.clock = time;
+            if(this.blockingQueue.processes.length > 0) {
+                const currentBlocking = this.blockingQueue.enqueue();
+                currentBlocking.execute(workTime);
+            }
+
+        }
     }
 
     // Checks that all queues have no processes 
@@ -47,7 +73,7 @@ class Scheduler {
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-        this.runningQueues[0].push(process);
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -58,13 +84,19 @@ class Scheduler {
     // If it is a blocking queue, add the process back to the blocking queue
     emitInterrupt(queue, process, interrupt) {
         switch (interrupt) {
-            case PROCESS_BLOCKED : this.blockingQueue.push(process);
+            case 'PROCESS_BLOCKED' : this.blockingQueue.enqueue(process);
             break;
-            case PROCESS_READY : this.runningQueues[0].push(process);
+            case 'PROCESS_READY' : this.addNewProcess(process);
             break;
-            case LOWER_PRIORITY : if (queue === this.blockingQueue) {
-                this.blockingQueue.push(process);
-            } else if (queue === this.runningQueues)
+            case 'LOWER_PRIORITY' : if (queue.queueType === QueueType.BLOCKING_QUEUE) {
+                this.blockingQueue.enqueue(process);
+            } else {
+                let level = queue.priorityLevel;
+                if (queue.priorityLevel < PRIORITY_LEVELS - 1) {
+                    this.runningQueues[level + 1].enqueue(process);
+                }
+                else this.runningQueues[queue.priorityLevel].enqueue(process);
+            }
             break;
             default :
             break;
