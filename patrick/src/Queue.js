@@ -34,7 +34,7 @@ class Queue {
   // Return the least-recently added process without removing it from the list of processes
   peek() {
     let len = this.processes.length;
-    return this.processes[len - 1];
+    return this.processes[0];
   }
 
   // Checks to see if there are any processes in the list of processes
