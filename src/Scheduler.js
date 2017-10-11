@@ -49,7 +49,16 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     emitInterrupt(queue, process, interrupt) {
-        
+        if (interrupt === "PROCESS_BLOCKED") {
+            // add process to blocking queue
+        }
+        if (interrupt === "PROCESS_READY") {
+            // add process to high prio queue
+        }
+        if (interrupt === "LOWER_PRIORITY") {
+            // check to see blah blah blah
+        }
+        // other steps need to be done
     }
 
     // Private function used for testing; DO NOT MODIFY
