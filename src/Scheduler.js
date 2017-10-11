@@ -49,7 +49,6 @@ class Scheduler {
             let time = Date.now();
             let workTime = time - this.clock;
             this.clock = time;
-            console.log(this.blockingQueue);
             if(!this.blockingQueue.isEmpty()) {
                 console.log('Blocking*************************************');
                 this.blockingQueue.doBlockingWork(workTime);

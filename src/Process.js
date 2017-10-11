@@ -22,7 +22,7 @@ class Process {
 
     // Checks that this process no longer has any more CPU or blocking time it needs
     isFinished() {
-        if (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0) {
+        if (this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0) {
             return true;
         } else {
             return false;
