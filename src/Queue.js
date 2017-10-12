@@ -112,7 +112,7 @@ class Queue {
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
         let theProcess = this.peek();
-        theProcess.executeBlockProcess(time);
+        theProcess.executeBlockingProcess(time);
         this.manageTimeSlice(theProcess, time);
     }
 

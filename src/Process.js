@@ -22,8 +22,8 @@ class Process {
 
     // Checks that this process no longer has any more CPU or blocking time it needs
     isFinished() {
-        if ( this.cpuTimeNeeded || this.blockingTimeNeeded) return false;
-        return true;
+        if ( this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0) return true;
+        return false;
     }
 
     // Sets this process's `this.stateChanged` property to `false`

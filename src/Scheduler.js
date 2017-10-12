@@ -29,28 +29,29 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        while(allEmpty() === false) {
+        while(!this.allEmpty()) {
             let currentTime = Date.now();
             let workTime = currentTime - this.clock;
             this.clock = currentTime;
-            if (this.blockingQueue.processes.length > 0) {
+            // blocking processes never get added to blocking queue <<<< ???
+            if (!this.blockingQueue.isEmpty()) {
                 this.blockingQueue.doBlockingWork(workTime);
-            }
+            } 
             for (let i = 0; i < this.runningQueues.length; i++) {
-                this.runningQueues[i].doCPUWork(workTime);
-            }
-            if (allEmpty()) {
-                break;
+                if (!this.runningQueues[i].isEmpty()) {
+                    this.runningQueues[i].doCPUWork(workTime);
+                    break;
+                }
             }
         }
     }
 
     // Checks that all queues have no processes 
     allEmpty() {
-        let empty = false;
-        if (this.blockingQueue.processes.length === 0) empty = true;
+        let empty = true;
+        if (this.blockingQueue.processes.length !== 0) empty = false;
         for (let i = 0; i < this.runningQueues.length; i++) {
-            if (this.runningQueues[i].processes.length === 0) empty = true;
+            if (this.runningQueues[i].processes.length !== 0) empty = false;
         }
         return empty;
     }
@@ -99,17 +100,16 @@ class Scheduler {
                 this.blockingQueue.enqueue(process);
                 break;
             case 'PROCESS_READY':
-                this.runningQueues[0].enqueue(process);
+                this.addNewProcess(process);
                 break;
             case 'LOWER_PRIORITY':
-                switch(queue) {
+                switch(queue.queueType) {
                     case 'CPU_QUEUE':
                         if (queue.priorityLevel === this.runningQueues.length - 1) {
                             this.runningQueues[this.runningQueues.length - 1].enqueue(process);
                             return;
                         } else {
-                            this.runningQueues[this.runningQueues.length].enqueue(process);
-                            return;
+                            this.runningQueues[queue.priorityLevel + 1].enqueue(process);
                         }
                         break;
                     case 'BLOCKING_QUEUE':
@@ -119,7 +119,7 @@ class Scheduler {
                 break;
             default:
                 break;
-    }
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
