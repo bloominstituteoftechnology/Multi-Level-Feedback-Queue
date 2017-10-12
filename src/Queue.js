@@ -33,7 +33,8 @@ class Queue {
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        return this.processes[this.processes.length-1];
+        let len = this.processes.length;
+        return this.processes[len-1];
     }
 
     // Checks to see if there are any processes in the list of processes
@@ -68,8 +69,9 @@ class Queue {
         if (currentProcess.isStateChanged()) {
             this.quantumClock = 0;
             return;
+        } else {
+            this.quantumClock = this.quantumClock + time;
         }
-        this.quantumClock = this.quantumClock + time;
         if (this.quantumClock > this.quantum){
             this.quantumClock = 0;
             const process = this.dequeue();
@@ -85,12 +87,22 @@ class Queue {
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
+        if(this.processes.length > 0) {
+            const nextprocess = this.peek();
+            nextprocess.executeProcess(time);
+            this.manageTimeSlice(nextprocess, time);
+        }
     }
 
     // Execute a blocking process
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
+        if(this.processes.length === 0) {
+            const nextprocess = this.peek();
+            nextprocess.executeBlockingProcess(time);
+            this.manageTimeSlice(nextprocess, time);
+        }
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue

@@ -29,21 +29,34 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        while(processes){
+        while(true){
             let ttime = Date.now();
             workTime = ttime-this.clock;
             this.clock = ttime;
+            if (this.blockingQueue ) {
+            blockingQueue.workTime;
+            }
+            for(let i = 0; i<this.runningQueues[i].length; i++) {
+                if(!this.runningQueues[i].isEmpty()){
+                    return false;
+                }
+            }
         }
     }
 
     // Checks that all queues have no processes 
     allEmpty() {
-        return true;
+        for(let i = 0; i<this.runningQueues[i].length; i++) {
+            if(!this.runningQueues[i].isEmpty()){
+                return false;
+            }
+        }
+        return this.blockingQueue.isEmpty();
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-        
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -55,15 +68,15 @@ class Scheduler {
     handleInterrupt(queue, process, interrupt) {
         switch(interrupt) {
             case 'PROCESS_BLOCKED':
-                this.processes.push(process);
+                this.blockingQueue.enqueue(process);
             case 'PROCESS_READY':
-                this.quantum;
+                this.addNewProcess;
             case 'LOWER_PRIORITY':
                 if(runningQueues) {
-
+                    this.runningQueues.enqueue(process);
                 }
                 if(blockingQueue) {
-
+                    this.blockingQueue.enqueue(process);
                 }
         }
     }
