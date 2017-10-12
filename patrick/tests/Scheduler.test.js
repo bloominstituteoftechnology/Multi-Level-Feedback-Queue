@@ -82,11 +82,11 @@ describe('Scheduler', () => {
     scheduler.run();
 
     expect(blockingQueueSpy.called).toBe(true);
-    // expect(queue1Spy.called).toBe(true);
-    // expect(blockingQueue.isEmpty()).toBe(true);
-    // expect(schedulerSpy.called).toBe(true);
-    // expect(queue1.isEmpty()).toBe(true);
-    // expect(queue2.isEmpty()).toBe(true);
-    // expect(queue3.isEmpty()).toBe(true);
+    expect(queue1Spy.called).toBe(true);
+    expect(blockingQueue.isEmpty()).toBe(true);
+    expect(schedulerSpy.called).toBe(true);
+    expect(queue1.isEmpty()).toBe(true);
+    expect(queue2.isEmpty()).toBe(true);
+    expect(queue3.isEmpty()).toBe(true);
   });
 });
