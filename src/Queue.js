@@ -66,7 +66,7 @@ class Queue {
   // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
   // needs to be moved to a lower priority queue
   manageTimeSlice(currentProcess, time) {
-    if (currentProcess.isStateChanged() === true) {
+    if (currentProcess.stateChanged === true) {
       this.quantumClock = 0;
       return;
     }
@@ -77,7 +77,7 @@ class Queue {
       const process = this.dequeue();
 
       if (!process.isFinished()) {
-        this.emitInterrupt(process, SchedulerInterrupt.LOWER_PRIORITY);
+        this.scheduler.emitInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
       }
     }
   }
@@ -87,8 +87,9 @@ class Queue {
   // Call `this.manageTimeSlice` with the peeked process and input `time`
   doCPUWork(time) {
     if (this.processes.length > 0) {
-      this.peek().executeProcess(time);
-      this.manageTimeSlice(this.peek(), time);
+      const process = this.peek();
+      process.executeProcess(time);
+      this.manageTimeSlice(process, time);
     }
   }
 
@@ -97,8 +98,9 @@ class Queue {
   // Call `this.manageTimeSlice` with the peeked process and input `time`
   doBlockingWork(time) {
     if (this.processes.length > 0) {
-      this.peek().executeBlockingProcess(time);
-      this.manageTimeSlice(this.peek(), time);
+      const process = this.peek();
+      process.executeBlockingProcess(time);
+      this.manageTimeSlice(process, time);
     }
   }
 
@@ -108,8 +110,6 @@ class Queue {
   // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt
   // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt
   emitInterrupt(source, interrupt) {
-    const sourceIndex = this.processes.indexOf(source);
-    this.processes.splice(sourceIndex, 1);
     switch (interrupt) {
       case SchedulerInterrupt.PROCESS_BLOCKED:
         this.scheduler.emitInterrupt(
