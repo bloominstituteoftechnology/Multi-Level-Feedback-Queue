@@ -35,6 +35,7 @@ class Scheduler {
             this.clock = currentTime;
             // blocking processes never get added to blocking queue <<<< ???
             if (!this.blockingQueue.isEmpty()) {
+                console.log("HII WORLD INSIDE");
                 this.blockingQueue.doBlockingWork(workTime);
             } 
             for (let i = 0; i < this.runningQueues.length; i++) {
@@ -119,7 +120,7 @@ class Scheduler {
                 break;
             default:
                 break;
-        }
+    }
     }
 
     // Private function used for testing; DO NOT MODIFY

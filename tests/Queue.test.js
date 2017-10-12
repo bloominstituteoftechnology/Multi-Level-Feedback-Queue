@@ -35,7 +35,7 @@ describe('Queue', () => {
         expect(queue.peek()).toBe(process);
     });
 
-    it('should return the most recently added process when peeking', () => {
+    it('should return the least recently added process when peeking', () => {
         const process1 = new Process(0);
         const process2 = new Process(1);
         queue.enqueue(process1);
@@ -58,7 +58,7 @@ describe('Queue', () => {
     });
 
     it('should properly manage a child process that did not complete execution during the allotted time quantum', () => {
-        const schedulerSpy = sinon.spy(scheduler, "emitInterrupt");
+        const schedulerSpy = sinon.spy(scheduler, "handleInterrupt");
         const process = new Process(0, 60);
         queue.enqueue(process);
         queue.doCPUWork(51);
@@ -66,7 +66,7 @@ describe('Queue', () => {
     });
 
     it('should properly manage a child process that completed execution during the allotted time quantum', () => {
-        const schedulerSpy = sinon.spy(scheduler, "emitInterrupt");
+        const schedulerSpy = sinon.spy(scheduler, "handleInterrupt");
         const queueSpy = sinon.spy(queue, "manageTimeSlice");
         const process = new Process(0, 49);
         queue.enqueue(process);
@@ -83,7 +83,7 @@ describe('Queue', () => {
     });
 
     it('should remove the source process from the queue and emit the input interrupt to the scheduler', () => {
-        const schedulerSpy = sinon.spy(scheduler, "emitInterrupt");
+        const schedulerSpy = sinon.spy(scheduler, "handleInterrupt");
         const process1 = new Process(0);
         const process2 = new Process(1);
         queue.enqueue(process1);
