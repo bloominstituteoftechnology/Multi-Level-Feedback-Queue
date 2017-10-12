@@ -76,9 +76,10 @@ class Queue {
       if (!process.isFinished()) {
         this.scheduler.emitInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
       }
-    } else {
-      /* eslint no-console: 0 */
-      console.log('Sean says the process is complete');
+    // } else {
+    //   /* eslint no-console: 0 */
+    //   console.log('Sean says the process is complete');
+    // }
     }
   }
 
@@ -87,8 +88,9 @@ class Queue {
   // Call `this.manageTimeSlice` with the peeked process and input `time`
   doCPUWork(time) {
     // this.manageTimeSlice(peek().executeProcess(time), time);
-    this.peek().executeProcess(time);
-    this.manageTimeSlice(this.peek(), time);
+    const peekaboo = this.peek();
+    peekaboo.executeProcess(time);
+    this.manageTimeSlice(peekaboo, time);
   }
 
   // Execute a blocking process
@@ -96,8 +98,9 @@ class Queue {
   // Call `this.manageTimeSlice` with the peeked process and input `time`
   doBlockingWork(time) {
     // this.manageTimeSlice(peek().executeBlockingProcess(time), time);
-    this.peek().executeBlockingProcess(time);
-    this.manageTimeSlice(this.peek(), time);
+    const peekaboo2 = this.peek();
+    peekaboo2.executeBlockingProcess(time);
+    this.manageTimeSlice(peekaboo2, time);
   }
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
@@ -106,8 +109,8 @@ class Queue {
   // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt
   // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt
   emitInterrupt(source, interrupt) {
-    let index = this.processes.indexOf(source);
-    this.processes.splice(index, 1);
+    // let index = this.processes.indexOf(source);
+    // this.processes.splice(index, 1);
     if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) this.scheduler.emitInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
     if (interrupt === SchedulerInterrupt.PROCESS_READY) this.scheduler.emitInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
   }
