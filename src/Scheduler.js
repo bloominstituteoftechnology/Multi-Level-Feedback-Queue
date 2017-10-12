@@ -1,14 +1,14 @@
-const Queue = require('./Queue'); 
-const { 
+const Queue = require('./Queue');
+const {
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
 
 // A class representing the scheduler
-// It holds a single blocking queue for blocking processes and three running queues 
+// It holds a single blocking queue for blocking processes and three running queues
 // for non-blocking processes
-class Scheduler { 
-    constructor() { 
+class Scheduler {
+    constructor() {
         this.clock = Date.now();
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];
@@ -29,17 +29,42 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        
+      while(!this.allEmpty()) {
+        let time = Date.now()
+        let workTime = time - this.clock
+        this.clock = time
+        // console.log(this.blockingQueue.isEmpty())
+        if (!this.blockingQueue.isEmpty()) {
+          this.blockingQueue.doBlockingWork(workTime)
+        }
+        // console.log(this.allEmpty())
+
+        for (let i = 0; i < this.runningQueues.length; i++) {
+          if(!this.runningQueues[i].isEmpty()) {
+            this.runningQueues[i].doCPUWork(workTime)
+            break
+          }
+          // console.log(this.runningQueues[i])
+        }
+      }
     }
 
-    // Checks that all queues have no processes 
+    // Checks that all queues have no processes
     allEmpty() {
-        
+      if (this.blockingQueue.processes.length <= 0) {
+        for (let i = 0; i < 3; i++) {
+          if (this.runningQueues[i].processes.length > 0) {
+            return false;
+          }
+        }
+        return true;
+      }
+      return false;
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-        
+      this.runningQueues[0].enqueue(process)
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -49,7 +74,29 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     emitInterrupt(queue, process, interrupt) {
-        
+
+      switch(interrupt) {
+        case 'PROCESS_BLOCKED': {
+          this.blockingQueue.enqueue(process)
+          break
+        }
+        case 'PROCESS_READY': {
+          this.addNewProcess(process)
+          break
+        }
+        case 'LOWER_PRIORITY': {
+          if(queue.queueType === 'CPU_QUEUE') {
+            const newLevel = queue.priorityLevel > 1 ? queue.priorityLevel : queue.priorityLevel += 1
+            this.runningQueues[newLevel].enqueue(process)
+          }
+          if (queue.queueType === 'BLOCKING_QUEUE') {
+            this.blockingQueue.enqueue(process)
+          }
+          break
+        }
+        default:
+          break
+      }
     }
 
     // Private function used for testing; DO NOT MODIFY

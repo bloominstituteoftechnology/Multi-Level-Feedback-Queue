@@ -2,14 +2,14 @@ const sinon = require('sinon');
 const Queue = require('../src/Queue');
 const Process = require('../src/Process');
 const Scheduler = require('../src/Scheduler');
-const { 
+const {
     SchedulerInterrupt,
     QueueType,
 } = require('../src/constants/index');
 
 let queue, scheduler;
 
-describe('Queue', () => {
+describe('Scheduler', () => {
     beforeEach(() => {
        scheduler = new Scheduler();
        queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
