@@ -36,24 +36,18 @@ class Scheduler {
       const resTime = Date.now();
       const workTime = resTime - this.clock;
       this.clock = resTime;
-      console.log(!this.blockingQueue.isEmpty());
-      if (!this.blockingQueue.isEmpty()) { // First, check to see if there are processes in the blocking queue
-        console.log("OH MY GOODNESS!!!!");
-        this.blockingQueue.doBlockingWork(workTime); // If there are, execute a blocking process for the amount of time given by `workTime`
+      if (!this.blockingQueue.isEmpty()) {
+        this.blockingQueue.doBlockingWork(workTime);
       }
-      console.log("42 WE LOVE ARTIE!!!!!!", this.allEmpty());
-      for (let i = 0; i < this.runningQueues.length; i++) { // Then, iterate through all of the running queues and
+      for (let i = 0; i < this.runningQueues.length; i++) {
         if (!this.runningQueues[i].isEmpty()) {
-          this.runningQueues[i].doCPUWork(workTime); // execute processes on those queues for the amount of time given by `workTime`
+          this.runningQueues[i].doCPUWork(workTime);
           break;
         }
       }
-      console.log("49", this.allEmpty());
-      if (this.allEmpty()) { // Once that is done, check to see if the queues are empty
-        console.log('Sean is VERY disappointed with us');
+      if (this.allEmpty()) {
         break;
       }
-      break;
     }
   }
 
