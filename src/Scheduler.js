@@ -64,9 +64,9 @@ class Scheduler {
 
     // Checks that all queues have no processes 
     allEmpty() {
-        if (this.blockingQueue.processes.length === 0) {
-            for (let i = 0; i < this.runningQueues.length; i++) {
-                if (this.runningQueues[i].length > 0) {
+        if (this.blockingQueue.processes.length <= 0) {
+            for (let i = 0; i < 3; i++) {
+                if (this.runningQueues[i].processes.length > 0) {
                     return false;
                 }
             }
@@ -87,6 +87,8 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     emitInterrupt(queue, process, interrupt) {
+        const sourceIndex = queue.processes.indexOf(process);
+        queue.processes.splice(sourceIndex, 1);
         switch (interrupt) {
             case 'PROCESS_BLOCKED' : this.blockingQueue.enqueue(process);
             break;
