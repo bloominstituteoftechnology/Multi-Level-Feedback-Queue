@@ -18,6 +18,10 @@ class Scheduler {
     }
   }
 
+  get workTime() { // can put any expression in here to reflect your model of workTime
+    return 5;
+  }
+
   // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
   // Initialize a variable with the current time and subtract current time by `this.clock` to get the `workTime`
   // `workTime` will be the amount of time each queue will be given to execute their processes for
@@ -28,38 +32,33 @@ class Scheduler {
   // Once that is done, check to see if the queues are empty
   // If yes, then break out of the infinite loop
   // Otherwise, perform another loop iteration
+
   run() {
-    while (true) {
-      const workTime = 5; /* time - this.clock gives 0 most of the time,
-                             so just let workTime be a constant 5 */
-      this.clock = Date.now();
-
-      //FIRST, check for processes in the blocking queue
-      if (!this.blockingQueue.isEmpty()) {
-        this.blockingQueue.doBlockingWork(workTime);
-      }
-
-      /* SECOND, iterate through all of the running queues and execute
-         processes on those queues for the amount of time given by `workTime` */
-      for (let i = 0; i < PRIORITY_LEVELS; i++) {
-        const queue = this.runningQueues[i];
-        if (!queue.isEmpty()) {
-          queue.doCPUWork(workTime);
-          break; /* all processes in a queue must complete or be moved to a
-                    lower queue before moving to a lower priority queue for processing */
-        }
-      }
-
-      // THIRD, check to see if the queues are empty
-      if (this.allEmpty())
-        break;
+    let nextProcess; /* do not call the same method twice in a row; grab the next process or fall out of loop;
+                        allEmpty() no longer needed */
+    while ((nextProcess = this.nextProcess)) {
+      this.process(nextProcess);
     }
   }
 
-  // Checks that all queues have no processes 
-  allEmpty() {
-    return this.blockingQueue.isEmpty() && this.runningQueues.every(q => q.isEmpty());
+  get nextProcess() { // returns the next process based upon priority, or null when the queues are empty
+    if (!this.blockingQueue.isEmpty()) {
+      return this.blockingQueue.peek();
+    }
+    let nonEmptyCPUQueue;
+    if (nonEmptyCPUQueue = this.runningQueues.find(queue => !queue.isEmpty()))
+      return nonEmptyCPUQueue.peek();
+    return null;
   }
+
+  process(nextProcess) { // either calls doBlockingWork or doCPUWork
+    if (nextProcess.blockingTimeNeeded > 0) {
+      nextProcess.queue.doBlockingWork(this.workTime)
+    } else {
+      nextProcess.queue.doCPUWork(this.workTime);
+    }
+  }
+
 
   // Adds a new process to the highest priority level running queue
   addNewProcess(process) {
