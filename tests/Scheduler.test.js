@@ -9,21 +9,16 @@ const {
 
 let queue, scheduler;
 
-describe('Queue', () => {
+describe('Scheduler', () => {
     beforeEach(() => {
        scheduler = new Scheduler();
        queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
     });
 
-    it('should have the methods "run", "allEmpty", "addNewProcess", and "emitInterrupt"', () => {
+    it('should have the methods "run", "addNewProcess", and "emitInterrupt"', () => {
         expect(Object.getPrototypeOf(scheduler).hasOwnProperty('run')).toBe(true);
-        expect(Object.getPrototypeOf(scheduler).hasOwnProperty('allEmpty')).toBe(true);
         expect(Object.getPrototypeOf(scheduler).hasOwnProperty('addNewProcess')).toBe(true);
         expect(Object.getPrototypeOf(scheduler).hasOwnProperty('emitInterrupt')).toBe(true);
-    });
-
-    it('should return true when "allEmpty" is called with no processes in any queues', () => {
-        expect(scheduler.allEmpty()).toBe(true);
     });
 
     it('should add new processes to the top priority CPU queue when "addNewProcess" is called', () => {
@@ -72,7 +67,6 @@ describe('Queue', () => {
         const queue2 = scheduler._getCPUQueue(1);
         const queue3 = scheduler._getCPUQueue(2);
 
-        const schedulerSpy = sinon.spy(scheduler, 'allEmpty');
         const blockingQueueSpy = sinon.spy(blockingQueue, 'doBlockingWork');
         const queue1Spy = sinon.spy(queue1, 'doCPUWork');
 
@@ -84,7 +78,6 @@ describe('Queue', () => {
         expect(blockingQueueSpy.called).toBe(true);
         expect(queue1Spy.called).toBe(true);
         expect(blockingQueue.isEmpty()).toBe(true);
-        expect(schedulerSpy.called).toBe(true);
         expect(queue1.isEmpty()).toBe(true);
         expect(queue2.isEmpty()).toBe(true);
         expect(queue3.isEmpty()).toBe(true);
