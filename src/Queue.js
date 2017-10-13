@@ -41,7 +41,7 @@ class Queue {
     return this.processes.length === 0;
   }
 
-    // Return this queue's priority level
+  // Return this queue's priority level
   getPriorityLevel() {
     return this.priorityLevel;
   }
@@ -74,8 +74,7 @@ class Queue {
 
         if (dqprocess.cpuTimeNeeded > 0) {
           this.scheduler.emitInterrupt(this, dqprocess, SchedulerInterrupt.LOWER_PRIORITY);
-        } else {
-        }
+        } // else the process is finished and it just disappears
       }
     }
   }
@@ -106,7 +105,7 @@ class Queue {
   emitInterrupt(source, interrupt) {
     const index = this.processes.findIndex(proc => proc.pid === source.pid);
     if (index === -1) {
-      console.log(`received an index of -1`);
+      console.log(`received an index of -1; source process is:\n`, source);
       process.exit(-1);
     }
     let foundProcess = this.processes.splice(index, 1)[0];

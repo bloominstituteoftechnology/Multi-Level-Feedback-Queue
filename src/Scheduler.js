@@ -29,9 +29,9 @@ class Scheduler {
   // If yes, then break out of the infinite loop
   // Otherwise, perform another loop iteration
   run() {
-    let c = 0;
     while (true) {
-      const workTime = 5;
+      const workTime = 5; /* time - this.clock gives 0 most of the time,
+                             so just let workTime be a constant 5 */
       this.clock = Date.now();
 
       //FIRST, check for processes in the blocking queue
@@ -39,12 +39,14 @@ class Scheduler {
         this.blockingQueue.doBlockingWork(workTime);
       }
 
-      // SECOND, iterate through all of the running queues and execute processes on those queues for the amount of time given by `workTime`
+      /* SECOND, iterate through all of the running queues and execute
+         processes on those queues for the amount of time given by `workTime` */
       for (let i = 0; i < PRIORITY_LEVELS; i++) {
         const queue = this.runningQueues[i];
         if (!queue.isEmpty()) {
           queue.doCPUWork(workTime);
-          break;
+          break; /* all processes in a queue must complete or be moved to a
+                    lower queue before moving to a lower priority queue for processing */
         }
       }
 

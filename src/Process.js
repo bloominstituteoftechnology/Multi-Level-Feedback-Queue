@@ -33,6 +33,7 @@ class Process {
   // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
   executeProcess(time) {
     this.stateChanged = false;
+
     if (this.blockingTimeNeeded > 0) {
       this.stateChanged = true;
       this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
@@ -45,27 +46,28 @@ class Process {
    // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying 
    // the process is ready and toggle `this.stateChanged` to `true`
   executeBlockingProcess(time) {
-      this.blockingTimeNeeded -= time;
-      if (this.blockingTimeNeeded <= 0) {
-        this.stateChanged = true;
-        this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
-      }
-    }
+    this.blockingTimeNeeded -= time;
 
-    // Returns this process's `this.stateChanged` property
-    isStateChanged() {
-      return this.stateChanged;
+    if (this.blockingTimeNeeded <= 0) {
+      this.stateChanged = true;
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
     }
+  }
 
-    // Gets this process's pid
-    get pid() {
-      return this._pid;
-    }
+  // Returns this process's `this.stateChanged` property
+  isStateChanged() {
+    return this.stateChanged;
+  }
 
-    // Private function used for testing; DO NOT MODIFY
-    _getParentQueue() {
-        return this.queue;
-    }
+  // Gets this process's pid
+  get pid() {
+    return this._pid;
+  }
+
+  // Private function used for testing; DO NOT MODIFY
+  _getParentQueue() {
+    return this.queue;
+  }
 }
 
 module.exports = Process;
