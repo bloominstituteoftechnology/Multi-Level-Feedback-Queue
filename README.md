@@ -79,6 +79,16 @@ Loop:
                     Add the process to the back of the next lower priority queue
 ```
 
+### Extra Credit
+Implement priority boosting within your MLFQ. Priority boosting is the idea that there is a global time quantum of,
+say, 500 ms that elapses. Once that global time quantum hits 0, it should reset, and every process in any of the 
+available queues should all be moved back up to the top-level priority queue. This is one such scheme that is 
+used in order to ensure that the bottom-of-the-barrel processes receive some additional attention. 
+
+Think about how this feature should be incorporated into your current MLFQ implementation. Which component of the 
+MLFQ should be responsible for the global time quantum? How should processes be notified that they're recieving
+a priority boost, and how should that be facillitated?
+
 ### Further Reading
 Here's a chapter from an operating systems textbook that dives a lot deeper into the theory and motivation behind 
 the multi-level feedback queue:
