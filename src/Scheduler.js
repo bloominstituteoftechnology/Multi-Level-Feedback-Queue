@@ -12,7 +12,7 @@ class Scheduler {
         this.clock = Date.now();
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];
-
+        this.globalTimeQuantum = 0;
         for (let i = 0; i < PRIORITY_LEVELS; i++) {
             this.runningQueues[i] = new Queue(this, 10 + i * 20, i, QueueType.CPU_QUEUE);
         }
@@ -29,13 +29,23 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
+      this.globalTimeQuantum = 500;
+      const interval = setInterval(() => this.globalTimeQuantum === 0 ? this.globalTimeQuantum = 500 : this.globalTimeQuantum -= 1, 1);
       while (!this.allEmpty()) {
+        if (this.globalTimeQuantum === 0) {
+          const processes = [];
+          this.runningQueues.forEach(q => {
+            while(!q.isEmpty()) processes.push(q.shift());
+          });
+          processes.forEach(p => this.addNewProcess(p));
+        }
         const currentTime = Date.now();
         const workTime = currentTime - this.clock;
         this.clock = currentTime;
         if (!this.blockingQueue.isEmpty()) this.blockingQueue.doBlockingWork(workTime);
         this.runningQueues.forEach(q => q.isEmpty() ? '' : q.doCPUWork(workTime));
       }
+      clearInterval(interval);
     }
 
     // Checks that all queues have no processes  
