@@ -37,7 +37,7 @@ describe('Scheduler', () => {
         const process = new Process(0);
         const queue = scheduler._getBlockingQueue();
         const queueSpy = sinon.spy(queue, 'enqueue');
-        scheduler.emitInterrupt(queue, process, SchedulerInterrupt.PROCESS_BLOCKED);
+        scheduler.handleInterrupt(queue, process, SchedulerInterrupt.PROCESS_BLOCKED);
         expect(queueSpy.calledWith(process)).toBe(true);
     });
 
@@ -45,7 +45,7 @@ describe('Scheduler', () => {
         const process = new Process(0);
         const queue = scheduler._getCPUQueue(0);
         const schedulerSpy = sinon.spy(scheduler, 'addNewProcess');
-        scheduler.emitInterrupt(queue, process, SchedulerInterrupt.PROCESS_READY);
+        scheduler.handleInterrupt(queue, process, SchedulerInterrupt.PROCESS_READY);
         expect(schedulerSpy.calledWith(process)).toBe(true);
     });
 
