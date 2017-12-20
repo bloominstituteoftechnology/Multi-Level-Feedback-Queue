@@ -29,17 +29,37 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        
+        while(!this.allEmpty()) {
+            let currentTime = Date.now();
+            let workTime = currentTime - this.clock;
+            this.clock = currentTime;
+            // blocking processes never get added to blocking queue <<<< ???
+            if (!this.blockingQueue.isEmpty()) {
+                
+                this.blockingQueue.doBlockingWork(workTime);
+            } 
+            for (let i = 0; i < this.runningQueues.length; i++) {
+                if (!this.runningQueues[i].isEmpty()) {
+                    this.runningQueues[i].doCPUWork(workTime);
+                    break;
+                }
+            }
+        }
     }
 
     // Checks that all queues have no processes 
     allEmpty() {
-        
+        let empty = true;
+        if (this.blockingQueue.processes.length !== 0) empty = false;
+        for (let i = 0; i < this.runningQueues.length; i++) {
+            if (this.runningQueues[i].processes.length !== 0) empty = false;
+        }
+        return empty;
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-        
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -48,8 +68,59 @@ class Scheduler {
     // In the case of a LOWER_PRIORITY interrupt, check to see if the input queue is a running queue or blocking queue
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
-    handleInterrupt(queue, process, interrupt) {
-        
+    emitInterrupt(queue, process, interrupt) {
+        // if (interrupt === "PROCESS_BLOCKED") {
+        //     // add process to blocking queue
+        //     this.blockingQueue.enqueue(process);
+        //     return;
+        // }
+        // if (interrupt === "PROCESS_READY") {
+        //     // add process to high prio queue
+        //     this.runningQueues[0].enqueue(process);
+        //     return;
+        // }
+        // if (interrupt === "LOWER_PRIORITY") {
+        //     // check to see blah blah blah
+        //     if (queue.QueueType === 'CPU_QUEUE') {
+        //         if (queue.priorityLevel === this.runningQueues.length - 1) {
+        //             this.runningQueues[this.runningQueues.length - 1].enqueue(process);
+        //             return;
+        //         } else {
+        //             this.runningQueues[this.runningQueues.length].enqueue(process);
+        //             return;
+        //         }
+        //     }
+        //     if (queue.QueueType === 'BLOCKING_QUEUE') {
+        //         this.blockingQueue.enqueue(process);
+        //         return;
+        //     }
+        // }
+        // other steps need to be done
+        switch(interrupt) {
+            case 'PROCESS_BLOCKED':
+                this.blockingQueue.enqueue(process);
+                break;
+            case 'PROCESS_READY':
+                this.addNewProcess(process);
+                break;
+            case 'LOWER_PRIORITY':
+                switch(queue.queueType) {
+                    case 'CPU_QUEUE':
+                        if (queue.priorityLevel === this.runningQueues.length - 1) {
+                            this.runningQueues[this.runningQueues.length - 1].enqueue(process);
+                            return;
+                        } else {
+                            this.runningQueues[queue.priorityLevel + 1].enqueue(process);
+                        }
+                        break;
+                    case 'BLOCKING_QUEUE':
+                        this.blockingQueue.enqueue(process);
+                        break;
+                }
+                break;
+            default:
+                break;
+    }
     }
 
     // Private function used for testing; DO NOT MODIFY
