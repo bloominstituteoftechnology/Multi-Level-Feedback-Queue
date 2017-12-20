@@ -29,17 +29,31 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        
+        while(!this.allEmpty()){
+            const curTime = Date.now();
+            const workTime = curTime - this.clock;
+            this.clock = curTime;
+            this.blockingQueue.doBlockingWork(workTime);
+            this.runningQueues.forEach((queue) => {
+                queue.doCPUWork(workTime);
+            });
+        }      
     }
 
     // Checks that all queues have no processes 
     allEmpty() {
-        
+        for(let i = 0; i < this.runningQueues.length; i++){
+            if(!this.runningQueues[i].isEmpty()) return false;
+        }
+        for(let i = 0; i < this.blockingQueue.length; i++){
+            if(!this.blockingQueues[i].isEmpty()) return false;
+        }
+        return true;
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-        
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -49,7 +63,27 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
-        
+        if(!process) return;
+        switch(interrupt){
+            case "PROCESS_BLOCKED":
+            this.blockingQueue.enqueue(process);
+            return;
+            case "PROCESS_READY":
+            this.addNewProcess(process);
+            return;
+            case "LOWER_PRIORITY":
+            switch(queue.getQueueType()){
+                case "CPU_QUEUE":
+                if(queue.getPriorityLevel() === 3) return this.runningQueues[3].enqueue(process);
+                if(!this.runningQueues[queue.getPriorityLevel() + 1]) return;
+                this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process);
+                return;
+                case "BLOCKING_QUEUE":
+                this.blockingQueue.enqueue(process);
+                return;
+            }
+            return;
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
