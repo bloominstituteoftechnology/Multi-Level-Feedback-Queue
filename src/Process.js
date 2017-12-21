@@ -46,7 +46,6 @@ class Process {
   // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying
   // the process is ready and toggle `this.stateChanged` to `true`
   executeBlockingProcess(time) {
-    // this.blockingTimeNeeded -= time;
     if ((this.blockingTimeNeeded -= time) <= 0) {
       this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
       this.stateChanged = true;

@@ -13,6 +13,7 @@ class Scheduler {
     this.clock = Date.now();
     this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
     this.runningQueues = [];
+    this.boostQuantum = 250;
 
     for (let i = 0; i < PRIORITY_LEVELS; i++) {
       this.runningQueues[i] = new Queue(
@@ -35,10 +36,17 @@ class Scheduler {
   // If yes, then break out of the infinite loop
   // Otherwise, perform another loop iteration
   run() {
+    const boostTimer = setInterval(() => this.boostQuantum--, 1);
     while (true) {
       let currentTime = Date.now();
       let workTime = currentTime - this.clock;
       this.clock = currentTime;
+
+      if (this.boostQuantum <= 0) {
+        this.boostQuantum = 250;
+        this.priorityBoost();
+      }
+
       if (!this.blockingQueue.isEmpty()) {
         this.blockingQueue.doBlockingWork(workTime);
       }
@@ -47,6 +55,15 @@ class Scheduler {
       });
       if (this.allEmpty()) break;
     }
+    clearInterval(boostTimer);
+  }
+
+  priorityBoost() {
+    this.runningQueues.forEach(queue => {
+      while (!queue.isEmpty()) {
+        this.addNewProcess(queue.dequeue());
+      }
+    });
   }
 
   // Checks that all queues have no processes
