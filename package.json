@@ -23,6 +23,8 @@
         "eslint-plugin-jsx-a11y": "^4.0.0",
         "eslint-plugin-react": "^6.10.3",
         "jest": "^19.0.2",
+        "prettier": "^1.9.2",
+        "prettier-eslint": "^8.4.0",
         "regenerator-runtime": "^0.10.3",
         "sinon": "^4.0.1"
     },
