@@ -92,6 +92,7 @@ class Queue {
   doBlockingWork(time) {
     const process = this.peek();
     process.executeBlockingProcess(time);
+    this.manageTimeSlice(process, time);
   }
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
