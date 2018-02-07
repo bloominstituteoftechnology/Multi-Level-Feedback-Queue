@@ -29,7 +29,13 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        
+        let currentTime = Date.now();
+        let workTime = currentTime - this.clock;
+        this.clock = currentTime;
+        if (this.blockingQueue.length > 1) {
+            this.blockingQueue.doBlockingWork(workTime);
+        }
+         
     }
 
     // Checks that all queues have no processes 
