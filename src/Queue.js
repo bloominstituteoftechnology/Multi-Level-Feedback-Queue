@@ -51,7 +51,7 @@ class Queue {
 
     // Manages a process's execution for the appropriate amount of time
     // Checks to see if currentProcess's `this.stateChanged` property is true
-    // If it is, we don't want to give the process any time; reset `this.quantumClock` and return
+    // If it is, reset `this.quantumClock` to give the process more time and return
     // Otherwise, increment `this.quantumClock` by `time`
     // Check to see if `this.quantumClock` is greater than `this.quantum`
     // If it is, then we need to execute the next process in the queue
