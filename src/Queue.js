@@ -20,15 +20,13 @@ class Queue {
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
     enqueue(process) {
-        this.processes.push(process);
         process.setParentQueue(this);
-        return process;
+        return this.processes.push(process);
     }
 
     // Removes the oldest added process from the list of processes
     // Return the newly-removed process
     dequeue() {
-
         return this.processes.shift();
     }
 
@@ -39,7 +37,7 @@ class Queue {
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-        return !this.processes.length;
+        return this.processes.length === 0;
     }
 
     // Return this queue's priority level
@@ -72,7 +70,7 @@ class Queue {
             this.quantumClock = 0;
             const process = this.dequeue();
             if (!process.isFinished()) {
-                this.emitInterrupt(process, SchedulerInterrupt.LOWER_PRIORITY);
+                this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
             }
         }
     }
@@ -100,9 +98,26 @@ class Queue {
     // Find the index of the source process in `this.processes` and splice the process out of the array
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
+    //     emitInterrupt(source, interrupt) {
+    //         const index = this.processes.indexOf(source)
+    //         this.processes.splice(index, 1);
+    //         this.scheduler.handleInterrupt(this, source, interrupt);
+    //     }
+    // }
     emitInterrupt(source, interrupt) {
-        this.processes.splice(source.pid, 1);
-        this.scheduler.handleInterrupt(this, source, interrupt);
+        const sourceIndex = this.processes.indexOf(source);
+        this.processes.splice(sourceIndex, 1);
+
+        switch (interrupt) {
+            case 'PROCESS_BLOCKED':
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+                break;
+            case 'PROCESS_READY':
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+                break;
+            default:
+                break;
+        }
     }
 }
 
