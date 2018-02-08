@@ -7,7 +7,7 @@
         "start": "node src/main.js",
         "test": "jest --verbose",
         "lint": "eslint",
-        "test:watch": "npm test --watch"
+        "test:watch": "yarn test --watch"
     },
     "repository": {
         "type": "git",

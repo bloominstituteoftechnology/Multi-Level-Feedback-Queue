@@ -1,5 +1,5 @@
-const Queue = require('./Queue'); 
-const { 
+const Queue = require('./Queue');
+const {
     QueueType,
     PRIORITY_LEVELS,
     SchedulerInterrupt
@@ -8,10 +8,11 @@ const {
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues 
 // for non-blocking processes
-class Scheduler { 
-    constructor() { 
+class Scheduler {
+    constructor() {
         this.clock = Date.now();
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
+        this.boostedQueues = [];
         this.runningQueues = [];
 
         for (let i = 0; i < PRIORITY_LEVELS; i++) {
@@ -32,7 +33,9 @@ class Scheduler {
     run() {
         // const maxLoops = 20000;
         // let loop = 0; 
-        while(!this.allEmpty()) {
+        let totalTime = 0;
+        const BOOST_TIME = 500;
+        while (!this.allEmpty()) {
             // if (++loop >= maxLoops) {
             //     console.log(`   blocking length: ${this.blockingQueue.processes.length}
             //      0: ${this.runningQueues[0].processes.length}     
@@ -43,24 +46,39 @@ class Scheduler {
             // }
             const now = Date.now();
             const workTime = Math.max(now - this.clock, 5); // milliseconds
+            totalTime += workTime;
+            if (totalTime > BOOST_TIME) {
+                this.runningQueues.forEach(queue => {
+                    if (queue.priorityLevel > 0)
+                        queue.processes.forEach(process => {
+                            if (process.cpuTimeNeeded > 0) {
+                                // console.log(`>>>>>process pid: ${process.pid} cpu needed: ${process.cpuTimeNeeded}`);
+                                process.cpuTimeNeeded = 0;
+                                this.boostedQueues.push(process);
+                            }
+                        })
+                })
+            }
             //console.log(`workTime ${workTime}`);
             this.clock = now;
-            this.blockingQueue.processes.forEach(process => {  
+            this.blockingQueue.processes.forEach(process => {
                 this.blockingQueue.doBlockingWork(process, workTime)
                 // element.executeBlockingProcess(workTime)
             });
-            this.runningQueues.forEach(queue  => {
+            this.runningQueues.forEach(queue => {
                 queue.processes.forEach(process => {
                     queue.doCPUWork(workTime, process)
                 })
             })
-        } 
-        
-    }
+        }
 
+    }
+    _boostedQueues() {
+        return this.boostedQueues;
+    }
     // Checks that all queues have no processes 
     allEmpty() {
-        return (this.blockingQueue.isEmpty() && this.runningQueues.reduce((em,q) => {if (!q.isEmpty()) em=false; return em},true));
+        return (this.blockingQueue.isEmpty() && this.runningQueues.reduce((em, q) => { if (!q.isEmpty()) em = false; return em }, true));
     }
 
     // Adds a new process to the highest priority level running queue
@@ -76,9 +94,9 @@ class Scheduler {
     // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
         // console.log(`================in handleInterrupt queue: ${queue.quantum}  process: ${process.pid} interrupt: ${interrupt} `);
-        switch(interrupt) {
+        switch (interrupt) {
             case SchedulerInterrupt.PROCESS_BLOCKED:
-               //  console.log('Process Blocked blockingQueue enqueue');
+                //  console.log('Process Blocked blockingQueue enqueue');
                 this.blockingQueue.enqueue(process);
                 break;
             case SchedulerInterrupt.PROCESS_READY:
@@ -91,8 +109,8 @@ class Scheduler {
                     this.blockingQueue.enqueue(process)
                 }
                 else {
-                    const priority = Math.min(queue.priorityLevel + 1,PRIORITY_LEVELS -1);
-                   // console.log(`priority: ${priority}`);
+                    const priority = Math.min(queue.priorityLevel + 1, PRIORITY_LEVELS - 1);
+                    // console.log(`priority: ${priority}`);
                     (this._getCPUQueue(priority)).enqueue(process);
                 }
                 break;
