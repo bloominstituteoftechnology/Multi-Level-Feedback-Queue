@@ -17,20 +17,29 @@ class Process {
     
     // Sets this process's `this.queue` property
     setParentQueue(queue) {
-        
+        this.queue = queue;
     }
 
     // Checks that this process no longer has any more CPU or blocking time it needs
     isFinished() {
-        
+        return this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0;
     }
 
     // Sets this process's `this.stateChanged` property to `false`
     // Checks to see if this process needs blocking time
     // If it does, emit a queue interrupt to notify the queue that the process is blocked
     // Also toggle its `this.stateChanged` property to `true`
-    // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
+    // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`ing
     executeProcess(time) {
+        this.stateChanged = false;
+        if (this.blockingTimeNeeded > 0) {
+            this.queue.emitInterrupt(this,SchedulerInterrupt.PROCESS_BLOCKED);
+            this.stateChanged = true;
+        }
+        else {
+            this.cpuTimeNeeded -= time;
+            // this.cpuTimeNeeded = Math.max(this.cpuTimeNeeded, 0);
+        }
 
    }
 
@@ -38,17 +47,25 @@ class Process {
    // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying 
    // the process is ready and toggle `this.stateChanged` to `true`
     executeBlockingProcess(time) {
+        this.blockingTimeNeeded -= time;
+        if (this.blockingTimeNeeded <= 0) {
+           // console.log(`blocking time expired q: ${this.queue != null}`)
+            if (this.queue)
+                this.queue.emitInterrupt(this,SchedulerInterrupt.PROCESS_READY);
+            this.stateChanged = true;
+        }
 
     }
 
     // Returns this process's `this.stateChanged` property
     isStateChanged() {
-        
+        // console.log(`>>>>>>>>>>>>>>>>>>>>>>this.stateChanged ${this.stateChanged}`)
+        return this.stateChanged;
     }
 
     // Gets this process's pid
     get pid() {
-        
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY

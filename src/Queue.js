@@ -1,4 +1,4 @@
-const { SchedulerInterrupt } = require('./constants/index');
+const { SchedulerInterrupt, QueueType } = require('./constants/index');
 
 // A class representation of a process queue that may hold either
 // blocking or non-blocking processes
@@ -20,38 +20,41 @@ class Queue {
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
     enqueue(process) {
-        
+
+        process.setParentQueue(this);
+        this.processes.unshift(process);
+        return process;
     }
 
     // Removes the least-recently added process from the list of processes
     // Return the newly-removed process
     dequeue() {
-        
+        return this.processes.pop();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        
+        return this.processes[this.processes.length - 1];
     }
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-
+        return this.processes.length === 0;
     }
 
     // Return this queue's priority level
     getPriorityLevel() {
-        
+        return this.priorityLevel;
     }
 
     // Return this queue's queueType
     getQueueType() {
-        
+        return this.queueType;
     }
 
     // Manages a process's execution for the appropriate amount of time
     // Checks to see if currentProcess's `this.stateChanged` property is true
-    // If it is, we don't want to give the process any time; reset `this.quantumClock` and return
+    // If it is, we reset `this.quantumClock` to give the process more time; reset `this.quantumClock` and return
     // Otherwise, increment `this.quantumClock` by `time`
     // Check to see if `this.quantumClock` is greater than `this.quantum`
     // If it is, then we need to execute the next process in the queue
@@ -60,22 +63,51 @@ class Queue {
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
-
+        if (currentProcess.isStateChanged()) {
+            this.quantumClock = 0;
+            return;
+        }
+        this.quantumClock += time;
+        if (this.quantumClock > this.quantum) {
+            this.quantumClock = 0;
+            if (!currentProcess.isFinished()) {
+                this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            } else {
+                const index = this.processes.indexOf(currentProcess);
+                this.processes.splice(index, 1);
+            }
+        }
     }
 
     // Execute a non-blocking process
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
-    doCPUWork(time) {
-        
+    doCPUWork(time, process = null) {
+        process = process == null ? this.peek() : process;
+        if (process) {
+            process.executeProcess(time);
+            this.manageTimeSlice(process, time);
+        }
     }
 
     // Execute a blocking process
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
-    doBlockingWork(time) {
-        
-    }
+    
+    
+    doBlockingWork(process, time) {
+        if (process) {
+            process.executeBlockingProcess(time);
+            this.manageTimeSlice(process, time);
+        }
+    }    
+    // doBlockingWork(time) {
+    //     const process = this.peek();
+    //     if (process) {
+    //         process.executeBlockingProcess(time);
+    //         this.manageTimeSlice(process, time);
+    //     }
+    // }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
     // Receives a source process and an interrupt string
@@ -83,7 +115,23 @@ class Queue {
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
-
+        const index = this.processes.indexOf(source);
+        // console.log(`source pid: ${source.pid}  index: ${index}`);
+        if (index >= 0) {
+            const process = this.processes.splice(index, 1)[0];
+            // if (this.queueType == QueueType.BLOCKING_QUEUE)
+            // console.log(`>>>>process pid: ${process.pid}  process cpu time: ${process.cpuTimeNeeded}  
+            //     process block time: ${process.blockingTimeNeeded}
+            //                       queue priority: ${this.priorityLevel} interrupt: ${interrupt} 
+            //                     type: ${this.queueType}  processes.length: ${this.processes.length}            
+            // `);
+            if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED || 
+                interrupt === SchedulerInterrupt.PROCESS_READY ||
+                interrupt === SchedulerInterrupt.LOWER_PRIORITY) {
+                // console.log(`<<<< handleInterrupt args ${this.quantum} ${process.pid} ${interrupt}`)
+                this.scheduler.handleInterrupt(this, process, interrupt);
+            }
+        }
     }
 }
 
