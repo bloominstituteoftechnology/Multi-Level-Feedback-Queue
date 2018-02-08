@@ -63,27 +63,36 @@ class Queue {
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
-        // if (currentProcess.stateChanged) {
-        //     return this.quantumClock = 0;
-        // }
-        // this.quantumClock + time;
-        // if this.quantumClock > this.quantum {
-        //     this.peek().executeProcess(this.quantumClock);
-        // }
+        if (currentProcess.isStateChanged()) {
+            this.quantumClock = 0;
+            return;
+        }
+        this.quantumClock += time;
+        if (this.quantumClock > this.quantum) {
+            this.quantumClock = 0;
+            const process = this.dequeue();
+            if (!process.isFinished()) {
+                this.emitInterrupt(process, SchedulerInterrupt.LOWER_PRIORITY);
+            }
+        }
     }
 
     // Execute a non-blocking process
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
-
+        let process = this.peek();
+        process.executeProcess(time);
+        this.manageTimeSlice(process, time);
     }
 
     // Execute a blocking process
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
-
+        let process = this.peek();
+        process.executeBlockingProcess(time);
+        this.manageTimeSlice(process, time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
@@ -92,7 +101,8 @@ class Queue {
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
-
+        this.processes.splice(source.pid, 1);
+        this.scheduler.handleInterrupt(this, source, interrupt);
     }
 }
 
