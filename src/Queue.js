@@ -116,7 +116,7 @@ class Queue {
         const sourceIndex = this.processes.indexOf(source);
         this.processes.splice(sourceIndex, 1);
 
-        switch(interrupt) { // for process block and process ready
+        switch(interrupt) {
             case 'PROCESS_BLOCKED':
                 this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
                 break;

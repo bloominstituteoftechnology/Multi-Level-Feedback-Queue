@@ -32,36 +32,19 @@ class Process {
     // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
     executeProcess(time) {
         this.stateChanged = false;
-
-        if (this.blockingTimeNeeded > 0) {
-            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-            this.stateChanged = true; // Goes from running process to blocked
+         if (this.blockingTimeNeeded === 0) {
+         this.cpuTimeNeeded -= time;
+         this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;
         } else {
-            this.cpuTimeNeeded -= time;
+         this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+         this.stateChanged = true;
         }
-
-        /**
-         * if (this.blockingTimeNeeded <= 0) {
-         *  this.cpuTimeNeeded -= time;
-         *  this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;
-         * } else {
-         *  this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-         *  this.stateChanged = true;
-         * }
-        */
    }
 
    // Decrement this process's `this.blockingTimeNeeded` by the input `time`
    // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying 
    // the process is ready and toggle `this.stateChanged` to `true`
     executeBlockingProcess(time) {
-        // this.blockingTimeNeeded -= time;
-
-        // if (this.blockingTimeNeeded <= 0) {
-        //     this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-        //     this.stateChanged = true;
-        // }
-
         this.blockingTimeNeeded -= time;
         this.blockingTimeNeeded = this.blockingTimeNeeded > 0 ? this.blockingTimeNeeded : 0;
 

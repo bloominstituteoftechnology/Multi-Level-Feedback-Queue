@@ -1,5 +1,3 @@
-// import { worker } from 'cluster';
-
 const Queue = require('./Queue'); 
 const { 
     QueueType,
