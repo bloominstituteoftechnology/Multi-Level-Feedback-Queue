@@ -66,6 +66,7 @@ class Queue {
     // Dequeue the next process from the queue
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
+    // handles the bookkeeping for the processes
     manageTimeSlice(currentProcess, time) {
         if (currentProcess.isStateChanged()) {
             this.quantumClock = 0; // changed blocking ready or ready for blocking which is why we set it to 0
@@ -119,7 +120,11 @@ class Queue {
             case 'PROCESS_BLOCKED':
                 this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
                 break;
-        /** NEED THE REST OF THE CASES **/
+            case 'PROCESS_READY':
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+                break;
+            default:
+                break;
         }
     }
 }
