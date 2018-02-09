@@ -70,6 +70,7 @@ class Queue {
         this.quantumClock += time;
         if (this.quantumClock > this.quantum) {
             this.quantumClock = 0;
+         
             if (!currentProcess.isFinished()) {
                 this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
             } else {
@@ -82,8 +83,8 @@ class Queue {
     // Execute a non-blocking process
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
-    doCPUWork(time, process = null) {
-        process = process == null ? this.peek() : process;
+    doCPUWork(time) {
+        process = this.peek();
         if (process) {
             process.executeProcess(time);
             this.manageTimeSlice(process, time);

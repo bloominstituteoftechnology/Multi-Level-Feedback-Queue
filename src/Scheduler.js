@@ -12,7 +12,7 @@ class Scheduler {
     constructor() {
         this.clock = Date.now();
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
-        this.boostedQueues = [];
+        this.boostedProcesses = [];
         this.runningQueues = [];
 
         for (let i = 0; i < PRIORITY_LEVELS; i++) {
@@ -45,19 +45,22 @@ class Scheduler {
             //     break;
             // }
             const now = Date.now();
-            const workTime = Math.max(now - this.clock, 5); // milliseconds
+            const workTime = Math.max(now - this.clock, 1); // milliseconds
             totalTime += workTime;
             if (totalTime > BOOST_TIME) {
                 this.runningQueues.forEach(queue => {
                     if (queue.priorityLevel > 0)
                         queue.processes.forEach(process => {
-                            if (process.cpuTimeNeeded > 0) {
-                                // console.log(`>>>>>process pid: ${process.pid} cpu needed: ${process.cpuTimeNeeded}`);
-                                process.cpuTimeNeeded = 0;
-                                this.boostedQueues.push(process);
-                            }
+                            // if (process.cpuTimeNeeded > 0) {
+                           // console.log(`>>>>> BOOST_TIME process pid: ${process.pid} cpu needed: ${process.cpuTimeNeeded}`);
+                            this.runningQueues[0].enqueue(process)
+                            this.boostedProcesses.push(process);
+                            //}
                         })
                 })
+                for (let i = 1; i < PRIORITY_LEVELS; i++) {
+                    this.runningQueues[i].processes = [];
+                }
             }
             //console.log(`workTime ${workTime}`);
             this.clock = now;
@@ -65,16 +68,26 @@ class Scheduler {
                 this.blockingQueue.doBlockingWork(process, workTime)
                 // element.executeBlockingProcess(workTime)
             });
-            this.runningQueues.forEach(queue => {
-                queue.processes.forEach(process => {
-                    queue.doCPUWork(workTime, process)
-                })
-            })
+            // this.runningQueues.forEach(queue => {
+            // queue.processes.forEach(process => {
+            //     queue.doCPUWork(workTime, process)
+            // })
+            if (this.runningQueues[0].processes.length == 0) { // if nothing to run look at lower priority queues
+                for (let i = 1; i < PRIORITY_LEVELS; i++) {
+                    if (this.runningQueues[i].processes.length > 0) {
+                        // console.log(`>>>> process pid promoted to 0 : ${this.runningQueues[i].peek().pid}`)
+                        this.runningQueues[0].enqueue(this.runningQueues[i].dequeue());
+                        break;
+                    }
+                }
+            }
+            this.runningQueues[0].doCPUWork(workTime);
+            // })    
         }
 
     }
     _boostedQueues() {
-        return this.boostedQueues;
+        return this.boostedProcesses;
     }
     // Checks that all queues have no processes 
     allEmpty() {
@@ -109,6 +122,7 @@ class Scheduler {
                     this.blockingQueue.enqueue(process)
                 }
                 else {
+                    if (this.boostedProcesses.length > 0) return;
                     const priority = Math.min(queue.priorityLevel + 1, PRIORITY_LEVELS - 1);
                     // console.log(`priority: ${priority}`);
                     (this._getCPUQueue(priority)).enqueue(process);

@@ -6,7 +6,7 @@ const { SchedulerInterrupt } = require('./constants/index');
 // is blocking; if so, the amount of blocking time needed is
 // randomly determined.
 class Process {
-    constructor(pid, cpuTimeNeeded=null, blocking=false) {
+    constructor(pid, cpuTimeNeeded = null, blocking = false) {
         this._pid = pid;
         this.queue = null;
         this.cpuTimeNeeded = cpuTimeNeeded ? cpuTimeNeeded : Math.round(Math.random() * 1000);
@@ -14,7 +14,7 @@ class Process {
         // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
         this.stateChanged = false;
     }
-    
+
     // Sets this process's `this.queue` property
     setParentQueue(queue) {
         this.queue = queue;
@@ -33,7 +33,7 @@ class Process {
     executeProcess(time) {
         this.stateChanged = false;
         if (this.blockingTimeNeeded > 0) {
-            this.queue.emitInterrupt(this,SchedulerInterrupt.PROCESS_BLOCKED);
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = true;
         }
         else {
@@ -41,17 +41,17 @@ class Process {
             // this.cpuTimeNeeded = Math.max(this.cpuTimeNeeded, 0);
         }
 
-   }
+    }
 
-   // Decrement this process's `this.blockingTimeNeeded` by the input `time`
-   // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying 
-   // the process is ready and toggle `this.stateChanged` to `true`
+    // Decrement this process's `this.blockingTimeNeeded` by the input `time`
+    // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying 
+    // the process is ready and toggle `this.stateChanged` to `true`
     executeBlockingProcess(time) {
         this.blockingTimeNeeded -= time;
         if (this.blockingTimeNeeded <= 0) {
-           // console.log(`blocking time expired q: ${this.queue != null}`)
-            if (this.queue)
-                this.queue.emitInterrupt(this,SchedulerInterrupt.PROCESS_READY);
+            // console.log(`blocking time expired q: ${this.queue != null}`)
+            // if (this.queue) only needed when queue.enqueue wasn't cooded
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
             this.stateChanged = true;
         }
 
