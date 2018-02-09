@@ -17,12 +17,12 @@ class Process {
     
     // Sets this process's `this.queue` property
     setParentQueue(queue) {
-        
+
     }
 
     // Checks that this process no longer has any more CPU or blocking time it needs
     isFinished() {
-        
+
     }
 
     // Sets this process's `this.stateChanged` property to `false`
@@ -43,12 +43,12 @@ class Process {
 
     // Returns this process's `this.stateChanged` property
     isStateChanged() {
-        
+
     }
 
     // Gets this process's pid
     get pid() {
-        
+
     }
 
     // Private function used for testing; DO NOT MODIFY

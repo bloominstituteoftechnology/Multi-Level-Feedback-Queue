@@ -20,18 +20,18 @@ class Queue {
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
     enqueue(process) {
-        
+
     }
 
     // Removes the least-recently added process from the list of processes
     // Return the newly-removed process
     dequeue() {
-        
+
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        
+        return this.processes[0];
     }
 
     // Checks to see if there are any processes in the list of processes
@@ -41,12 +41,12 @@ class Queue {
 
     // Return this queue's priority level
     getPriorityLevel() {
-        
+
     }
 
     // Return this queue's queueType
     getQueueType() {
-        
+
     }
 
     // Manages a process's execution for the appropriate amount of time
@@ -54,7 +54,7 @@ class Queue {
     // If it is, we don't want to give the process any time; reset `this.quantumClock` and return
     // Otherwise, increment `this.quantumClock` by `time`
     // Check to see if `this.quantumClock` is greater than `this.quantum`
-    // If it is, then we need to execute the next process in the queue
+    // If it is, remove the current process from its queue to make way for the next process in line
     // Set `this.quantumClock` to 0
     // Dequeue the next process from the queue
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
@@ -67,14 +67,14 @@ class Queue {
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
-        
+
     }
 
     // Execute a blocking process
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
-        
+
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
