@@ -29,17 +29,43 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        
-    }
 
-    // Checks that all queues have no processes 
+        console.log("made it to run");
+        console.log("blockingque processes.length is: ", this.blockingQueue.processes.length);
+        console.log("running que process length is: ", this.runningQueues.length);
+        while(true) {
+            const time = Date.now();
+            const workTime = time - this.clock;
+            this.clock = time;
+
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                const queue = this.runningQueues[i];
+                if (!queue.isEmpty()) {
+                    queue.doCPUWork(workTime);
+                    break;
+                }
+            }
+            if (this.allEmpty()) {
+                console.log("Idle Mode");
+                break;
+            }
+        }
+        }
+    
+
+     
     allEmpty() {
-        
+        return this.runningQueues.length === 0;
+        // return true;
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-        
+         this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
