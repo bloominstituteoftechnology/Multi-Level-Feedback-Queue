@@ -20,47 +20,66 @@ class Queue {
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
     enqueue(process) {
-        
+        this.processes.push(process);
+        process.setParentQueue(this);
+        return process;
     }
 
     // Removes the least-recently added process from the list of processes
     // Return the newly-removed process
     dequeue() {
-        
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        
+        return this.processes[0];
     }
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-
+        return this.processes.length === 0;
     }
 
     // Return this queue's priority level
     getPriorityLevel() {
-        
+        return this.priorityLevel;
     }
 
     // Return this queue's queueType
     getQueueType() {
-        
+        return this.queueType;
     }
 
-    // Manages a process's execution for the appropriate amount of time
-    // Checks to see if currentProcess's `this.stateChanged` property is true
-    // If it is, we don't want to give the process any time; reset `this.quantumClock` and return
-    // Otherwise, increment `this.quantumClock` by `time`
-    // Check to see if `this.quantumClock` is greater than `this.quantum`
-    // If it is, then we need to execute the next process in the queue
-    // Set `this.quantumClock` to 0
-    // Dequeue the next process from the queue
-    // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
-    // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
+        // Manages a process's execution for the appropriate amount of time
+        // Checks to see if currentProcess's `this.stateChanged` property is true
+        // If it is, we don't want to give the process any time; reset `this.quantumClock` and return
+        // Otherwise, increment `this.quantumClock` by `time`
+        if (currentProcess.isStateChanged()) {
+            this.quantumClock = 0;
+            return;
+        }
+        
+        this.quantumClock += time;
 
+        // Check to see if `this.quantumClock` is greater than `this.quantum`
+        // If it is, then we need to execute the next process in the queue
+        // Set `this.quantumClock` to 0
+        // Dequeue the next process from the queue
+        if (this.quantumClock > this.quantum) {
+            this.quantumClock = 0;
+
+            if (!currentProcess.isFinished()) {
+                this.emitInterrupt(currentProcess. SchedulerInterrupt.LOWER_PRIORITY);
+            } else {
+                
+            }
+        } else {
+            // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
+            // needs to be moved to a lower priority queue
+            this.SchedulerInterrupt;
+        }
     }
 
     // Execute a non-blocking process
