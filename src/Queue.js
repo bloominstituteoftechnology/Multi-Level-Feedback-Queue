@@ -101,8 +101,8 @@ class Queue {
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
-        const process = this.peek;
-        process.executeProcess(time);
+        const process = this.peek();
+        process.executeBlockingProcess(time);
         this.manageTimeSlice(process, time);
     }
 
