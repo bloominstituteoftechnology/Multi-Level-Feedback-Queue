@@ -74,8 +74,7 @@ class Queue {
             if (!process.isFinished()) {
                 this.emitInterrupt(process, SchedulerInterrupt.LOWER_PRIORITY);
             }
-        }
-       
+        }       
     }
 
     // Execute a non-blocking process
@@ -102,7 +101,7 @@ class Queue {
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
-        this.processes.splice(source.pid , 1);
+        this.processes.splice(source.pid, 1);
         this.scheduler.handleInterrupt(this, source, interrupt);
     }
 }
