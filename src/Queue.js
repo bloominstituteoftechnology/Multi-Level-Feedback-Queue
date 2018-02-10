@@ -52,13 +52,15 @@ class Queue {
 
   // Manages a process's execution for the appropriate amount of time
   // Checks to see if currentProcess's `this.stateChanged` property is true
-  // If it is, we don't want to give the process any time; reset `this.quantumClock` and return
+  // If it is, we don't want to give the process any time; reset `this.quantumClock`
+  // and return
   // Otherwise, increment `this.quantumClock` by `time`
   // Check to see if `this.quantumClock` is greater than `this.quantum`
   // If it is, then we need to execute the next process in the queue
   // Set `this.quantumClock` to 0
   // Dequeue the next process from the queue
-  // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
+  // If it isn't finished, emit a scheduler interrupt notifying the scheduler that
+  // this process
   // needs to be moved to a lower priority queue
   manageTimeSlice(currentProcess, time) {
     if (currentProcess.isStateChanged()) {
@@ -71,10 +73,10 @@ class Queue {
       this.quantumClock = 0;
       const process = this.dequeue();
 
-      if (!currentProcess.isFinished()) {
-        this.Scheduler.handleInterrupt(
+      if (!process.isFinished()) {
+        this.scheduler.handleInterrupt(
           this,
-          currentProcess,
+          process,
           SchedulerInterrupt.LOWER_PRIORITY
         );
       } else {
@@ -101,11 +103,15 @@ class Queue {
     this.manageTimeSlice(process, time);
   }
 
-  // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
+  // The queue's interrupt handler for notifying when a process needs to be moved to
+  // a different queue
   // Receives a source process and an interrupt string
-  // Find the index of the source process in `this.processes` and splice the process out of the array
-  // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
-  // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
+  // Find the index of the source process in `this.processes` and splice the process
+  // out of the array
+  // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler
+  // interrupt to the scheduler's interrupt handler
+  // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler
+  // interrupt to the scheduler's interrupt handler
   emitInterrupt(source, interrupt) {
     const sourceIndex = this.processes.indexOf(source);
     this.processes.splice(sourceIndex, 1);
