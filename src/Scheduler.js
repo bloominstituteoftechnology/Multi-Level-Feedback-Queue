@@ -66,13 +66,13 @@ class Scheduler {
     // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
         switch(interrupt) {
-            case 'PROCESS_BLOCKED':
+            case interrupt['PROCESS_BLOCKED']:
                 this.blockingQueue.enqueue(process);
                 break;
-            case 'PROCESS_READY':
+            case interrupt['PROCESS_READY']:
                 this.addNewProcess(process);
                 break;
-            case 'LOWER_PRIORITY':
+            case interrupt['LOWER_PRIORITY']:
                 const type = queue.getQueueType();
                 if(type === 'BLOCKING_QUEUE') {
                     queue.dequeue();
