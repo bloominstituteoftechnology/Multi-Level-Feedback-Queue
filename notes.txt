@@ -1,0 +1,5 @@
+Scheduler //
+Process // constructor(pid, cpuTimeNeeded=null, blocking=false)
+
+Scheduler.addNewProcess(PID, Time Needed = NULL, BLOCKING); // ASSUMPTION
+Scheduler.run() // WTF is this
