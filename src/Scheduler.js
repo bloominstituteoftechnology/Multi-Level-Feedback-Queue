@@ -29,17 +29,33 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-
+        const workTime = Date.now() - this.clock;
+        this.clock = workTime;
+        if(!this.blockingQueue.isEmpty()) {
+            this.blockingQueue.doBlockingWork(workTime);
+            for(let i = 0; i<this.runningQueues.length; i++) {
+                this.runningQueues[i].doCPUWork(workTime);
+            }
+            if(!this.allEmpty()) this.run();
+        }
     }
 
     // Checks that all queues have no processes 
     allEmpty() {
-
+        let noProcesses = true;
+        const queues = [this.blockingQueue, ...this.runningQueues];
+        for(let i = 0; i<queues.length; i++) {
+            if(!queues[i].isEmpty()) {
+                noProcesses = false;
+                break;
+            }
+        }
+        return noProcesses;
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-
+        this.runningQueues[this.runningQueues.length - 1].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -49,7 +65,30 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
-
+        switch(interrupt) {
+            case interrupt['PROCESS_BLOCKED']:
+                this.blockingQueue.enqueue(process);
+                break;
+            case interrupt['PROCESS_READY']:
+                this.addNewProcess(process);
+                break;
+            case interrupt['LOWER_PRIORITY']:
+                const type = queue.getQueueType();
+                if(type === 'BLOCKING_QUEUE') {
+                    queue.dequeue();
+                    this.blockingQueue.enqueue(process);
+                } 
+                if (type === 'RUNNING_QUEUE') {
+                    const priority = queue.getPriorityLevel();
+                    queue.dequeue();
+                    if(priority === 0) {
+                        queue.enqueue(process);
+                    } else {
+                        this.runningQueues[priority - 1].enqueue(process);
+                    }
+                }
+                break;
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
