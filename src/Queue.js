@@ -20,7 +20,8 @@ class Queue {
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
     enqueue(process) {
-
+        // this.processes.push(process);
+        // process.setParentQueue(this);
     }
 
     // Removes the least-recently added process from the list of processes
@@ -83,7 +84,7 @@ class Queue {
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
-
+        
     }
 }
 

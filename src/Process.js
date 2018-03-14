@@ -33,8 +33,9 @@ class Process {
     executeProcess(time) {
         this.stateChanged = false;
         if (this.blockingTimeNeeded !== 0) {
-            this.queue.emitInterrupt(this._pid, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = true;
+        } else {
             this.cpuTimeNeeded = this.cpuTimeNeeded - time;
         }
     }
@@ -43,14 +44,11 @@ class Process {
     // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt notifying
     // the process is ready and toggle `this.stateChanged` to `true`
     executeBlockingProcess(time) {
-        let diff = this.blockingTimeNeeded - time;
-        if (diff <= 0) {
-            this.blockingTimeNeeded = 0;
-            this.queue.emitInterrupt(this._pid, SchedulerInterrupt.PROCESS_READY);
+        this.blockingTimeNeeded = this.blockingTimeNeeded - time >= 0 ? this.blockingTimeNeeded - time : 0;
+        if (this.blockingTimeNeeded <= 0) {
             this.stateChanged = true;
-        } else {
-            this.blockingTimeNeeded = diff;
-        }        
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+        }
     }
 
     // Returns this process's `this.stateChanged` property
