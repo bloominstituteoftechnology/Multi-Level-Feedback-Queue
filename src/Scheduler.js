@@ -50,8 +50,8 @@ class Scheduler {
     // In the case of a PROCESS_BLOCKED interrupt, add the process to the blocking queue
     // In the case of a PROCESS_READY interrupt, add the process to highest priority running queue
     // In the case of a LOWER_PRIORITY interrupt, check to see if the input queue is a running queue or blocking queue
-    // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
-    // If it is a blocking queue, add the process back to the blocking queue
+        // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
+        // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
         switch (interrupt) {
             case "PROCESS_BLOCKED":
