@@ -10,7 +10,7 @@ const main = () => {
     const scheduler = new Scheduler();
     
     for (let i = 1; i < 101; i++) {
-        let rollForBlockingProcess = Math.random() < 0.25;
+        let rollForBlockingProcess = Math.random() < 0.25; // 25% chance of being true
         scheduler.addNewProcess(new Process(i + 1000, null, rollForBlockingProcess));
     }
 
