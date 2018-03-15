@@ -44,6 +44,7 @@ class Process {
     // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt notifying
     // the process is ready and toggle `this.stateChanged` to `true`
     executeBlockingProcess(time) {
+        // Clamping the value of this.blockingTimeNeeded to 0 or above
         this.blockingTimeNeeded = this.blockingTimeNeeded - time >= 0 ? this.blockingTimeNeeded - time : 0;
         if (this.blockingTimeNeeded <= 0) {
             this.stateChanged = true;
