@@ -17,12 +17,12 @@ class Process {
     
     // Sets this process's `this.queue` property
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     // Checks that this process no longer has any more CPU or blocking time it needs
     isFinished() {
-
+        return this.cpuTimeNeeded === null && this.blockingTimeNeeded === 0 ? true : false;
     }
 
     // Sets this process's `this.stateChanged` property to `false`
@@ -31,7 +31,13 @@ class Process {
     // Also toggle its `this.stateChanged` property to `true`
     // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
     executeProcess(time) {
-
+        if (this.blockingTimeNeeded > 0) {
+            let interrupt = SchedulerInterrupt.PROCESS_BLOCKED;
+            this.queue.emitInterrupt(this, interrupt);
+            this.stateChanged = true;
+        } else {
+            this.cpuTimeNeeded -= time;
+        }
    }
 
    // Decrement this process's `this.blockingTimeNeeded` by the input `time`
@@ -43,12 +49,12 @@ class Process {
 
     // Returns this process's `this.stateChanged` property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     // Gets this process's pid
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
