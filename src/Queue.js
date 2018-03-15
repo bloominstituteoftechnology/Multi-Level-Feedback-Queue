@@ -20,13 +20,15 @@ class Queue {
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
     enqueue(process) {
-
+        this.processes.unshift(process);
+        process.setParentQueue(this);
+        return process;
     }
 
     // Removes the least-recently added process from the list of processes
     // Return the newly-removed process
     dequeue() {
-
+        const removed = this.process.splice(-1,1)
     }
 
     // Return the least-recently added process without removing it from the list of processes
@@ -36,17 +38,17 @@ class Queue {
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-
+        return this.processes.length === 0;
     }
 
     // Return this queue's priority level
     getPriorityLevel() {
-
+        return this.Queue.priorityLevel;
     }
 
     // Return this queue's queueType
     getQueueType() {
-
+        return this.Queue.queueType;
     }
 
     // Manages a process's execution for the appropriate amount of time
