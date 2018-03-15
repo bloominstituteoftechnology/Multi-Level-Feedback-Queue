@@ -1,4 +1,5 @@
 const { SchedulerInterrupt } = require('./constants/index');
+const Process = require('./Process')
 
 // A class representation of a process queue that may hold either
 // blocking or non-blocking processes
@@ -14,6 +15,8 @@ class Queue {
         // A counter to keep track of how much time the queue has been executing so far
         this.quantumClock = 0;
         this.queueType = queueType;
+
+        let p = new Process();
     }
 
     // Adds the input process to the queue's list of processes
@@ -27,13 +30,16 @@ class Queue {
 
     // Removes the least-recently added process from the list of processes
     // Return the newly-removed process
-    dequeue() {
-        
+    dequeue(process) {
+        this.process.pop(process);
+        process.setParentQueue(this);
+        return process;
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+        return this.processes[0];
+        
     }
 
     // Checks to see if there are any processes in the list of processes
@@ -62,14 +68,28 @@ class Queue {
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
-
+        if(currentProcess.isStateChanged()) {
+            this.quantumClock = 0;
+            return;
+        }
+        this.quantumClock += time;
+        
+        if(this.quantumClock > this.quantum) {
+            this.quantumClock = 0;
+            let process = this.dequeue();
+        if(!process.isFinished()) {
+            this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
+        }
+        }
     }
 
     // Execute a non-blocking process
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
-
+        let process = this.peek();
+        process.executeProcess(time);
+        this.manageTimeSlice(process, time);
     }
 
     // Execute a blocking process

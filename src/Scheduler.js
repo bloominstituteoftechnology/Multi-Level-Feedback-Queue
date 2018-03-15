@@ -3,6 +3,7 @@ const {
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
+const {SchedulerInterrupt } = require('./constants/index');
 
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues 
@@ -29,7 +30,11 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-
+        while (!this.allEmpty()) {
+            let curTime = Date.now();
+            let workTime = curTime - this.clock;
+            this.clock = curtime;
+        }
     }
 
     // Checks that all queues have no processes 
@@ -49,7 +54,28 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
+        let level;
+        switch (interrupt) {
+            case SchedulerInterrupt.PROCESS_BLOCKED:
+            break;
+            case SchedulerInterrupt.PROCESS_READY:
+            break;
+            case SchedulerInterrupt.LOWER_PRIORITY:
+            switch (QueueType.getQueueType()) {
+                case QueueType.CPU_QUEUE:
+                level++;
 
+                if (level > PRIORITY_LEVELS - 1) {
+                    level = PRIORITY_LEVELS -1;
+                }
+                this.runningQueues[level].enqueue([process];)
+                break;
+                case QueueType.BLOCKING_QUEUE:
+            this.blockingQueue.enqueue(process);
+            break;
+                    }            }
+            break;
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
