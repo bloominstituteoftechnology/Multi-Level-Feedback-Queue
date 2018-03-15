@@ -56,7 +56,7 @@ class Queue {
     // If it is, reset `this.quantumClock` to give the process more time and return
     // Otherwise, increment `this.quantumClock` by `time`
     // Check to see if `this.quantumClock` is greater than `this.quantum`
-    // If it is, remove the current process from its queue to make way for the next process in line
+        // If it is, remove the current process from its queue to make way for the next process in line
         // Set `this.quantumClock` to 0
         // Dequeue the next process from the queue
         // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
@@ -69,8 +69,7 @@ class Queue {
             this.quantumClock += time;
             if (this.quantumClock > this.quantum) {
                 this.quantumClock = 0;
-                let processes = this.dequeue();
-                
+                let process = this.dequeue();
                 if (!process.isFinished()) {
                     this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY)
                 }

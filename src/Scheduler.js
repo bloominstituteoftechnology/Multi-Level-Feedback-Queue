@@ -29,11 +29,23 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        // while (!this.allEmpty()) {
-        //     let current = Date.now();
-        //     let workTime = current - this.clock;
-        //     this.clock = current;
-        // }
+        while (!this.allEmpty()) {
+            let currentTime = Date.now();
+            let workTime = currentTime - this.clock;
+            this.clock = currentTime;
+
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                if (!this.runningQueues[i].isEmpty()) {
+                    this.runningQueues[i].doCPUWork(workTime);
+                }   
+            }
+            
+            if (this.allEmpty()) break;
+        }
     }
 
     // Checks that all queues have no processes 
