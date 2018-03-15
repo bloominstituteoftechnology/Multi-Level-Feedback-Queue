@@ -50,7 +50,7 @@ class Queue {
     getQueueType() {
         return this.queueType;
     }
-
+    
     // Manages a process's execution for the appropriate amount of time
     // Checks to see if currentProcess's `this.stateChanged` property is true
     // If it is, reset `this.quantumClock` to give the process more time and return
@@ -69,13 +69,13 @@ class Queue {
             this.quantumClock += time;
             if (this.quantumClock > this.quantum) {
                 // - O.o
-                let index = this.processes.findIndex(currentProcess); // Find Process in Queue
-                this.processes.splice(index, 1); // Remove process from queue
+                //let index = this.processes.findIndex(currentProcess); // Find Process in Queue
+                //this.processes.splice(index, 1); // Remove process from queue
                 // - O.o
                 this.quantumClock = 0;
-                let nextProcess = this.dequeue();
-                if (!nextProcess.isFinished()) {
-                    this.emitInterrupt(nextProcess, SchedulerInterrupt.LOWER_PRIORITY);
+                let process = this.dequeue();
+                if (!process.isFinished()) {
+                    this.scheduler.handleInterrupt(this ,process, SchedulerInterrupt.LOWER_PRIORITY);
                 }
             }
         }
