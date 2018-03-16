@@ -40,18 +40,30 @@ class Scheduler {
             let workTime = currentTime - this.clock;
             this.clock = currentTime;
             // Todo
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+            this.runningQueues.forEach(queue => {
+                if (!queue.isEmpty()) {
+                    queue.doCPUWork(workTime);
+                }
+            });
         }
     }
 
     // Checks that all queues have no processes 
     allEmpty() {
-        let flag = true;
-        this.runningQueues(item => {
-            if (item.length > 0)
-            {
+        let flag;
+        // Check inside the Running Queues
+        this.runningQueues.forEach(item => {
+            if (item.isEmpty()) {
+                flag = true;
+            } else {
                 flag = false;
-            }    
-        })
+            }
+        });
+        // Check inside Blocking Queue
+        flag = this.blockingQueue.isEmpty();
         return flag;
     }
 
@@ -67,17 +79,19 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
-        let priority;
+
         switch (interrupt) {
-            case SchedulerInterrupt.PROCESS_READY:
-                break;
             case SchedulerInterrupt.PROCESS_BLOCKED:
+                this.blockingQueue.enqueue(process);
+                break;
+            case SchedulerInterrupt.PROCESS_READY:
+                this.addNewProcess(process);
                 break;
             case SchedulerInterrupt.LOWER_PRIORITY:
                 switch (queue.getQueueType()) {
                     case QueueType.CPU_QUEUE:
-                        priority = queue.getPriorityLevel();
-                        priority = priority = 2 ? 2 : priority++; // Add 1 to the priority level
+                        let priority = queue.getPriorityLevel();
+                        priority = (priority === PRIORITY_LEVELS - 1) ? PRIORITY_LEVELS - 1 : priority + 1; // Add 1 to the priority level
                         this.runningQueues[priority].enqueue(process);
                         break;
                     case QueueType.BLOCKING_QUEUE:

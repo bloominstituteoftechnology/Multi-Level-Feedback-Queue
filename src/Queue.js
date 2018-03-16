@@ -38,7 +38,7 @@ class Queue {
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-        return (this.processes.length > 0);
+        return (!this.processes.length > 0);
     }
 
     // Return this queue's priority level
@@ -50,32 +50,28 @@ class Queue {
     getQueueType() {
         return this.queueType;
     }
-    
+
     // Manages a process's execution for the appropriate amount of time
     // Checks to see if currentProcess's `this.stateChanged` property is true
     // If it is, reset `this.quantumClock` to give the process more time and return
     // Otherwise, increment `this.quantumClock` by `time`
     // Check to see if `this.quantumClock` is greater than `this.quantum`
     // If it is, remove the current process from its queue to make way for the next process in line
-    // Set `this.quantumClock` to 0
-    // Dequeue the next process from the queue
-    // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
-    // needs to be moved to a lower priority queue
+    //      Set `this.quantumClock` to 0
+    //      Dequeue the next process from the queue
+    //      If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
+    //      needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
         if (currentProcess.isStateChanged()) {
             this.quantumClock = 0; // Is this a reset?
             return;
         } else {
             this.quantumClock += time;
-            if (this.quantumClock > this.quantum) {
-                // - O.o
-                //let index = this.processes.findIndex(currentProcess); // Find Process in Queue
-                //this.processes.splice(index, 1); // Remove process from queue
-                // - O.o
+            if (this.quantumClock > this.quantum) {             
                 this.quantumClock = 0;
-                let process = this.dequeue();
+                const process = this.dequeue();
                 if (!process.isFinished()) {
-                    this.scheduler.handleInterrupt(this ,process, SchedulerInterrupt.LOWER_PRIORITY);
+                    this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
                 }
             }
         }
@@ -85,7 +81,7 @@ class Queue {
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
-        let process = this.peek();
+        const process = this.peek();
         process.executeProcess(time);
         this.manageTimeSlice(process, time);
     }
@@ -94,7 +90,7 @@ class Queue {
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
-        let process = this.peek();
+        const process = this.peek();
         process.executeBlockingProcess(time);
         this.manageTimeSlice(process, time);
     }
@@ -105,14 +101,22 @@ class Queue {
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
-        let index = this.processes.findIndex(source); // Find Process in Queue
+        //let index = this.processes.findIndex(source); // Find Process in Queue
+        let index;
+        let sourcePid = source.pid;
+        this.processes.forEach((item, i) => {
+            let eachPid = item.pid;
+            if (eachPid === sourcePid) {
+                index = i;
+            }
+        });
         let extractedProcess = this.processes.splice(index, 1); // Remove process from queue
         if (interrupt = SchedulerInterrupt.PROCESS_BLOCKED) {
             // emit the appropriate scheduler interrupt to the scheduler's interrupt handler
-            scheduler.handleInterrupt(this, extractedProcess[0], SchedulerInterrupt.PROCESS_BLOCKED)
+            this.scheduler.handleInterrupt(this, extractedProcess[0], SchedulerInterrupt.PROCESS_BLOCKED)
         } else if (interrupt = SchedulerInterrupt.PROCESS_READY) {
             // emit the appropriate scheduler interrupt to the scheduler's interrupt handler
-            scheduler.handleInterrupt(this, extractedProcess[0], SchedulerInterrupt.PROCESS_READY)
+            this.scheduler.handleInterrupt(this, extractedProcess[0], SchedulerInterrupt.PROCESS_READY)
         }
     }
 }
