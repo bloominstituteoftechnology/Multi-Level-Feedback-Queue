@@ -17,8 +17,9 @@ class Process {
     
     // Sets this process's `this.queue` property
     setParentQueue(queue) {
-        queue = _getParentQueue();
-
+        this.queue = queue;
+        queue = this._getParentQueue();
+        
     }
 
     // Checks that this process no longer has any more CPU or blocking time it needs
@@ -29,35 +30,34 @@ class Process {
     
     
    
-    // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
+   
     executeProcess(time) {
         // Sets this process's `this.stateChanged` property to `false`
         this.stateChanged = false;
         // Checks to see if this process needs blocking time
-        if (this.blockingTimeNeeded === 0) {
+        this.isFinished() ? 
+             // If it does, emit a queue interrupt to notify the queue that the process is blocked
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED) :
+             // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
             this.cpuTimeNeeded -= time;
-            (this.cpuTimeNeeded > 0) ? this.cputimeNeeded : 0;
-        }
-         // If it does, emit a queue interrupt to notify the queue that the process is blocked
-        this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-        
-        // Also toggle its `this.stateChanged` property to `true`
+            // Also toggle its `this.stateChanged` property to `true`
         this.stateChanged = true;
-   }
-
+        }
+   
    
    
   
     executeBlockingProcess(time) {
         // Decrement this process's `this.blockingTimeNeeded` by the input `time`
         this.blockingTimeNeeded -= time;
-        (this.blockingTimeNeeded > 0) ? this.blockingTimeNeeded : 0;
+        // (this.blockingTimeNeeded > 0) ? this.blockingTimeNeeded : 0;
         // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying 
-        if(this.blockingTimeNeeded === 0) {
+        if(this.blockingTimeNeeded === 0 || this.blockingTimeNeeded < 0) {
            
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
-            this.stateChanged = true;
+           
         }
+        this.stateChanged = true;
     }
 
     // Returns this process's `this.stateChanged` property
