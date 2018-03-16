@@ -53,18 +53,16 @@ class Scheduler {
 
     // Checks that all queues have no processes 
     allEmpty() {
-        let flag;
-        // Check inside the Running Queues
+        let count = 0
+        // Check inside the Running Queues, increase count if not empty.
         this.runningQueues.forEach(item => {
-            if (item.isEmpty()) {
-                flag = true;
-            } else {
-                flag = false;
+            if (!item.isEmpty()) {
+                count++
             }
         });
-        // Check inside Blocking Queue
-        flag = this.blockingQueue.isEmpty();
-        return flag;
+        // Check inside Blocking Queue??
+        // if (!this.blockingQueue.isEmpty()) count++;
+        return (count === 0);
     }
 
     // Adds a new process to the highest priority level running queue
