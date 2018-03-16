@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const Queue = require('../src/Queue');
 const Process = require('../src/Process');
 const Scheduler = require('../src/Scheduler');
-const { 
+const {
     SchedulerInterrupt,
     QueueType,
 } = require('../src/constants/index');
@@ -52,6 +52,8 @@ describe('Process', () => {
         const blockingProcess = new Process(0, 0, true);
         const queueSpy = sinon.spy(queue, 'emitInterrupt');
         queue.enqueue(blockingProcess);
+        // Process file is queue.enqueue() to pass the queue to it. This addition will allow the test evaluate without implementing Queue.js first.
+        blockingProcess.setParentQueue(queue); // Not necessary but a more independent way to test just the Process.js file.
         blockingProcess.executeBlockingProcess(1000);
         expect(queueSpy.calledWith(blockingProcess, SchedulerInterrupt.PROCESS_READY));
         expect(blockingProcess.isStateChanged()).toBe(true);
