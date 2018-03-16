@@ -21,9 +21,10 @@ class Queue {
     
     enqueue(process) {
         // Adds the input process to the queue's list of processes
+        process.setParentQueue(this);
         this.processes.push(process);
         // Also sets the input process's parent queue to this queue
-        process.setParentQueue(this.queue);
+        
         // Return the newly added process
         return process;
     }
@@ -44,7 +45,7 @@ class Queue {
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-        return this.processes.length === 0;
+        return (this.processes.length  < 1);
     }
 
     // Return this queue's priority level
@@ -69,19 +70,18 @@ class Queue {
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
         if (currentProcess.isStateChanged()) {
-            this.quantumClock =0;
+            this.quantumClock = 0;
             return;
+        } else {
+            this.quantumClock += time;
         }
-        this.quantumClock += time;
-        if (this.quantumClock >= this.quantum) {
+        if (this.quantumClock > this.quantum) {
             this.quantumClock = 0;
             const process =  this.dequeue();
             
             if (!process.isFinished()) {
-                this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
-            } else {
-                console.log("Process Complete!");
-            }
+                this.emitInterrupt(process, SchedulerInterrupt.LOWER_PRIORITY);
+            } 
         }
     }
 

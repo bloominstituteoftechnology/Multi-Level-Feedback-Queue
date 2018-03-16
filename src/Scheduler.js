@@ -65,7 +65,7 @@ class Scheduler {
     // Checks that all queues have no processes 
     allEmpty() {
         this.runningQueues.every(function(queue) {
-            return (this.queue.isEmpty() && this._getBlockingQueue().isEmpty());
+            return (queue.isEmpty() && this._getBlockingQueue().isEmpty());
         });
     }
     // Adds a new process to the highest priority level running queue
