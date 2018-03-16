@@ -22,8 +22,8 @@ class Process {
 
     // Checks that this process no longer has any more CPU or blocking time it needs
     isFinished() {
-        // console.log("pid", this.pid, "cpu", this.cpuTimeNeeded, "block", this.blockingTimeNeeded);
-        if (this.blockingTimeNeeded === 0 && this.cpuTimeNeeded === 0) {
+        // console.log("this.blockingTimeNeeded", this.blockingTimeNeeded, "this.cpuTimeNeeded", this.cpuTimeNeeded)
+        if (this.blockingTimeNeeded <= 0 && this.cpuTimeNeeded <= 0) {
             return true;
         } else {
             return false;

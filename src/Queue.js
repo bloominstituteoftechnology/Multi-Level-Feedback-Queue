@@ -66,11 +66,10 @@ class Queue {
         if (currentProcess.isStateChanged()) {
             this.quantumClock = 0;
             return;
-        } else {
-            // console.log("beforeclock", this.quantumClock);
-            this.quantumClock += time;
-            // console.log("afterclock", this.quantumClock);
         }
+        // console.log("beforeclock", this.quantumClock);
+        this.quantumClock += time;
+        // console.log("afterclock", this.quantumClock);
 
         if (this.quantumClock > this.quantum) {
             // console.log("beforeclock", this.quantumClock, "quantum", this.quantum);
@@ -79,6 +78,7 @@ class Queue {
             let process = this.dequeue();
             if (!process.isFinished()) {
                 this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+
             }
         }
     }
@@ -113,7 +113,6 @@ class Queue {
             }
         }
         this.scheduler.handleInterrupt(this, source, interrupt);
-
     }
 
 }
