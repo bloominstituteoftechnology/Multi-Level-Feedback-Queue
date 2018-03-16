@@ -72,7 +72,8 @@ class Queue {
       this.quantumClock = 0;
       let process = this.dequeue();
 
-      if (!process.isFinshed()) {
+      if (!process.isFinished()) {
+        this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
       }
     }
   }
@@ -91,7 +92,13 @@ class Queue {
   // Execute a blocking process
   // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
   // Call `this.manageTimeSlice` with the peeked process and input `time`
-  doBlockingWork(time) {}
+  doBlockingWork(time) {
+    let process = this.peek();
+
+    process.executeBlockingProcess(time);
+
+    this.manageTimeSlice(process, time);
+  }
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
   // Receives a source process and an interrupt string

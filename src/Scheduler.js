@@ -46,7 +46,9 @@ class Scheduler {
   }
 
   // Adds a new process to the highest priority level running queue
-  addNewProcess(process) {}
+  addNewProcess(process) {
+    this.runningQueues[0].push(process);
+  }
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
   // In the case of a PROCESS_BLOCKED interrupt, add the process to the blocking queue
@@ -55,8 +57,28 @@ class Scheduler {
   // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
   // If it is a blocking queue, add the process back to the blocking queue
   handleInterrupt(queue, process, interrupt) {
+    let level;
     switch (interrupt) {
       case SchedulerInterrupt.PROCESS_BLOCKED:
+        this.blockingQueue.enqueue(process);
+        break;
+      case SchedulerInterrupt.PROCESS_READY:
+        this.addNewProcess(process);
+        break;
+      case SchedulerInterrupt.LOWER_PRIORITY:
+        switch (queue.getQueueType()) {
+          case QueueType.CPU_QUEUE:
+            level = queue.getPriorityLevel();
+            level++;
+            if (level > PRIORITY_LEVELS - 1) {
+              level = PRIORITY_LEVELS - 1;
+            }
+            this.runningQueues[level].enqueue(process);
+            break;
+          case QueueType.BLOCKING_QUEUE:
+            this.blockingQueue.enqueue(process);
+            break;
+        }
         break;
     }
   }
