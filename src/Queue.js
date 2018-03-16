@@ -109,10 +109,10 @@ class Queue {
     this.processes.splice(sourceIndex, 1);
 
     switch (interrupt) {
-      case 'PROCESS_BLOCKED':
+      case SchedulerInterrupt.PROCESS_BLOCKED:
         this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
         break;
-      case 'PROCESS_READY':
+      case SchedulerInterrupt.PROCESS_READY:
         this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
         break;
       default:
