@@ -65,13 +65,14 @@ class Queue {
     if (currentProcess.isStateChanged()) {
       this.quantumClock = 0;
       return;
-    } 
+    }
 
-      this.quantumClock += time;
-      if (this.quantumClock > this.quantum) {
-          const index = 
-        this.processes.
-        this.quantumClock = 0;
+    this.quantumClock += time;
+    if (this.quantumClock > this.quantum) {
+      this.quantumClock = 0;
+      let process = this.dequeue();
+
+      if (!process.isFinshed()) {
       }
     }
   }
@@ -80,11 +81,11 @@ class Queue {
   // Peeks the next process and runs its `executeProcess` method with input `time`
   // Call `this.manageTimeSlice` with the peeked process and input `time`
   doCPUWork(time) {
-      let process = this.peek();
+    let process = this.peek();
 
-      process.executeProcess(time);
-      
-      this.manageTimeSlice(process, time);
+    process.executeProcess(time);
+
+    this.manageTimeSlice(process, time);
   }
 
   // Execute a blocking process
