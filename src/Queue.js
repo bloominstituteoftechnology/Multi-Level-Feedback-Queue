@@ -67,7 +67,7 @@ class Queue {
     }
 
     this.quantumClock += time;
-    if (this.quantumClock > this.quantum) {
+    if (this.quantumClock >= this.quantum) {
       this.quantumClock = 0;
       const process = this.dequeue();
 
@@ -109,10 +109,10 @@ class Queue {
     this.processes.splice(sourceIndex, 1);
 
     switch (interrupt) {
-      case SchedulerInterrupt.PROCESS_BLOCKED:
+      case 'PROCESS_BLOCKED':
         this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
         break;
-      case SchedulerInterrupt.PROCESS_READY:
+      case 'PROCESS_READY':
         this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
         break;
       default:
