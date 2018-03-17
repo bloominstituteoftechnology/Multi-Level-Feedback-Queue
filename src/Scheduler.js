@@ -2,6 +2,7 @@ const Queue = require('./Queue');
 const { 
     QueueType,
     PRIORITY_LEVELS,
+    SchedulerInterrupt,
 } = require('./constants/index');
 
 // A class representing the scheduler
@@ -29,17 +30,40 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-
+        while (!this.allEmpty()) {
+            let currentTime = Date.now();
+            let workTime = currentTime - this.clock;
+            this.clock = currentTime;
+            if (!this.blockingQueue.isEmpty) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+            for (let i = 0; i < PRIORITY_LEVELS - 1; i++) {
+                if (!this.runningQueues[i].isEmpty());
+               this.runningQueues[i].doCPUWork(workTime);
+             }
+        }
     }
 
     // Checks that all queues have no processes 
     allEmpty() {
-
+        let notebook = 0;
+        for (let i = 0; i < this.runningQueues.length; i++) {
+            let currentQueue = this.runningQueues[i];
+            let emptyQueue = currentQueue.isEmpty();
+            if (!empyQueue) {
+                notebook++;
+            }
+        }
+        if (notebook === 0) {
+            return true;
+        } else {
+            return false;
+           }
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -49,7 +73,29 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
+        switch (interrupt) {
+            case SchedulerInterrupt.PROCESS_BLOCKED:
+                this.blockingQueue.enqueue(process);
+                break;
+            case SchedulerInterrupt.PROCESS_READY:
+                this.runningQueues[0].enqueue(process);
+                break;
+            case SchedulerInterrupt.LOWER_PRIORITY:
 
+                switch (queue.getQueueType()) {
+                    case QueueType.BLOCKING_QUEUE:
+                        this.blockingQueue.enqueue(process);    
+                        break;
+                    case QueueType.CPU_QUEUE:
+                        let currentPriority = queue.getPriorityLevel();
+                        if (currentPriority === PRIORITY_LEVELS - 1) {
+                            this.runningQueues[PRIORITY_LEVELS - 1].enqueue(process);
+                        } else {
+                            this.runningQueues[currentPriority + 1].enqueue(process);
+                        }
+                        break;       
+            }         
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY

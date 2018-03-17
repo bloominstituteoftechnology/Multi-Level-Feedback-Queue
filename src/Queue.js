@@ -33,12 +33,12 @@ class Queue {
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        return this.processes.slice(0, 1)[0];
+        return this.processes[0];
     }
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-        return this.processes.length > 0;
+        return this.processes.length <= 0;
     }
 
     // Return this queue's priority level
@@ -67,17 +67,16 @@ class Queue {
             return;
         } else {
             this.quantumClock += time;
-            if (this.quantumClock > this.quantum) {
-                this.currentProcess.findIndex(currentProcess); // Find process in Queue
-                this.processes.splice(index, 1); // Remove process from Queue
+            if (this.quantumClock >= this.quantum) {
                 this.quantumClock = 0;
                 let nextProcess = this.dequeue();
-                if (nextProcess.isFinished()) {
-                    this.emitInterrupt(nextProcess, SchedulerInterrupt.LOWER_PRIORITY);
+                if (!nextProcess.isFinished()) {
+                    this.scheduler.handleInterrupt(this, nextProcess, SchedulerInterrupt.LOWER_PRIORITY);
                 }
             }
         }
     }
+
 
     // Execute a non-blocking process
     // Peeks the next process and runs its `executeProcess` method with input `time`
@@ -103,14 +102,19 @@ class Queue {
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
-        let index = this.process.findIndex(source);
-        let extractedProcess = this.processes.splice(index, 1)
-        if (interrupt = SchedulerInterrupt.PROCESS_BLOCKED) {
-            scheduler.handleInterrupt(this, extractedProcess[0], SchedulerInterrupt.PROCESS_BLOCK);[0]
-        } else if (interrupt = SchedulerInterrupt.PROCESS_READY) {
-             scheduler.handleInterrupt(this, extractedProcess[0], SchedulerInterrupt.PROCESS_READY);
+        let index = this.processes.indexOf(source);
+        this.processes.splice(index, 1)
+
+        switch (interrupt) {
+            case 'PROCESS_BLOCKED':
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+                break;
+            case 'PROCESS_READY':
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+                break;
         }
     }
+    
 }
 
 module.exports = Queue;
