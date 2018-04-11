@@ -40,8 +40,6 @@ describe('Process', () => {
     it('should finish a process when the process is given enough CPU time', () => {
         const process1 = new Process(0, 30);
         const process2 = new Process(0, 30);
-        queue.enqueue(process1);
-        queue.enqueue(process2);
         process1.executeProcess(30);
         process2.executeProcess(29);
         expect(process1.isFinished()).toBe(true);
