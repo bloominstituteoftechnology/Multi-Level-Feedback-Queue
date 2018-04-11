@@ -108,3 +108,5 @@ Here's a chapter from an operating systems textbook that dives a lot deeper into
 the multi-level feedback queue:
 [http://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf](http://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf)
 
+Also this link to some dude's copious notes on the topic of process scheduling on Unix kernels: https://notes.shichao.io/lkd/ch4/
+
