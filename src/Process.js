@@ -44,7 +44,11 @@ class Process {
    // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying 
    // the process is ready and toggle `this.stateChanged` to `true`
     executeBlockingProcess(time) {
-
+        this.blockingTimeNeeded = this.blockingTimeNeeded - time;
+        if (this.blockingTimeNeeded <= 0) {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.stateChanged = true;
+        }
     }
 
     // Returns this process's `this.stateChanged` property
@@ -54,7 +58,7 @@ class Process {
 
     // Gets this process's pid
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
