@@ -29,7 +29,7 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        while(this.blockingQueue.isEmpty() === false || this.runningQueues.length > 0) {
+        while(this.allEmpty() === false) {
             let currentTime = Date.now();
             let workTime = currentTime - this.clock;
             this.clock = workTime;
@@ -37,7 +37,9 @@ class Scheduler {
                 this.blockingQueue.doBlockingWork(workTime);
             }
             for (let i = 0; i < this.runningQueues.length; i++) {
-                this.runningQueues[i].doCPUWork(workTime);
+                if(this.runningQueues[i].isEmpty() === false) {
+                    this.runningQueues[i].doCPUWork(workTime);
+                }
             }
         }
         return;
@@ -75,7 +77,7 @@ class Scheduler {
             this.blockingQueue.enqueue(process);
         } else if (interrupt === "PROCESS_READY") {
             this.addNewProcess(process);
-        } else {
+        } else if (interrupt === "LOWER_PRIORITY") {
             if (queue.getQueueType() === QueueType.CPU_QUEUE) {
                 let priorityLevel =  queue.getPriorityLevel() + 1;
                 if (priorityLevel >= PRIORITY_LEVELS) priorityLevel = PRIORITY_LEVELS - 1;

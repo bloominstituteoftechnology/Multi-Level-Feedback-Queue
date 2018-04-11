@@ -37,7 +37,7 @@ class Process {
     executeProcess(time) {
         this.stateChanged = false;
         if (this.blockingTimeNeeded > 0) {
-            this.queue.emitInterrupt(this.queue, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = true;
         } else {
             this.cpuTimeNeeded -= time;

@@ -75,7 +75,7 @@ class Queue {
             this.quantumClock += time;
             if (this.quantumClock > this.quantum) {
                 this.quantumClock = 0;
-                this.dequeue()
+                this.dequeue();
             } else {
                 this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
             }
