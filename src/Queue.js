@@ -28,7 +28,7 @@ class Queue {
     // Removes the least-recently added process from the list of processes
     // Return the newly-removed process
     dequeue() {
-        return this.process.shift();
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
@@ -38,17 +38,17 @@ class Queue {
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-
+        return this.processes.length > 0;
     }
 
     // Return this queue's priority level
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     // Return this queue's queueType
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the appropriate amount of time
@@ -62,14 +62,24 @@ class Queue {
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
+        if (currentProcess.isStateChanged()) {
+            this.quantumClock = 0;
+            return;
+        }
 
+        this.quantumClock += time;
+        if (this.quantumClock > this.quantum) {
+            const index = this.processes.this.quantumClock = 0;
+        }
     }
 
     // Execute a non-blocking process
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
-
+        let process = this.peek();
+        process.executeProcess(time);
+        this.manageTimeSlice(process, time);
     }
 
     // Execute a blocking process
