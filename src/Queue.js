@@ -69,7 +69,11 @@ class Queue {
 
         this.quantumClock += time;
         if (this.quantumClock > this.quantum) {
-            const index = this.processes.this.quantumClock = 0;
+            this.quantumClock = 0;
+            let process = this.dequeue();
+            if (!process.isFinished()) {
+                
+            }
         }
     }
 
