@@ -71,7 +71,7 @@ class Queue {
       this.quantumClock = 0;
       const process = this.dequeue();
 
-      if (!process.isFinishe()) {
+      if (!process.isFinished()) {
         this.scheduler.handleInterrupt(
           this,
           process,
@@ -107,11 +107,7 @@ class Queue {
   emitInterrupt(source, interrupt) {
     const index = this.processes.indexOf(source);
     this.processes.splice(index, 1);
-    this.scheduler.handleInterrupt(
-        this,
-        source,
-        interrupt
-    );
+    this.scheduler.handleInterrupt(this, source, interrupt);
   }
 }
 
