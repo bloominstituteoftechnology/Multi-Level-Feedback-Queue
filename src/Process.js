@@ -46,7 +46,7 @@ class Process {
     executeBlockingProcess(time) {
         this.blockingTimeNeeded -= time;
         if (this.blockingTimeNeeded <= 0) {
-            this.queue.emitInterrupt(this._pid, "PROCESS_READY");
+            // this.queue.emitInterrupt(this._pid, "PROCESS_READY");
             this.stateChanged = true;
         }
     }
