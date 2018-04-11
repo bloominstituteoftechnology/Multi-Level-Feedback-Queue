@@ -69,16 +69,16 @@ class Queue {
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
         if (currentProcess.stateChanged) {
-            this.quantumClock = this.quantum;
+            this.quantumClock = 0;
             return;
         } else {
-            this.quantum += time;
-        }
-        if (this.quantumClock > this.quantum) {
-            this.quantumClock = 0;
-            this.dequeue()
-        } else {
-            this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            this.quantumClock += time;
+            if (this.quantumClock > this.quantum) {
+                this.quantumClock = 0;
+                this.dequeue()
+            } else {
+                this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            }
         }
 
     }
@@ -110,7 +110,7 @@ class Queue {
         let index = this.processes.indexOf(source);
         this.processes.splice(index,1);
 
-        this.scheduler.handleInterrupt(this.processes, source, interrupt);
+        this.scheduler.handleInterrupt(this, source, interrupt);
     }
 }
 
