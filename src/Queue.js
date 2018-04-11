@@ -38,17 +38,17 @@ class Queue {
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-
+        return this.processes.length > 0;
     }
 
     // Return this queue's priority level
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     // Return this queue's queueType
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the appropriate amount of time
