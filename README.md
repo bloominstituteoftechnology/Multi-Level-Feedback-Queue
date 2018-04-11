@@ -36,7 +36,7 @@ are constantly being added to the highest-priority queue by the scheduler.
 Nothing special here. Just run `npm install` in the root directory, then start working on your implementation,
 using the provided skeleton code and comments for guidance / pointers. Run `npm test` when you want to check 
 your code against the test suite, or `npm test:watch` if you'd like to keep the tests running as you work.  You 
-can also do `npm run test <name-of-test-suite>' to run one suite out of the three.
+can also do `npm run test <name-of-test-suite>` to run one suite out of the three.
 
 ### Architecture
 ![alt text](./assets/mlfq_diagram.png)
@@ -107,4 +107,6 @@ a priority boost, and how should that be facillitated?
 Here's a chapter from an operating systems textbook that dives a lot deeper into the theory and motivation behind 
 the multi-level feedback queue:
 [http://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf](http://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf)
+
+Also this link to some dude's copious notes on the topic of process scheduling on Unix kernels: https://notes.shichao.io/lkd/ch4/
 
