@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const Queue = require('../src/Queue');
 const Process = require('../src/Process');
 const Scheduler = require('../src/Scheduler');
-const { 
+const {
     SchedulerInterrupt,
     QueueType,
 } = require('../src/constants/index');
@@ -11,10 +11,10 @@ let queue, scheduler;
 
 describe('Queue', () => {
     beforeEach(() => {
-       scheduler = new Scheduler();
-       queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
+        scheduler = new Scheduler();
+        queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
     });
-    
+
     it('should have the methods "enqueue", "dequeue", "peek", "getPriorityLevel", "getQueueType", "emitInterrupt", "isEmpty", "doCPUWork", "doBlockingWork", and "manageTimeSlice"', () => {
         expect(Object.getPrototypeOf(queue).hasOwnProperty('enqueue')).toBe(true);
         expect(Object.getPrototypeOf(queue).hasOwnProperty('dequeue')).toBe(true);
@@ -40,7 +40,7 @@ describe('Queue', () => {
         const process2 = new Process(1);
         queue.enqueue(process1);
         queue.enqueue(process2);
-        expect(queue.peek()).toBe(process1); 
+        expect(queue.peek()).toBe(process1);
     });
 
     it('should dequeue processes in first in first out order', () => {
