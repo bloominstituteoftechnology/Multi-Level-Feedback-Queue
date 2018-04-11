@@ -20,33 +20,35 @@ class Queue {
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
     enqueue(process) {
-
+        process.setParentQueue(this);
+        return this.processes.push(process);
     }
 
     // Removes the least-recently added process from the list of processes
     // Return the newly-removed process
     dequeue() {
-
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+        return this.processes[0];
     }
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-
+        if (this.processes.length > 0) return true;
+        return false;
     }
 
     // Return this queue's priority level
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     // Return this queue's queueType
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the appropriate amount of time
@@ -60,7 +62,21 @@ class Queue {
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
+        if (currentProcess.isStateChanged()) {
+            this.quantumClock = 0;
+            return;
+        }
+        this.quantumClock += time;
+        if (this.quantumClock > this.quantum) {
+            const index = this.processes.indexOf(currentProcess);
+            if (index >= 0) this.processes.splice(index, 1);
+            this.quantumClock = 0;
+            const nextProcess = this.dequeue();
 
+            if (!nextProcess.isFinished()) {
+                this.scheduler.handleInterrupt(this, nextProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            }
+        }
     }
 
     // Execute a non-blocking process
