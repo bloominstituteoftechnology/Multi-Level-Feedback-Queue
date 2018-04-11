@@ -52,6 +52,7 @@ describe('Process', () => {
         const blockingProcess = new Process(0, 0, true);
         const queueSpy = sinon.spy(queue, 'emitInterrupt');
         queue.enqueue(blockingProcess);
+        expect(queue.peek()).toEqual(blockingProcess);
         blockingProcess.executeBlockingProcess(1000);
         expect(queueSpy.calledWith(blockingProcess, SchedulerInterrupt.PROCESS_READY));
         expect(blockingProcess.isStateChanged()).toBe(true);
