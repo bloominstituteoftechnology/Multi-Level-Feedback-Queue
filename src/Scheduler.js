@@ -37,7 +37,9 @@ class Scheduler {
                 this.blockingQueue.doBlockingWork(workTime);
             }
             for (let i = 0; i < this.runningQueues.length; i++) {
-                this.runningQueues[i].doCPUWork(workTime);
+                if (!this.runningQueues[i].isEmpty()) {
+                    this.runningQueues[i].doCPUWork(workTime);
+                }
             }
         }
     }
