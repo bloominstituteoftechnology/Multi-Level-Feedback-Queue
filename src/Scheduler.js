@@ -29,17 +29,46 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-
+        let empty = this.allEmpty();
+        while(!empty) {
+            let currentTime = Date.now();
+            let workTime = currentTime - this.clock;
+            this.clock = currentTime;
+            if (this.blockingQueue) {
+                this.blockingQueue.doBlockingWork(workTime);
+                for (let i = 0; i < runningQueues.length; i++) {
+                    let currQueue = runningQueues[i];
+                    currQueue.processes.forEach(p => {
+                        p.executeProcess(workTime);
+                    });
+                }
+            }
+            if (empty) break;
+        }
     }
 
     // Checks that all queues have no processes 
     allEmpty() {
-
+        if (this.blockingQueue.processes.length === 0) {
+            this.runningQueues.forEach(q => {
+                if (q.processes.length > 0) return false;
+            });
+        }
+        return true;
+        // return (!this.blockingQueue && !this.runningQueues);
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-
+        let min = 1000000000;
+        let highest;
+        for (let i = 0; i < this.runningQueues.length; i++) {
+            if (this.runningQueues[i].priorityLevel < min) {
+                min = this.runningQueues[i].priorityLevel;
+                highest = this.runningQueues[i];
+            }
+        }
+        highest.enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -49,7 +78,29 @@ class Scheduler {
     // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
     // If it is a blocking queue, add the process back to the blocking queue
     handleInterrupt(queue, process, interrupt) {
-
+        switch(interrupt) {
+            case 'PROCESS_BLOCKED':
+                // add the process to the blocking queue
+                this.blockingQueue.enqueue(process);
+            case 'PROCESS_READY':
+                // call addNewProcess
+                this.addNewProcess();
+            case 'LOWER_PRIORITY':
+                if (queue.queueType === 'runningQueue') {
+                    let min = 100000000000;
+                    let next;
+                    for (let i = 0; i < this.runningQueues.length; i++) {
+                        if (this.runningQueues[i].priorityLevel >= queue.priorityLevel 
+                                && this.runningQueues[i].priorityLevel < min) {
+                                    min = this.runningQueues[i].priorityLevel;
+                                next = this.runningQueues[i];
+                        }
+                    }
+                    next.enqueue(process);
+                } else {
+                    this.blockingQueue.enqueue(process);
+                }
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
