@@ -31,7 +31,7 @@ class Scheduler {
     run() {
         while (true) {
             const time = Date.now();
-            const workTime = time - this.clock();
+            const workTime = time - this.clock;
             this.clock = time;
 
             if (!this.blockingQueue.isEmpty()) {
