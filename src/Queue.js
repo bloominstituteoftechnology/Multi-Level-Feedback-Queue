@@ -20,7 +20,9 @@ class Queue {
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
     enqueue(process) {
-
+        this.processes.push(process);
+        process.setParentQueue(this);
+        return process;
     }
 
     // Removes the least-recently added process from the list of processes

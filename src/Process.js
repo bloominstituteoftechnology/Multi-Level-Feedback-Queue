@@ -17,7 +17,7 @@ class Process {
     
     // Sets this process's `this.queue` property
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     // Checks that this process no longer has any more CPU or blocking time it needs
@@ -43,7 +43,7 @@ class Process {
 
     // Returns this process's `this.stateChanged` property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     // Gets this process's pid
