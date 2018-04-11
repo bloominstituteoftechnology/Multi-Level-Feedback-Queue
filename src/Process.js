@@ -24,7 +24,7 @@ class Process {
 
   // Checks that this process no longer has any more CPU or blocking time it needs
   isFinished() {
-    return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0;
+    return this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0;
   }
 
   // Sets this process's `this.stateChanged` property to `false`
@@ -40,7 +40,7 @@ class Process {
       this.stateChanged = true;
     } else {
       this.cpuTimeNeeded -= time;
-      this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;
+    //   this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;
     }
   }
 
