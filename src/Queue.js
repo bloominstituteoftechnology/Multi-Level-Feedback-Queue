@@ -65,6 +65,7 @@ class Queue {
   manageTimeSlice(currentProcess, time) {
     if (currentProcess.isStateChanged()) {
       this.quantumClock = 0;
+      return;
     }
 
     this.quantumClock += time;
