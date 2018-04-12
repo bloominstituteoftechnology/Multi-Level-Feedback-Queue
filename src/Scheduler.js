@@ -29,46 +29,57 @@ class Scheduler {
     // If yes, then break out of the infinite loop
     // Otherwise, perform another loop iteration
     run() {
-        let empty = this.allEmpty();
-        while(!empty) {
+        // let empty = this.allEmpty();
+        while(true) {
             let currentTime = Date.now();
             let workTime = currentTime - this.clock;
             this.clock = currentTime;
-            if (this.blockingQueue) {
+            if (!this.blockingQueue.isEmpty()) {
                 this.blockingQueue.doBlockingWork(workTime);
-                for (let i = 0; i < runningQueues.length; i++) {
-                    let currQueue = runningQueues[i];
-                    currQueue.processes.forEach(p => {
-                        p.executeProcess(workTime);
-                    });
+                // for (let i = 0; i < runningQueues.length; i++) {
+                //     let currQueue = runningQueues[i];
+                //     currQueue.processes.forEach(p => {
+                //         p.executeProcess(workTime);
+                //     });
+                // }
+            }
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                const queue = this.runningQueues[i];
+                if (!queue.isEmpty()) {
+                    queue.doCPUWork(workTime);
+                    break;
                 }
             }
-            if (empty) break;
+            if (this.allEmpty()) {
+                break;
+            }
         }
     }
 
     // Checks that all queues have no processes 
     allEmpty() {
-        if (this.blockingQueue.processes.length === 0) {
-            this.runningQueues.forEach(q => {
-                if (q.processes.length > 0) return false;
-            });
-        }
-        return true;
+        // if (this.blockingQueue.processes.length === 0) {
+        //     this.runningQueues.forEach(q => {
+        //         if (q.processes.length > 0) return false;
+        //     });
+        // }
+        // return true;
         // return (!this.blockingQueue && !this.runningQueues);
+        return this.runningQueues.every(queue => queue.isEmpty()) && this.blockingQueue.isEmpty();
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-        let min = 1000000000;
-        let highest;
-        for (let i = 0; i < this.runningQueues.length; i++) {
-            if (this.runningQueues[i].priorityLevel < min) {
-                min = this.runningQueues[i].priorityLevel;
-                highest = this.runningQueues[i];
-            }
-        }
-        highest.enqueue(process);
+        // let min = 1000000000;
+        // let highest;
+        // for (let i = 0; i < this.runningQueues.length; i++) {
+        //     if (this.runningQueues[i].priorityLevel < min) {
+        //         min = this.runningQueues[i].priorityLevel;
+        //         highest = this.runningQueues[i];
+        //     }
+        // }
+        // highest.enqueue(p);
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -82,24 +93,21 @@ class Scheduler {
             case 'PROCESS_BLOCKED':
                 // add the process to the blocking queue
                 this.blockingQueue.enqueue(process);
+                break;
             case 'PROCESS_READY':
                 // call addNewProcess
-                this.addNewProcess();
+                this.addNewProcess(process);
+                break;
             case 'LOWER_PRIORITY':
-                if (queue.queueType === 'runningQueue') {
-                    let min = 100000000000;
-                    let next;
-                    for (let i = 0; i < this.runningQueues.length; i++) {
-                        if (this.runningQueues[i].priorityLevel >= queue.priorityLevel 
-                                && this.runningQueues[i].priorityLevel < min) {
-                                    min = this.runningQueues[i].priorityLevel;
-                                next = this.runningQueues[i];
-                        }
-                    }
-                    next.enqueue(process);
+                if (queue.getQueueType() === QueueType.CPU_QUEUE) {
+                    const priorityLevel = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1);
+                    this.runningQueues[priorityLevel].enqueue(process);
                 } else {
                     this.blockingQueue.enqueue(process);
                 }
+                break;
+            default:
+                break;
         }
     }
 

@@ -22,10 +22,10 @@ class Process {
 
     // Checks that this process no longer has any more CPU or blocking time it needs
     isFinished() {
-        if (this.cpuTimeNeeded && this.blockingTimeNeeded) return false; 
-        else return true;
+        // if (this.cpuTimeNeeded || this.blockingTimeNeeded) return false; 
+        // else return true;
         // return true;
-        // return (this.cpuTimeNeeded && this.blockingTimeNeeded);
+        return (this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0);
     }
 
     // Sets this process's `this.stateChanged` property to `false`
@@ -35,11 +35,14 @@ class Process {
     // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
     executeProcess(time) {
         this.stateChanged = false;
-        if (this.blockingTimeNeeded) {
+        if (this.blockingTimeNeeded > 0) {
             // emit a queue interrupt to notify the queue that the process is blocked
-            this.queue.emitInterrupt('PROCESS_BLOCKED', time);
+            this.queue.emitInterrupt(this, 'PROCESS_BLOCKED');
+            this.stateChanged = true;
         }
-        else this.cpuTimeNeeded -= time;
+        else {
+            this.cpuTimeNeeded -= time;
+        }
    }
 
    // Decrement this process's `this.blockingTimeNeeded` by the input `time`
@@ -47,9 +50,10 @@ class Process {
    // the process is ready and toggle `this.stateChanged` to `true`
     executeBlockingProcess(time) {
         this.blockingTimeNeeded -= time;
+
         if (this.blockingTimeNeeded <= 0) {
             //emit a queue interrupt notifying the process is ready
-            this.queue.emitInterrupt('PROCESS_READY', time);
+            this.queue.emitInterrupt(this, 'PROCESS_READY');
             this.stateChanged = true;
         }
     }

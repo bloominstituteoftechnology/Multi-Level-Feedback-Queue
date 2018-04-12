@@ -20,9 +20,11 @@ class Queue {
     // Also sets the input process's parent queue to this queue
     // Return the newly added process
     enqueue(process) {
-        this.processes.push(process);
-        this.processes[this.processes.length - 1].setParentQueue(this);
-        return process;
+        process.setParentQueue(this);
+        // p.queue = this;
+        return this.processes.push(process);
+        // this.processes[this.processes.length - 1].setParentQueue(this);
+        // return p;
     }
 
     // Removes the least-recently added process from the list of processes
@@ -62,28 +64,31 @@ class Queue {
     // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
     // needs to be moved to a lower priority queue
     manageTimeSlice(currentProcess, time) {
-        if (currentProcess.stateChanged) {
+        if (currentProcess.isStateChanged()) {
             this.quantumClock = 0;
             return;
         } else {
             this.quantumClock += time;
         }
 
-        if (this.quantumClock > this.quantum) {
-            const index = this.processes.indexOf(currentProcess);
-            this.processes.splice(index, 1);
+        if (this.quantumClock >= this.quantum) {
+            // const index = this.processes.indexOf(currentProcess);
+            // this.processes.splice(index, 1);
             this.quantumClock = 0;
-            this.dequeue();
-        } else {
-            this.scheduler.handleInterrupt(this, currentProcess, 'LOWER_PRIORITY');
-        }
+            const process = this.dequeue();
+            // const process = this.dequeue();
+
+            if (!process.isFinished()) {
+                this.scheduler.handleInterrupt(this, process, 'LOWER_PRIORITY');
+            }
+        } 
     }
 
     // Execute a non-blocking process
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
-        let nextProcess = this.peek();
+        const nextProcess = this.peek();
         nextProcess.executeProcess(time);
         this.manageTimeSlice(nextProcess, time);
     }
@@ -106,9 +111,9 @@ class Queue {
         const index = this.processes.indexOf(source);
         const removedProcess = this.processes.splice(index, 1);
         if (interrupt === 'PROCESS_BLOCKED') {
-            this.scheduler.handleInterrupt(this, removedProcess, 'PROCESS_BLOCKED');
+            this.scheduler.handleInterrupt(this, source, 'PROCESS_BLOCKED');
         } else if (interrupt === 'PROCESS_READY') {
-            this.scheduler.handleInterrupt(this, removedProcess, 'PROCESS_READY');
+            this.scheduler.handleInterrupt(this, source, 'PROCESS_READY');
         }
     }
 }
