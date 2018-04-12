@@ -45,14 +45,9 @@ class Scheduler {
 
     // Checks that all queues have no processes 
     allEmpty() {
-        for (let i = 0; i < this.runningQueues.length; i++) {
-            if (!this.runningQueues[i].isEmpty()) return false;
-        }
-        // forEach below should do the same thing as the for loop above, but causes test to fail
-        // this.runningQueues.forEach(queue => {
-        //     if (!queue.isEmpty()) return false;
-        // })
-        return this.blockingQueue.isEmpty();
+        return this.blockingQueue.isEmpty() && this.runningQueues.every(queue => {
+            return queue.isEmpty();
+        });
     }
 
     // Adds a new process to the highest priority level running queue
