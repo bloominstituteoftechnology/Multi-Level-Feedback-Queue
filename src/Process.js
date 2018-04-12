@@ -6,65 +6,67 @@ const { SchedulerInterrupt } = require('./constants/index');
 // is blocking; if so, the amount of blocking time needed is
 // randomly determined.
 class Process {
-    constructor(pid, cpuTimeNeeded=null, blocking=false) {
-        this._pid = pid;
-        this.queue = null;
-        this.cpuTimeNeeded = cpuTimeNeeded ? cpuTimeNeeded : Math.round(Math.random() * 1000);
-        this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
-        // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
-        this.stateChanged = false;
-    }
-    
-    // Sets this process's `this.queue` property
-    setParentQueue(queue) {
-        this.queue = queue;
-    }
+  constructor(pid, cpuTimeNeeded = null, blocking = false) {
+    this._pid = pid;
+    this.queue = null;
+    this.cpuTimeNeeded = cpuTimeNeeded ? cpuTimeNeeded : Math.round(Math.random() * 1000);
+    this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
+    // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
+    this.stateChanged = false;
+  }
 
-    // Checks that this process no longer has any more CPU or blocking time it needs
-    isFinished() {
-        return this.blockingTimeNeeded === 0 && this.cpuTimeNeeded === 0;
-    }
+  // Sets this process's `this.queue` property
+  setParentQueue(queue) {
+    this.queue = queue;
+  }
 
-    // Sets this process's `this.stateChanged` property to `false`
-    // Checks to see if this process needs blocking time
-    // If it does, emit a queue interrupt to notify the queue that the process is blocked
-    // Also toggle its `this.stateChanged` property to `true`
-    // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
-    executeProcess(time) {
-        this.stateChanged = false;
-        if (this.blockingTimeNeeded > 0) {
-            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-            this.stateChanged = true;
-        } else {
-            this.cpuTimeNeeded = this.cpuTimeNeeded - time;
-        }
-   }
+  // Checks that this process no longer has any more CPU or blocking time it needs
+  isFinished() {
+    return this.blockingTimeNeeded === 0 && this.cpuTimeNeeded === 0;
+  }
 
-   // Decrement this process's `this.blockingTimeNeeded` by the input `time`
-   // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying 
-   // the process is ready and toggle `this.stateChanged` to `true`
-    executeBlockingProcess(time) {
-        this.blockingTimeNeeded = this.blockingTimeNeeded - time;
-        if (this.blockingTimeNeeded <= 0) {
-            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-            this.stateChanged = true;
-        }
+  // Sets this process's `this.stateChanged` property to `false`
+  // Checks to see if this process needs blocking time
+  // If it does, emit a queue interrupt to notify the queue that the process is blocked
+  // Also toggle its `this.stateChanged` property to `true`
+  // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
+  executeProcess(time) {
+    this.stateChanged = false;
+    if (this.blockingTimeNeeded === 0) {
+      this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;
+    } else {
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+      this.stateChanged = true;
     }
+  }
 
-    // Returns this process's `this.stateChanged` property
-    isStateChanged() {
-        return this.stateChanged;
-    }
+  // Decrement this process's `this.blockingTimeNeeded` by the input `time`
+  // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying
+  // the process is ready and toggle `this.stateChanged` to `true`
+  executeBlockingProcess(time) {
+    this.blockingTimeNeeded -= time;
+    this.blockingTimeNeeded = this.blockingTimeNeeded > 0 ? this.blockingTimeNeeded : 0;
 
-    // Gets this process's pid
-    get pid() {
-        return this._pid;
+    if (this.blockingTimeNeeded === 0) {
+      this.queue.emitInterrupt(this.SchedulerInterrupt.PROCESS_READY);
+      this.stateChanged = true;
     }
+  }
 
-    // Private function used for testing; DO NOT MODIFY
-    _getParentQueue() {
-        return this.queue;
-    }
+  // Returns this process's `this.stateChanged` property
+  isStateChanged() {
+    return this.stateChanged;
+  }
+
+  // Gets this process's pid
+  get pid() {
+    return this._pid;
+  }
+
+  // Private function used for testing; DO NOT MODIFY
+  _getParentQueue() {
+    return this.queue;
+  }
 }
 
 module.exports = Process;

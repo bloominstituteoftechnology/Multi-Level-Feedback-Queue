@@ -22,9 +22,8 @@ class Queue {
   // Also sets the input process's parent queue to this queue
   // Return the newly added process
   enqueue(process) {
-    this.processes.push(process);
     process.setParentQueue(this);
-    return process;
+    return this.processes.push(process);
   }
 
   // Removes the least-recently added process from the list of processes
@@ -40,7 +39,7 @@ class Queue {
 
   // Checks to see if there are any processes in the list of processes
   isEmpty() {
-    return this.processes.length > 0;
+    return this.processes.length === 0;
   }
 
   // Return this queue's priority level
@@ -72,7 +71,7 @@ class Queue {
     this.quantumClock += time;
     if (this.quantumClock > this.quantum) {
       this.quantumClock = 0;
-      let process = this.dequeue();
+      const process = this.dequeue();
 
       if (!process.isFinished()) {
         this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
@@ -84,7 +83,7 @@ class Queue {
   // Peeks the next process and runs its `executeProcess` method with input `time`
   // Call `this.manageTimeSlice` with the peeked process and input `time`
   doCPUWork(time) {
-    let process = this.peek();
+    const process = this.peek();
 
     process.executeProcess(time);
 
@@ -95,7 +94,7 @@ class Queue {
   // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
   // Call `this.manageTimeSlice` with the peeked process and input `time`
   doBlockingWork(time) {
-    let process = this.peek();
+    const process = this.peek();
 
     process.executeBlockingProcess(time);
 
@@ -108,14 +107,16 @@ class Queue {
   // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
   // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
   emitInterrupt(source, interrupt) {
-    let index = this.processes.indexOf(source);
+    const index = this.processes.indexOf(source);
     this.processes.splice(index, 1);
     switch (interrupt) {
-      case SchedulerInterrupt.PROCESS_BLOCKED:
+      case 'PROCESS_BLOCKED':
         this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
         break;
-      case SchedulerInterrupt.PROCESS_READY:
+      case 'PROCESS_READY':
         this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+        break;
+      default:
         break;
     }
   }

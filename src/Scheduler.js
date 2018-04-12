@@ -27,27 +27,36 @@ class Scheduler {
   // If yes, then break out of the infinite loop
   // Otherwise, perform another loop iteration
   run() {
-    while (!this.allEmpty()) {
+    while (true) {
       let currentTime = Date.now();
       let workTime = currentTime - this.clock;
       this.clock = currentTime;
+
+      if (!this.blockingQueue.isEmpty()) {
+        this.blockingQueue.doBlockingWork(workTime);
+      }
+
+      for (let i = 0; i < PRIORITY_LEVELS -1; i++) {
+        const queue = this.runningQueues[i];
+        if (!queue.isEmpty()) {
+          queue.doCPUWork(workTime);
+          break;
+        }
+      }
+    }
+    if (this.allEmpty()) {
+      console.log('CPU Idle');
     }
   }
 
   // Checks that all queues have no processes
   allEmpty() {
-    if (!this.blockingQueue.isEmpty) return false;
-    for (let i = 0; i < PRIORITY_LEVELS - 1; i++) {
-      if (!this.runningQueues[i].isEmpty) {
-        return false;
-      }
-    }
-    return true;
+    return this.runningQueues.every(queue => queue.isEmpty() && this.blockingQueue.isEmpty());
   }
 
   // Adds a new process to the highest priority level running queue
   addNewProcess(process) {
-    this.runningQueues[0].push(process);
+    this.runningQueues[0].enqueue(process);
   }
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
@@ -59,13 +68,13 @@ class Scheduler {
   handleInterrupt(queue, process, interrupt) {
     let level;
     switch (interrupt) {
-      case SchedulerInterrupt.PROCESS_BLOCKED:
+      case 'PROCESS_BLOCKED':
         this.blockingQueue.enqueue(process);
         break;
-      case SchedulerInterrupt.PROCESS_READY:
+      case 'PROCESS_READY':
         this.addNewProcess(process);
         break;
-      case SchedulerInterrupt.LOWER_PRIORITY:
+      case 'LOWER_PRIORITY':
         switch (queue.getQueueType()) {
           case QueueType.CPU_QUEUE:
             level = queue.getPriorityLevel();
