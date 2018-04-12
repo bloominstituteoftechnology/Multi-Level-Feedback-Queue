@@ -37,7 +37,7 @@ class Scheduler {
       }
 
       for (let i = 0; i < PRIORITY_LEVELS -1; i++) {
-        const queue = this.runningQueues[i];
+        let queue = this.runningQueues[i];
         if (!queue.isEmpty()) {
           queue.doCPUWork(workTime);
           break;
@@ -68,13 +68,13 @@ class Scheduler {
   handleInterrupt(queue, process, interrupt) {
     let level;
     switch (interrupt) {
-      case 'PROCESS_BLOCKED':
+      case SchedulerInterrupt.PROCESS_BLOCKED:
         this.blockingQueue.enqueue(process);
         break;
-      case 'PROCESS_READY':
+      case SchedulerInterrupt.PROCESS_READY:
         this.addNewProcess(process);
         break;
-      case 'LOWER_PRIORITY':
+      case SchedulerInterrupt.LOWER_PRIORITY:
         switch (queue.getQueueType()) {
           case QueueType.CPU_QUEUE:
             level = queue.getPriorityLevel();
