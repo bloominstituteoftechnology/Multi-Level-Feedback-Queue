@@ -1,6 +1,4 @@
-const {
-  SchedulerInterrupt
-} = require('./constants/index');
+const { SchedulerInterrupt } = require('./constants/index');
 
 // A class representation of a process queue that may hold either
 // blocking or non-blocking processes
@@ -69,7 +67,7 @@ class Queue {
     }
 
     this.quantumClock += time;
-    if (this.quantumClock > this.quantum) {
+    if (this.quantumClock >= this.quantum) {
       this.quantumClock = 0;
       const process = this.dequeue();
 
@@ -107,13 +105,14 @@ class Queue {
   // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
   // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
   emitInterrupt(source, interrupt) {
-    const index = this.processes.indexOf(source);
-    this.processes.splice(index, 1);
+    const sourceIndex = this.processes.indexOf(source);
+    this.processes.splice(sourceIndex, 1);
+
     switch (interrupt) {
-      case SchedulerInterrupt.PROCESS_BLOCKED:
+      case 'PROCESS_BLOCKED':
         this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
         break;
-      case SchedulerInterrupt.PROCESS_READY:
+      case 'PROCESS_READY':
         this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
         break;
       default:
