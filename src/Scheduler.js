@@ -6,6 +6,8 @@ const {
   LOWER_PRIORITY,
 } = require('./constants/index').SchedulerInterrupt;
 
+const GLOBAL_TIME_QUANTUM = 500;
+
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues
 // for non-blocking processes
@@ -14,6 +16,7 @@ class Scheduler {
     this.clock = Date.now();
     this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
     this.runningQueues = [];
+    this.globalTimeQuantum = GLOBAL_TIME_QUANTUM;
 
     for (let i = 0; i < PRIORITY_LEVELS; i++) {
       this.runningQueues[i] = new Queue(
@@ -41,6 +44,24 @@ class Scheduler {
       const workTime = currentTime - this.clock;
 
       this.clock = currentTime;
+
+      if (this.globalTimeQuantum <= 0) {
+        this.globalTimeQuantum = GLOBAL_TIME_QUANTUM;
+
+        for (let i = PRIORITY_LEVELS - 1; i > 0; i--) {
+          const priorityQ = this.runningQueues[i];
+
+          while (!priorityQ.isEmpty()) {
+            this.addNewProcess(priorityQ.dequeue());
+          }
+        }
+
+        while (!this.blockingQueue.isEmpty()) {
+          this.addNewProcess(blockingQueue.dequeue());
+        }
+      } else {
+        this.globalTimeQuantum -= workTime;
+      }
 
       if (!this.blockingQueue.isEmpty()) {
         this.blockingQueue.doBlockingWork(workTime);
