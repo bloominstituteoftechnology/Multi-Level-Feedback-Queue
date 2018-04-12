@@ -37,7 +37,7 @@ class Queue {
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-        if (this.processes.length > 0) return true;
+        if (this.processes.length === 0) return true;
         return false;
     }
 
@@ -67,14 +67,14 @@ class Queue {
             return;
         }
         this.quantumClock += time;
-        if (this.quantumClock > this.quantum) {
-            const index = this.processes.indexOf(currentProcess);
-            if (index >= 0) this.processes.splice(index, 1);
+        if (this.quantumClock >= this.quantum) {
             this.quantumClock = 0;
-            const nextProcess = this.dequeue();
+            const process = this.dequeue()
 
-            if (!nextProcess.isFinished()) {
-                this.scheduler.handleInterrupt(this, nextProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            if (!process.isFinished()) {
+                this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
+            } else {
+                console.log("Process Completed!");
             }
         }
     }
@@ -83,14 +83,18 @@ class Queue {
     // Peeks the next process and runs its `executeProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doCPUWork(time) {
-
+        const nextProcess = this.peek();
+        nextProcess.executeProcess(time);
+        this.manageTimeSlice(nextProcess, time);
     }
 
     // Execute a blocking process
     // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
     // Call `this.manageTimeSlice` with the peeked process and input `time`
     doBlockingWork(time) {
-
+        const nextProcess = this.peek();
+        nextProcess.executeBlockingProcess(time);
+        this.manageTimeSlice(nextProcess, time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
@@ -99,7 +103,19 @@ class Queue {
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
+        const index = this.processes.indexOf(source);
+        this.processes.splice(index, 1);
 
+        switch (interrupt) {
+            case SchedulerInterrupt.PROCESS_BLOCKED:
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+                break;
+            case SchedulerInterrupt.PROCESS_READY:
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+                break;
+            default:
+                break;
+        }
     }
 }
 
