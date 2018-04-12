@@ -102,14 +102,22 @@ class Queue {
     // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
-        for (const [index, process] of this.process.entries()) {
-            if (process.pid === source.pid) {
-                this.scheduler.handleInterrupt(this, process, interrupt);
-                this.processes.splice(index, 1);
+        const sourceIndex = this.processes.indexOf(source);
+        this.processes.splice(sourceIndex, 1);
+
+        switch (interrupt) {
+            case 'PROCESS_BLOCKED':
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
                 break;
-            }
+            case 'PROCESS_READY':
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+                break;
+            default:
+                break;
         }
     }
+
 }
+
 
 module.exports = Queue;
