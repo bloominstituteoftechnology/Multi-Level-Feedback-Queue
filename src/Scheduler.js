@@ -37,11 +37,9 @@ class Scheduler {
             if (!this.blockingQueue.isEmpty()) {
                 this.blockingQueue.doBlockingWork(workTime);
             }
-            for (let i = 0; i < this.runningQueues.length; i++) {
-                if (!this.runningQueues[i].isEmpty()) {
-                    this.runningQueues[i].doCPUWork(workTime);
-                }
-            }
+            this.runningQueues.forEach(queue => {
+                if (!queue.isEmpty()) queue.doCPUWork(workTime);
+            })
         }
     }
 
@@ -50,6 +48,10 @@ class Scheduler {
         for (let i = 0; i < this.runningQueues.length; i++) {
             if (!this.runningQueues[i].isEmpty()) return false;
         }
+        // forEach below should do the same thing as the for loop above, but causes test to fail
+        // this.runningQueues.forEach(queue => {
+        //     if (!queue.isEmpty()) return false;
+        // })
         return this.blockingQueue.isEmpty();
     }
 
@@ -73,7 +75,7 @@ class Scheduler {
                 this.addNewProcess(process);
                 break;
             case SchedulerInterrupt.LOWER_PRIORITY:
-                if (queue.getQueueType() == QueueType.CPU_QUEUE) {
+                if (queue.getQueueType() === QueueType.CPU_QUEUE) {
                     let priority_level = queue.getPriorityLevel();
                     if (priority_level < PRIORITY_LEVELS - 1) priority_level++;
                     this.runningQueues[priority_level].enqueue(process);

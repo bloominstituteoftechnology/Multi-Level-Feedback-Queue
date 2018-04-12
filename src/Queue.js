@@ -38,7 +38,7 @@ class Queue {
 
     // Checks to see if there are any processes in the list of processes
     isEmpty() {
-        return this.processes.length == 0;
+        return this.processes.length <= 0;
     }
 
     // Return this queue's priority level
@@ -72,7 +72,7 @@ class Queue {
             const dequeuedProcess = this.dequeue();
             this.quantumClock = 0;
             if (!dequeuedProcess.isFinished()) {
-                this.scheduler.handleInterrupt(this, dequeuedProcess, SchedulerInterrupt.LOWER_PRIORITY);
+                this.emitInterrupt(dequeuedProcess, SchedulerInterrupt.LOWER_PRIORITY);
             }
         }
     }
@@ -102,7 +102,7 @@ class Queue {
     // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
     emitInterrupt(source, interrupt) {
         for (let i = 0; i < this.processes.length; i++) {
-            if (this.processes[i] == source) this.processes.splice(i, 1);
+            if (this.processes[i] === source) this.processes.splice(i, 1);
         }
         this.scheduler.handleInterrupt(this, source, interrupt);
     }
