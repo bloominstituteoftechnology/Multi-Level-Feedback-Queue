@@ -1,5 +1,8 @@
-/* eslint semi: "off" */
 const { SchedulerInterrupt } = require('./constants/index');
+const { QueueType } = require('./constants/index');
+// A process that is blocked is one that is waiting for some event, such as a resource becoming
+// available or the completion of an I/O operation. In a multitasking computer system, individual
+// tasks, or threads of execution, must share the resources of the system.
 
 // A class representation of a process that may be blocking
 // or non-blocking. We can specify how much CPU time a process
@@ -7,7 +10,7 @@ const { SchedulerInterrupt } = require('./constants/index');
 // is blocking; if so, the amount of blocking time needed is
 // randomly determined.
 class Process {
-  constructor(pid, cpuTimeNeeded=null, blocking=false) {
+  constructor(pid, cpuTimeNeeded = null, blocking = false) {
     this._pid = pid;
     this.queue = null;
     this.cpuTimeNeeded = cpuTimeNeeded ? cpuTimeNeeded : Math.round(Math.random() * 1000);
@@ -19,12 +22,12 @@ class Process {
 
   // Sets this process's `this.queue` property
   setParentQueue(queue) {
-
+    this.queue = queue;
   }
 
   // Checks that this process no longer has any more CPU or blocking time it needs
   isFinished() {
-
+    return this.blockingTimeNeeded <= 0 && this.cpuTimeNeeded <= 0;
   }
 
   // Sets this process's `this.stateChanged` property to `false`
@@ -33,24 +36,34 @@ class Process {
   // Also toggle its `this.stateChanged` property to `true`
   // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
   executeProcess(time) {
-
+    this.stateChanged = false;
+    if (this.blockingTimeNeeded > 0) {
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+      this.stateChanged = true;
+    } else {
+      this.cpuTimeNeeded -= time;
+    }
   }
 
   // Decrement this process's `this.blockingTimeNeeded` by the input `time`
   // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying
   // the process is ready and toggle `this.stateChanged` to `true`
   executeBlockingProcess(time) {
-
+    this.blockingTimeNeeded -= time;
+    if (this.blockingTimeNeeded <= 0) {
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+      this.stateChanged = true;
+    }
   }
 
   // Returns this process's `this.stateChanged` property
   isStateChanged() {
-
+    return this.stateChanged;
   }
 
   // Gets this process's pid
   get pid() {
-
+    return this._pid;
   }
 
   // Private function used for testing; DO NOT MODIFY
