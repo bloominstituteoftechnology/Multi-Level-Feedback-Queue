@@ -72,7 +72,7 @@ class Queue {
             const dequeuedProcess = this.dequeue();
             this.quantumClock = 0;
             if (!dequeuedProcess.isFinished()) {
-                this.scheduler.handleInterrupt(this, dequeuedProcess, "LOWER_PRIORITY");
+                this.scheduler.handleInterrupt(this, dequeuedProcess, SchedulerInterrupt.LOWER_PRIORITY);
             }
         }
     }
