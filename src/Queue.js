@@ -21,9 +21,9 @@ class Queue {
   // Return the newly added process
   enqueue(process) {
     this.processes.push(process);
-    process.setParentQueue(this);
+    return process.setParentQueue(this);
 
-    return this.processes[this.processes.length - 1];
+    // return this.processes[this.processes.length - 1];
   }
 
   // Removes the least-recently added process from the list of processes
@@ -70,13 +70,18 @@ class Queue {
 
     this.quantumClock += time;
 
-    if (this.quantumClock > this.quantum) {
+    if (this.quantumClock >= this.quantum) {
       this.quantumClock = 0;
       this.dequeue();
-    }
 
-    if (!currentProcess.isFinished()) {
-      this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+      if (!currentProcess.isFinished()) {
+        // this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+        this.scheduler.handleInterrupt(
+          this,
+          currentProcess,
+          SchedulerInterrupt.LOWER_PRIORITY,
+        );
+      }
     }
   }
 

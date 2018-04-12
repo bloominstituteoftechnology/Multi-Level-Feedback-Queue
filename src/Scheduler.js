@@ -79,13 +79,16 @@ class Scheduler {
 
   // Checks that all queues have no processes
   allEmpty() {
-    if (!this.blockingQueue.isEmpty()) return false;
+    // if (!this.blockingQueue.isEmpty()) return false;
 
-    for (let i = 0; i < PRIORITY_LEVELS; i++) {
-      if (!this.runningQueues[i].isEmpty()) return false;
-    }
+    // for (let i = 0; i < PRIORITY_LEVELS; i++) {
+    //   if (!this.runningQueues[i].isEmpty()) return false;
+    // }
 
-    return true;
+    // return true;
+    return this.runningQueues.every(
+      q => q.isEmpty() && this.blockingQueue.isEmpty(),
+    );
   }
 
   // Adds a new process to the highest priority level running queue
@@ -106,11 +109,9 @@ class Scheduler {
       const qType = queue.getQueueType();
 
       if (qType === QueueType.CPU_QUEUE) {
-        const qPL = queue.getPriorityLevel();
+        const qPL = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1);
 
-        this.runningQueues[qPL === PRIORITY_LEVELS - 1 ? qPL : qPL + 1].enqueue(
-          process,
-        );
+        this.runningQueues[qPL].enqueue(process);
       }
 
       if (qType === QueueType.BLOCKING_QUEUE) {
