@@ -1,4 +1,6 @@
-const { SchedulerInterrupt } = require('./constants/index');
+const {
+  SchedulerInterrupt
+} = require('./constants/index');
 
 // A class representation of a process queue that may hold either
 // blocking or non-blocking processes
@@ -105,7 +107,18 @@ class Queue {
   // Find the index of the source process in `this.processes` and splice the process out of the array
   // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
   // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
-  emitInterrupt(source, interrupt) {}
+  emitInterrupt(source, interrupt) {
+    let index = this.processes.indexOf(source);
+    this.processes.splice(index, 1);
+    switch (interrupt) {
+      case SchedulerInterrupt.PROCESS_BLOCKED:
+        this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+        break;
+      case SchedulerInterrupt.PROCESS_READY:
+        this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+        break;
+    }
+  }
 }
 
 module.exports = Queue;
