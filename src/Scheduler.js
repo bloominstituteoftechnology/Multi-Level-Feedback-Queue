@@ -36,12 +36,6 @@ class Scheduler {
             this.clock = currentTime;
             if (!this.blockingQueue.isEmpty()) {
                 this.blockingQueue.doBlockingWork(workTime);
-                // for (let i = 0; i < runningQueues.length; i++) {
-                //     let currQueue = runningQueues[i];
-                //     currQueue.processes.forEach(p => {
-                //         p.executeProcess(workTime);
-                //     });
-                // }
             }
             for (let i = 0; i < PRIORITY_LEVELS; i++) {
                 const queue = this.runningQueues[i];
@@ -58,27 +52,11 @@ class Scheduler {
 
     // Checks that all queues have no processes 
     allEmpty() {
-        // if (this.blockingQueue.processes.length === 0) {
-        //     this.runningQueues.forEach(q => {
-        //         if (q.processes.length > 0) return false;
-        //     });
-        // }
-        // return true;
-        // return (!this.blockingQueue && !this.runningQueues);
         return this.runningQueues.every(queue => queue.isEmpty()) && this.blockingQueue.isEmpty();
     }
 
     // Adds a new process to the highest priority level running queue
     addNewProcess(process) {
-        // let min = 1000000000;
-        // let highest;
-        // for (let i = 0; i < this.runningQueues.length; i++) {
-        //     if (this.runningQueues[i].priorityLevel < min) {
-        //         min = this.runningQueues[i].priorityLevel;
-        //         highest = this.runningQueues[i];
-        //     }
-        // }
-        // highest.enqueue(p);
         this.runningQueues[0].enqueue(process);
     }
 
