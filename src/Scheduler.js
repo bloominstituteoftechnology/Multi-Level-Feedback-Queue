@@ -1,66 +1,134 @@
-const Queue = require('./Queue'); 
-const { 
-    QueueType,
-    PRIORITY_LEVELS,
-} = require('./constants/index');
+const Queue = require('./Queue');
+const { QueueType, PRIORITY_LEVELS } = require('./constants/index');
+const {
+  PROCESS_BLOCKED,
+  PROCESS_READY,
+  LOWER_PRIORITY,
+} = require('./constants/index').SchedulerInterrupt;
+
+const GLOBAL_TIME_QUANTUM = 500;
 
 // A class representing the scheduler
-// It holds a single blocking queue for blocking processes and three running queues 
+// It holds a single blocking queue for blocking processes and three running queues
 // for non-blocking processes
-class Scheduler { 
-    constructor() { 
-        this.clock = Date.now();
-        this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
-        this.runningQueues = [];
+class Scheduler {
+  constructor() {
+    this.clock = Date.now();
+    this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
+    this.runningQueues = [];
+    this.globalTimeQuantum = GLOBAL_TIME_QUANTUM;
 
-        for (let i = 0; i < PRIORITY_LEVELS; i++) {
-            this.runningQueues[i] = new Queue(this, 10 + i * 20, i, QueueType.CPU_QUEUE);
+    for (let i = 0; i < PRIORITY_LEVELS; i++) {
+      this.runningQueues[i] = new Queue(
+        this,
+        10 + i * 20,
+        i,
+        QueueType.CPU_QUEUE,
+      );
+    }
+  }
+
+  // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
+  // Initialize a variable with the current time and subtract current time by `this.clock` to get the `workTime`
+  // `workTime` will be the amount of time each queue will be given to execute their processes for
+  // Update `this.clock` with the new current time
+  // First, check to see if there are processes in the blocking queue
+  // If there are, execute a blocking process for the amount of time given by `workTime`
+  // Then, iterate through all of the running queues and execute processes on those queues for the amount of time given by `workTime`
+  // Once that is done, check to see if the queues are empty
+  // If yes, then break out of the infinite loop
+  // Otherwise, perform another loop iteration
+  run() {
+    while (1) {
+      const currentTime = Date.now();
+      const workTime = currentTime - this.clock;
+
+      this.clock = currentTime;
+
+      if (this.globalTimeQuantum <= 0) {
+        this.globalTimeQuantum = GLOBAL_TIME_QUANTUM;
+
+        for (let i = PRIORITY_LEVELS - 1; i > 0; i--) {
+          const priorityQ = this.runningQueues[i];
+
+          while (!priorityQ.isEmpty()) {
+            this.addNewProcess(priorityQ.dequeue());
+          }
         }
+
+        while (!this.blockingQueue.isEmpty()) {
+          this.addNewProcess(blockingQueue.dequeue());
+        }
+      } else {
+        this.globalTimeQuantum -= workTime;
+      }
+
+      if (!this.blockingQueue.isEmpty()) {
+        this.blockingQueue.doBlockingWork(workTime);
+      }
+
+      for (let i = 0; i < PRIORITY_LEVELS; i++) {
+        const runningQueue = this.runningQueues[i];
+
+        if (!runningQueue.isEmpty()) runningQueue.doCPUWork(workTime);
+      }
+
+      if (this.allEmpty()) break;
     }
+  }
 
-    // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
-    // Initialize a variable with the current time and subtract current time by `this.clock` to get the `workTime`
-    // `workTime` will be the amount of time each queue will be given to execute their processes for
-    // Update `this.clock` with the new current time
-    // First, check to see if there are processes in the blocking queue
-    // If there are, execute a blocking process for the amount of time given by `workTime`
-    // Then, iterate through all of the running queues and execute processes on those queues for the amount of time given by `workTime`
-    // Once that is done, check to see if the queues are empty
-    // If yes, then break out of the infinite loop
-    // Otherwise, perform another loop iteration
-    run() {
+  // Checks that all queues have no processes
+  allEmpty() {
+    // if (!this.blockingQueue.isEmpty()) return false;
 
+    // for (let i = 0; i < PRIORITY_LEVELS; i++) {
+    //   if (!this.runningQueues[i].isEmpty()) return false;
+    // }
+
+    // return true;
+    return this.runningQueues.every(
+      q => q.isEmpty() && this.blockingQueue.isEmpty(),
+    );
+  }
+
+  // Adds a new process to the highest priority level running queue
+  addNewProcess(process) {
+    this.runningQueues[0].enqueue(process);
+  }
+
+  // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
+  // In the case of a PROCESS_BLOCKED interrupt, add the process to the blocking queue
+  // In the case of a PROCESS_READY interrupt, add the process to highest priority running queue
+  // In the case of a LOWER_PRIORITY interrupt, check to see if the input queue is a running queue or blocking queue
+  // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
+  // If it is a blocking queue, add the process back to the blocking queue
+  handleInterrupt(queue, process, interrupt) {
+    if (interrupt === PROCESS_BLOCKED) this.blockingQueue.enqueue(process);
+    if (interrupt === PROCESS_READY) this.addNewProcess(process);
+    if (interrupt === LOWER_PRIORITY) {
+      const qType = queue.getQueueType();
+
+      if (qType === QueueType.CPU_QUEUE) {
+        const qPL = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1);
+
+        this.runningQueues[qPL].enqueue(process);
+      }
+
+      if (qType === QueueType.BLOCKING_QUEUE) {
+        this.blockingQueue.enqueue(process);
+      }
     }
+  }
 
-    // Checks that all queues have no processes 
-    allEmpty() {
+  // Private function used for testing; DO NOT MODIFY
+  _getCPUQueue(priorityLevel) {
+    return this.runningQueues[priorityLevel];
+  }
 
-    }
-
-    // Adds a new process to the highest priority level running queue
-    addNewProcess(process) {
-
-    }
-
-    // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string
-    // In the case of a PROCESS_BLOCKED interrupt, add the process to the blocking queue
-    // In the case of a PROCESS_READY interrupt, add the process to highest priority running queue
-    // In the case of a LOWER_PRIORITY interrupt, check to see if the input queue is a running queue or blocking queue
-    // If it is a running queue, add the process to the next lower priority queue, or back into itself if it is already in the lowest priority queue
-    // If it is a blocking queue, add the process back to the blocking queue
-    handleInterrupt(queue, process, interrupt) {
-
-    }
-
-    // Private function used for testing; DO NOT MODIFY
-    _getCPUQueue(priorityLevel) {
-        return this.runningQueues[priorityLevel];
-    }
-
-    // Private function used for testing; DO NOT MODIFY
-    _getBlockingQueue() {
-        return this.blockingQueue;
-    }
+  // Private function used for testing; DO NOT MODIFY
+  _getBlockingQueue() {
+    return this.blockingQueue;
+  }
 }
 
 module.exports = Scheduler;
