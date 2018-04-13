@@ -1,7 +1,7 @@
 const { SchedulerInterrupt } = require('./constants/index');
 
-// A class representation of a process queue that may hold either
-// blocking or non-blocking processes
+// A class representation of a process queue that may hold either a 
+// blocking or non-blocking process
 class Queue {
     constructor(scheduler, quantum, priorityLevel, queueType) {
         this.processes = [];
@@ -9,22 +9,20 @@ class Queue {
         this.priorityLevel = priorityLevel;
         // The queue's parent scheduler
         this.scheduler = scheduler;
-        // The queue's allotted time slice; each process in this queue is executed for this amount of time
+        // The queue's allotted time slice; each process in this queue is executed for this amount of time in total
+        // This may be done over multiple scheduler iterations
         this.quantum = quantum;
         // A counter to keep track of how much time the queue has been executing so far
         this.quantumClock = 0;
         this.queueType = queueType;
     }
 
-    // Adds the input process to the queue's list of processes
-    // Also sets the input process's parent queue to this queue
-    // Return the newly added process
+    // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
 
     }
 
-    // Removes the least-recently added process from the list of processes
-    // Return the newly-removed process
+    // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
 
     }
@@ -34,17 +32,14 @@ class Queue {
 
     }
 
-    // Checks to see if there are any processes in the list of processes
     isEmpty() {
 
     }
 
-    // Return this queue's priority level
     getPriorityLevel() {
 
     }
 
-    // Return this queue's queueType
     getQueueType() {
 
     }
