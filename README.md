@@ -64,30 +64,28 @@ The pseudo code for our MLFQ implementation is as follows:
 Loop:
     If a process exists in the blocking queue:
         Work on removing each process in the blocking queue on a First In First Out (FIFO) basis
-        Do blocking work (since we're in the blocking queue)
+        Do blocking work for the amount of time specified for the current iteration 
         When a process completes its blocking operation, emit an interrupt to the scheduler
         The scheduler removes the process from the blocking queue and
-        Adds it to the highest priority level CPU queue
+        adds it to the highest priority level CPU queue
 
-    Beginning with the top priority CPU queue, look through each queue for a process to run; processes
-        should be processed in FIFO order
+    Beginning with the top priority CPU queue, look through each queue for a process to run; processes should be processed in FIFO order
     If a process is found:
-        Work on that process until the end of the queue's specified time quantum
-            Do non-blocking work (since we're in the non-blocking CPU queues)
+        Do non-blocking work for the amount of time specified for the current iteration
             If the process becomes blocking:
                 Emit an interrupt to the scheduler notifying it that the process has become blocking
                 The scheduler removes the now-blocking process from the CPU queue
                 Places it on the blocking queue
                 Restarts the time quantum with the next process in the CPU queue
 
-        If the end of the time quantum has been reached:
-            Remove the process that is currently being worked on from the top of the CPU queue
-            If the process is not finished:
-                If the process is already in the lowest priority queue:
-                    Add it to the back of the same queue
-                Else:
-                    Add the process to the back of the next lower priority queue
-            Return to the top of the Loop
+            If the end of the time quantum has been reached:
+                Remove the process that is currently being worked on from the top of the CPU queue
+                If the process is not finished:
+                    If the process is already in the lowest priority queue:
+                        Add it to the back of the same queue
+                    Else:
+                        Add the process to the back of the next lower priority queue
+                Break out of the current iteration and continue looping
             
     If no processes are found in any queues, the scheduler can idle while waiting for new processes
         (in our case, the program will be done)
