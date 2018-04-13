@@ -44,39 +44,29 @@ class Queue {
 
     }
 
-    // Manages a process's execution for the appropriate amount of time
-    // Checks to see if currentProcess's `this.stateChanged` property is true
-    // If it is, reset `this.quantumClock` to give the process more time and return
-    // Otherwise, increment `this.quantumClock` by `time`
-    // Check to see if `this.quantumClock` is greater than `this.quantum`
-    // If it is, remove the current process from its queue to make way for the next process in line
-    // Set `this.quantumClock` to 0
-    // Dequeue the next process from the queue
-    // If it isn't finished, emit a scheduler interrupt notifying the scheduler that this process
-    // needs to be moved to a lower priority queue
+    // Manages a process's execution for the given amount of time
+    // Processes that have had their states changed should not be affected
+    // Once a process has received the alloted time, it needs to be dequeue'd and 
+    // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
 
     }
 
-    // Execute a non-blocking process
-    // Peeks the next process and runs its `executeProcess` method with input `time`
-    // Call `this.manageTimeSlice` with the peeked process and input `time`
+    // Execute the next non-blocking process (assuming this is a CPU queue)
+    // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
 
     }
 
-    // Execute a blocking process
-    // Peeks the next process and runs its `executeBlockingProcess` method with input `time`
-    // Call `this.manageTimeSlice` with the peeked process and input `time`
+    // Execute the next blocking process (assuming this is the blocking queue)
+    // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
 
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
-    // Receives a source process and an interrupt string
-    // Find the index of the source process in `this.processes` and splice the process out of the array
-    // In the case of a PROCESS_BLOCKED interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
-    // In the case of a PROCESS_READY interrupt, emit the appropriate scheduler interrupt to the scheduler's interrupt handler
+    // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
+    // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
 
     }
