@@ -36,7 +36,7 @@ class Scheduler {
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
-    // The possible string constants are PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY.
+    // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
 
     }
