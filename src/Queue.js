@@ -19,29 +19,31 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+        this.processes.unshift();
+        return processes[0];
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-
+        return this.process.pop();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+        const processLen = this.processes.length;
+        return this.process[processLen - 1];
     }
 
     isEmpty() {
-
+        this.processes.length < 1 ? true : false;
     }
 
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the given amount of time

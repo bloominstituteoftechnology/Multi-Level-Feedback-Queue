@@ -24,14 +24,14 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-        // const blockingLen = blockingQueue.length;
-        // const queue1Len = runningQueues[0].length;
-        // const queue2Len = runningQueues[1].length;
-        // const queue3Len = runningQueues[2].length;
+        const blockingLen = blockingQueue.length;
+        const queue1Len = runningQueues[0].length;
+        const queue2Len = runningQueues[1].length;
+        const queue3Len = runningQueues[2].length;
 
-        // while(blockingLen > 0 || queue1Len > 0 || queue2Len > 0 || queue3Len > 0){
-
-        // }
+        while(blockingLen > 0 || queue1Len > 0 || queue2Len > 0 || queue3Len > 0){
+            //
+        }
     }
 
     allEmpty() {
@@ -39,11 +39,8 @@ class Scheduler {
     }
 
     addNewProcess(process) {
-        if(process.blockingTimeNeeded > 0){
-            this.blockingQueue.processes.unshift(process);
-        }else{
-            this.runningQueues[0].processes.unshift(process);
-        }
+
+        
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
