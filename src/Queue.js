@@ -19,6 +19,7 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
+        process.setParentQueue(this);
         this.processes.push(process);
     }
 
@@ -29,7 +30,7 @@ class Queue {
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        return this.processes[this.processes.length + 1];
+        return this.processes[0];
     }
 
     isEmpty() {
