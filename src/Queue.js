@@ -19,29 +19,32 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+        this.processes.push(process);
+        return this.processes[this.processes.length - 1];
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-
+        let deq = this.processes[0];
+        this.processes = this.processes.slice(1);
+        return deq;
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+        return this.processes[0];
     }
 
     isEmpty() {
-
+        return this.processes === [];
     }
 
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the given amount of time
@@ -49,6 +52,17 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
+        if(!currentProcess.stateChanged && this.cpuTimeNeeded > 0){
+            currentProcess.cpuTimeNeeded = currentProcess.cpuTimeNeeded - time;
+
+            if(currentProcess.cpuTimeNeeded <= 0) {
+                let target = this.processes.indexOf(currentProcess);
+                this.processes.splice(target, 1);
+            } else {
+
+
+            }
+        }
 
     }
 
