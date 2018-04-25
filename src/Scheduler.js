@@ -24,10 +24,18 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
+        while(!this.allQueuesEmpty) {
+            let scheduledTime = Date.now();
+           // time slice = this.clock -  scheduledTime;
+            //this.clock = scheduledTime;
+            if(this.blockingQueue === null) {
+                this.CPU_QUEUE;
+            }
+        }
+        
     }
 
-    allEmpty() {
+    allQueuesEmpty() {
 
     }
 
