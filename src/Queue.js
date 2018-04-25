@@ -50,7 +50,7 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-        if(!currentProcess.stateChanged) {
+        if(!currentProcess.isStateChanged()) {
             this.quantumClock += time;
             if(this.quantumClock >= this.quantum) {
                 this.quantumClock = 0
@@ -65,15 +65,17 @@ class Queue {
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-        if(this.queueType === 'CPU_QUEUE') {
-
-        }
+        const proc = this.peek();
+        proc.executeProcess(time);
+        this.manageTimeSlice(proc, time);
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-
+        const proc = this.peek();
+        proc.executeBlockingProcess(time);
+        this.manageTimeSlice(proc, time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
@@ -81,6 +83,7 @@ class Queue {
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
         this.scheduler.handleInterrupt(this, source, interrupt);
+        this.dequeue();
     }
 }
 
