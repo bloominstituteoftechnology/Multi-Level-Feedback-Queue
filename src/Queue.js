@@ -41,7 +41,9 @@ class Queue {
     }
 
     getQueueType() {
-
+        if (this.queueType === 'BLOCKING_QUEUE'){
+            doBlockingWork(this.quantum);
+        }
     }
 
     // Manages a process's execution for the given amount of time
