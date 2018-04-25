@@ -34,12 +34,17 @@ class Scheduler {
         }
     }
 
-    allEmpty() {
-
+    allQueuesEmpty() {
+        for (let i = 0; i < this.runningQueues.length; i++) {
+            if (this.runningQueues[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
@@ -47,10 +52,13 @@ class Scheduler {
     handleInterrupt(queue, process, interrupt) {
         switch(interrupt) {
             case 'PROCESS_BLOCKED':
+                this.blockingQueue.enqueue(process);
                 break;
             case 'PROCESS_READY':
+                this.addNewProcess(process);
                 break;
             case 'LOWER_PRIORITY':
+
                 break;
             default:
                 break;

@@ -9,7 +9,7 @@ class Process {
     constructor(pid, cpuTimeNeeded=null, blocking=false) {
         this._pid = pid;
         this.queue = null;
-        this.cpuTimeNeeded = cpuTimeNeeded ? cpuTimeNeeded : Math.round(Math.random() * 1000);
+        this.cpuTimeNeeded = (cpuTimeNeeded !== null) ? cpuTimeNeeded : Math.round(Math.random() * 1000);
         this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
         // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
         this.stateChanged = false;
@@ -32,7 +32,7 @@ class Process {
         if (this.blockingTimeNeeded === 0) {
             this.cpuTimeNeeded = this.cpuTimeNeeded - time;
         } else {
-
+            this.queue.emitInterrupt(source, interrupt)
             this.stateChanged = true;
         }
    }
@@ -46,7 +46,7 @@ class Process {
         if (this.blockingTimeNeeded !== 0) {
             this.blockingTimeNeeded = this.blockingTimeNeeded - time;
         } else {
-
+            this.queue.emitInterrupt(source, interrupt)
             this.stateChanged = true;
         }
     }
