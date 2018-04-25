@@ -32,7 +32,7 @@ class Process {
         if (this.blockingTimeNeeded === 0) {
             this.cpuTimeNeeded = this.cpuTimeNeeded - time;
         } else {
-            this.queue.emitInterrupt(source, interrupt)
+            this.queue.emitInterrupt(this, 'PROCESS_BLOCKED')
             this.stateChanged = true;
         }
    }
@@ -43,11 +43,11 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-        if (this.blockingTimeNeeded !== 0) {
-            this.blockingTimeNeeded = this.blockingTimeNeeded - time;
-        } else {
-            this.queue.emitInterrupt(source, interrupt)
+        if (this.blockingTimeNeeded === 0) {
+            this.queue.emitInterrupt(this, 'PROCESS_READY');
             this.stateChanged = true;
+        } else {
+            this.blockingTimeNeeded = this.blockingTimeNeeded - time;
         }
     }
 

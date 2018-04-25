@@ -19,6 +19,7 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
+        process.setParentQueue(this);
         this.processes.push(process);
         return this.processes;
     }
@@ -53,7 +54,17 @@ class Queue {
         if (currentProcess.isStateChanged()) {
             return;
         }
+        this.quantumClock += time;
+        if (this.quantumClock >= this.quantum) {
+            this.quantumClock = 0;
+            let process = this.dequeue();
 
+            if (!process.isFinished()) {
+                this.scheduler.handleInterrupt(this.process, 'LOWER_PRIORITY');
+            } else {
+                return;
+            }
+        }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
@@ -80,10 +91,10 @@ class Queue {
 
         switch (interrupt) {
             case 'PROCESS_BLOCKED':
-                this.scheduler.handleInterrupt(queue, process, interrupt);
+                this.scheduler.handleInterrupt(this, source, 'PROCESS_BLOCKED');
                 break;
             case 'PROCESS_READY':
-                this.scheduler.handleInterrupt(queue, process, interrupt);
+                this.scheduler.handleInterrupt(this, source, 'PROCESS_READY');
                 break;
             default:
                 break;
