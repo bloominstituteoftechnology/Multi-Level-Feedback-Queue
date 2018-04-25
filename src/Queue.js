@@ -66,7 +66,7 @@ class Queue {
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
         if(this.queueType === 'CPU_QUEUE') {
-            
+
         }
     }
 
@@ -80,7 +80,7 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-
+        this.scheduler.handleInterrupt(this, source, interrupt);
     }
 }
 
