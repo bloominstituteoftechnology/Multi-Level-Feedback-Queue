@@ -71,7 +71,7 @@ class Queue {
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-        const process = this.peek(time);
+        const process = this.peek();
         process.executeProcess(time);
         this.manageTimeSlice(process, time);
     }
@@ -79,7 +79,9 @@ class Queue {
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-
+        const process = this.peek();
+        process.executeBlockingProcess(time);
+        this.manageTimeSlice(process, time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
