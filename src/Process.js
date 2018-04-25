@@ -9,17 +9,18 @@ class Process {
     constructor(pid, cpuTimeNeeded=null, blocking=false) {
         this._pid = pid;
         this.queue = null;
-        this.cpuTimeNeeded = cpuTimeNeeded ? cpuTimeNeeded : Math.round(Math.random() * 1000);
+        this.cpuTimeNeeded = (cpuTimeNeeded !== null) ? cpuTimeNeeded : Math.round(Math.random() * 1000);
         this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
         // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
         this.stateChanged = false;
     }
     
     setParentQueue(queue) {
-
+        this.queue=queue;
     }
 
     isFinished() {
+        return(this.blockingTimeNeeded+this.cpuTimeNeeded==0)?true:false;
 
     }
 
@@ -29,6 +30,8 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
+        (this.blockingTimeNeeded >0 )
+
 
    }
 
@@ -43,10 +46,11 @@ class Process {
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     get pid() {
+        return this._pid;
 
     }
 
