@@ -27,8 +27,8 @@ class Scheduler {
 
     }
 
-    allEmpty() {
-
+    allQueuesEmpty() {
+        return this.runningQueues.length === 0;
     }
 
     addNewProcess(process) {
