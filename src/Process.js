@@ -29,7 +29,15 @@ class Process {
   // If blocking time is needed by this process, move it to the blocking queue
   // by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
-    executeProcess(time) {}
+    executeProcess(time) {
+        if (this.blockingTimeNeeded === 0) {
+            time > this.cpuTimeNeeded ? this.cpuTimeNeeded = 0 : this.cpuTimeNeeded -= time;
+        } else {
+            console.log(this.blockingTimeNeeded, time);
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.stateChanged = true;
+        }
+    }
 
   // If this process requires blocking time, decrement the amount of blocking
   // time it needs by the input time
