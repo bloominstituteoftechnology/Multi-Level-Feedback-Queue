@@ -33,7 +33,12 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        if (this.blockingTimeNeeded) {
+            this.stateChanged = !this.stateChanged;
+        }
+        else {
+            this.cpuTimeNeeded -= time;
+        }
     }
 
     // If this process requires blocking time, decrement the amount of blocking
@@ -45,12 +50,12 @@ class Process {
 
 
 
-        
+
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-    return this.stateChanged;
+        return this.stateChanged;
     }
 
     get pid() {
