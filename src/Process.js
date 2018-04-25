@@ -30,12 +30,13 @@ class Process {
   // by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-        if (this.blockingTimeNeeded === 0) {
-            time > this.cpuTimeNeeded ? this.cpuTimeNeeded = 0 : this.cpuTimeNeeded -= time;
+        if (this.blockingTimeNeeded <= 0) {
+            time > this.cpuTimeNeeded
+        ? (this.cpuTimeNeeded = 0)
+        : (this.cpuTimeNeeded -= time);
         } else {
-            console.log(this.blockingTimeNeeded, time);
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-            this.stateChanged = true;
+            this.stateChanged = !this.stateChanged;
         }
     }
 
@@ -44,7 +45,18 @@ class Process {
   // Once it no longer needs to perform any blocking execution, move it to the
   // top running queue by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
-    executeBlockingProcess(time) {}
+    executeBlockingProcess(time) {
+        if (this.blockingTimeNeeded > 0) {
+            time > this.blockingTimeNeeded
+        ? (this.blockingTimeNeeded = 0)
+        : (this.blockingTimeNeeded -= time);
+
+            if (this.blockingTimeNeeded === 0) {
+                this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+                this.stateChanged = !this.stateChanged;
+            }
+        }
+    }
 
   // Returns this process's stateChanged property
     isStateChanged() {
