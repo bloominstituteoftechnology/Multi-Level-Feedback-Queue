@@ -1,14 +1,14 @@
-const Queue = require('./Queue'); 
-const { 
+const Queue = require('./Queue');
+const {
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
 
 // A class representing the scheduler
-// It holds a single blocking queue for blocking processes and three running queues 
+// It holds a single blocking queue for blocking processes and three running queues
 // for non-blocking processes
-class Scheduler { 
-    constructor() { 
+class Scheduler {
+    constructor() {
         this.clock = Date.now();
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];

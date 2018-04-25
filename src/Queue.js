@@ -1,6 +1,6 @@
 const { SchedulerInterrupt } = require('./constants/index');
 
-// A class representation of a process queue that may hold either a 
+// A class representation of a process queue that may hold either a
 // blocking or non-blocking process
 class Queue {
     constructor(scheduler, quantum, priorityLevel, queueType) {
@@ -46,7 +46,7 @@ class Queue {
 
     // Manages a process's execution for the given amount of time
     // Processes that have had their states changed should not be affected
-    // Once a process has received the alloted time, it needs to be dequeue'd and 
+    // Once a process has received the alloted time, it needs to be dequeue'd and
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
 
