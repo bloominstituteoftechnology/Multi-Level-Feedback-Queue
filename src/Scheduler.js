@@ -1,5 +1,5 @@
-const Queue = require('./Queue'); 
-const { 
+const Queue = require('./Queue');
+const {
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
@@ -24,15 +24,30 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
+        let nextTimeSlice = Date.now() - this.clock;
+        while (!this.allQueuesEmpty) {
+            if (this.blockingQueue.length > 0) {
+                this.blockingQueue[0]
+            }
+        }
     }
 
     allQueuesEmpty() {
+        if (this.blockingQueue.processes.length > 0) return false;
 
+        this.runningQueues.forEach(q => {
+            if (q.processes.length > 0) return false;
+        });
+
+        return true;
     }
 
     addNewProcess(process) {
-
+        if (process.blockingTimeNeeded > 0) { 
+            this.blockingQueue.processes.push(process);
+        } else {
+            this.runningQueues[process.queue.priorityLevel].processes.push(process);
+        }
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
