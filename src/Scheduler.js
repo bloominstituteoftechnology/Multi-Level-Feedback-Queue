@@ -28,7 +28,10 @@ class Scheduler {
     }
 
     allEmpty() {
-
+        let result = 0;
+        result += this.blockingQueue.length;
+        this.runningQueues.forEach(e => result += e.length);
+        return result === 0;
     }
 
     addNewProcess(process) {
