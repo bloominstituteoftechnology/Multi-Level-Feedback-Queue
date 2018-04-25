@@ -83,7 +83,7 @@ class Queue {
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
         this.scheduler.handleInterrupt(this, source, interrupt);
-        this.dequeue();
+        this.processes.splice(this.processes.indexOf(source), 1);
     }
 }
 
