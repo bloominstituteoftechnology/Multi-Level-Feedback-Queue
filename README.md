@@ -1,4 +1,4 @@
-# Multi-Level Feedback Queue
+# Multi-Level Feedback Queue.
 
 ### Motivation
 After talking about one of the most popular scheduling algorithms used by operating systems to schedule processes,
@@ -6,9 +6,9 @@ let's implement it! This will be an implementation that simulates an actual mult
 blocking and non-blocking processes with multiple priority levels.
 
 ### Reiterating on How Scheduling Works
-One of the main jobs of operating system kernels is that they need to be able to execute all of the processes 
+One of the main jobs of operating system kernels is that they need to be able to execute all of the processes
 running on your computer efficiently such that high priority processes are completed as quickly as possible,
-while also ensuring that there is some fairness in how they schedule processes; even if a process is a low 
+while also ensuring that there is some fairness in how they schedule processes; even if a process is a low
 priority, it eventually needs to complete execution.
 
 In order to achieve this, a scheduler looks through the queues for the highest priority process and then executes
@@ -34,8 +34,8 @@ are constantly being added to the highest-priority queue by the scheduler.
 
 ### Setup
 Nothing special here. Just run `npm install` in the root directory, then start working on your implementation,
-using the provided skeleton code and comments for guidance / pointers. Run `npm test` when you want to check 
-your code against the test suite, or `npm test:watch` if you'd like to keep the tests running as you work.  You 
+using the provided skeleton code and comments for guidance / pointers. Run `npm test` when you want to check
+your code against the test suite, or `npm test:watch` if you'd like to keep the tests running as you work.  You
 can also do `npm run test <name-of-test-suite>` to run one suite out of the three.
 
 ### Architecture
@@ -46,11 +46,11 @@ one blocking queue and three CPU queues in our implementation. The blocking queu
 all other processes go into the CPU queues. Each queue will have a different priority level, with a different time
 quantum allocation (which designates how much time each process in the associated queue receives from the CPU).
 
-The blocking queue will have the highest priority (since we want to get through blocking processes as soon as 
-possible), followed by the three CPU queues. You'll be implementing three classes, a Process class to represent 
-blocking and non-blocking processes, a Queue class to represent the different types of queues, and a Scheduler 
-class to represent the scheduler itself. Then, inside `main.js` is where these classes will be executed to 
-simulate a scheduler working through processes. 
+The blocking queue will have the highest priority (since we want to get through blocking processes as soon as
+possible), followed by the three CPU queues. You'll be implementing three classes, a Process class to represent
+blocking and non-blocking processes, a Queue class to represent the different types of queues, and a Scheduler
+class to represent the scheduler itself. Then, inside `main.js` is where these classes will be executed to
+simulate a scheduler working through processes.
 
 Another important aspect that should be touched on is how queues, processes, and the scheduler all communicate
 with each other. For example, a process may need to let the scheduler and its parent queue know that the process
@@ -64,7 +64,7 @@ The pseudo code for our MLFQ implementation is as follows:
 Loop:
     If a process exists in the blocking queue:
         Work on removing each process in the blocking queue on a First In First Out (FIFO) basis
-        Do blocking work for the amount of time specified for the current iteration 
+        Do blocking work for the amount of time specified for the current iteration
         When a process completes its blocking operation, emit an interrupt to the scheduler
         The scheduler removes the process from the blocking queue and
         adds it to the highest priority level CPU queue
@@ -86,25 +86,24 @@ Loop:
                     Else:
                         Add the process to the back of the next lower priority queue
                 Break out of the current iteration and continue looping
-            
+
     If no processes are found in any queues, the scheduler can idle while waiting for new processes
         (in our case, the program will be done)
 ```
 
 ### Extra Credit
 Implement priority boosting within your MLFQ. Priority boosting is the idea that there is a global time quantum of,
-say, 500 ms that elapses. Once that global time quantum hits 0, it should reset, and every process in any of the 
-available queues should all be moved back up to the top-level priority queue. This is one such scheme that is 
-used in order to ensure that the bottom-of-the-barrel processes receive some additional attention. 
+say, 500 ms that elapses. Once that global time quantum hits 0, it should reset, and every process in any of the
+available queues should all be moved back up to the top-level priority queue. This is one such scheme that is
+used in order to ensure that the bottom-of-the-barrel processes receive some additional attention.
 
-Think about how this feature should be incorporated into your current MLFQ implementation. Which component of the 
+Think about how this feature should be incorporated into your current MLFQ implementation. Which component of the
 MLFQ should be responsible for the global time quantum? How should processes be notified that they're recieving
 a priority boost, and how should that be facillitated?
 
 ### Further Reading
-Here's a chapter from an operating systems textbook that dives a lot deeper into the theory and motivation behind 
+Here's a chapter from an operating systems textbook that dives a lot deeper into the theory and motivation behind
 the multi-level feedback queue:
 [http://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf](http://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf)
 
 Also this link to some dude's copious notes on the topic of process scheduling on Unix kernels: https://notes.shichao.io/lkd/ch4/
-
