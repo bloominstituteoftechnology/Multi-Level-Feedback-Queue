@@ -33,7 +33,7 @@ processes only get allocated CPU time when your computer is idle, because during
 are constantly being added to the highest-priority queue by the scheduler.
 
 ### Setup
-Nothing special here. Just run `npm install` in the root directory, then start working on your implementation,
+Nothing special here. **Just run `npm install` in the root directory**, then start working on your implementation,
 using the provided skeleton code and comments for guidance / pointers. Run `npm test` when you want to check 
 your code against the test suite, or `npm test:watch` if you'd like to keep the tests running as you work.  You 
 can also do `npm run test <name-of-test-suite>` to run one suite out of the three.
@@ -59,7 +59,7 @@ process will need to notify the scheduler and its queue that it has finished its
 be moved to a CPU queue.  The classes handle this communication by emitting interrupts at the appropriate times.
 
 ### Algorithm
-The pseudo code for our MLFQ implementation is as follows:
+The pseudo code for our **MLFQ implementation** is as follows:
 ```
 Loop:
     If a process exists in the blocking queue:
@@ -91,7 +91,7 @@ Loop:
         (in our case, the program will be done)
 ```
 
-### Extra Credit
+### **Extra Credit**
 Implement priority boosting within your MLFQ. Priority boosting is the idea that there is a global time quantum of,
 say, 500 ms that elapses. Once that global time quantum hits 0, it should reset, and every process in any of the 
 available queues should all be moved back up to the top-level priority queue. This is one such scheme that is 
