@@ -19,6 +19,7 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
+        process.setParentQueue(this);
         this.processes.push(process);
         return process;
     }
@@ -34,15 +35,15 @@ class Queue {
     }
 
     isEmpty() {
-
+        return this.processes.length < 1;
     }
 
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the given amount of time
