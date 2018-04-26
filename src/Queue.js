@@ -56,10 +56,10 @@ class Queue {
             this.dequeue();
             if (!currentProcess.isFinished()) {
                 this.scheduler.handleInterrupt(
-                  this,
-                  currentProcess,
-                  SchedulerInterrupt.LOWER_PRIORITY
-                );
+          this,
+          currentProcess,
+          SchedulerInterrupt.LOWER_PRIORITY
+        );
             }
             return;
         } else {
@@ -70,16 +70,18 @@ class Queue {
   // Execute the next non-blocking process (assuming this is a CPU queue)
   // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-        if (this.queueType !== 'BLOCKING_QUEUE') {
-            let head = this.peek();
-            this.manageTimeSlice(head, time);
-            head.executeProcess(time);
-        }
+        let head = this.peek();
+        this.manageTimeSlice(head, time);
+        head.executeProcess(time);
     }
 
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
-    doBlockingWork(time) {}
+    doBlockingWork(time) {
+        let head = this.peek();
+        this.manageTimeSlice(head, time);
+        head.executeBlockingProcess(time);
+    }
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
