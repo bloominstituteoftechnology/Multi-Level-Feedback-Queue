@@ -77,12 +77,14 @@ class Queue {
   // This method should call `manageTimeSlice` as well as execute the next running process
   doCPUWork(time) {
     this.peek().executeProcess(time);
+    this.manageTimeSlice(process, time); //copied from solution. Do not really understand what manageTimeSlice does
   }
 
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
   doBlockingWork(time) {
     this.peek().executeBlockingWork(time);
+    this.manageTimeSlice(process, time);
   }
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
