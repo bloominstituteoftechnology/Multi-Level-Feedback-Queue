@@ -24,16 +24,31 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
+        while (!this.allEmpty()) {
+            const timeSlice = Date.now() - this.clock;
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(timeSlice);
+            }
+            this.runningQueues.forEach(queue => {
+                if(!queue.isEmpty){
+                    queue.doCPUWork(timeSlice);
+                }
+            });
+        }
+        this.clock = Date.now();
     }
 
     allEmpty() {
-
+        if(this.blockingQueue.isEmpty()){
+            this.runningQueues.forEach(queue => {
+                return !queue.isEmpty();
+            });
+            return true;
+        }
     }
 
     addNewProcess(process) {
-
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
@@ -41,8 +56,10 @@ class Scheduler {
     handleInterrupt(queue, process, interrupt) {
         switch(interrupt){
             case 'PROCESS_BLOCKED':
+                this.blockingQueue.enqueue(process);
             break;
             case 'PROCESS_READY':
+                this.addNewProcess(process);
             break;
             case 'LOWER_PRIORITY':
                 queue.dequeue();

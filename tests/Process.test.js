@@ -74,6 +74,7 @@ describe('Process', () => {
 
     test("executeProcess function not running to completion", () => {
         const process = new Process(0, 30);
+        process.setParentQueue(queue);
         process.executeProcess(25);
         expect(process.isFinished()).toBe(false);
         expect(process.cpuTimeNeeded).toEqual(5);
@@ -114,7 +115,7 @@ describe('Process', () => {
     test("executeBlockingProcess function not running to completion", () => {
         const process = new Process(0, 20, true);
         process.blockingTimeNeeded = 20;
-
+        process.setParentQueue(queue);
         const queueSpy = sinon.spy(queue, 'emitInterrupt');
         process.executeBlockingProcess(15);
         expect(process.blockingTimeNeeded).toEqual(5);

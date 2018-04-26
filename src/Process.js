@@ -33,19 +33,15 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
+        this.stateChanged = false;
         if(this.blockingTimeNeeded === 0){
-            if(this.cpuTimeNeeded - time < 1){
-                this.cpuTimeNeeded = 0;
-            }else{
-                this.cpuTimeNeeded = this.cpuTimeNeeded - time;
-            }
-            if(this.cpuTimeNeeded > 0){
-                this.queue.emitInterrupt(this, SchedulerInterrupt.LOWER_PRIORITY);
-                this.stateChanged = true;
+            this.cpuTimeNeeded -= time;
+            if(this.cpuTimeNeeded < 0){
+                this.cpuTimeNeeded = 0
             }
         }else{
+            this.stateChanged = true;
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-            this.stateChanged = !this.stateChanged;
         }
    }
 
@@ -56,15 +52,13 @@ class Process {
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
         if(this.blockingTimeNeeded > 0){
-            if(this.blockingTimeNeeded - time < 1){
+            this.blockingTimeNeeded -= time;
+            if(this.blockingTimeNeeded < 0){
                 this.blockingTimeNeeded = 0;
+            }
+            if(this.blockingTimeNeeded === 0){
                 this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
-                this.stateChanged = !this.stateChanged;
-            }else{
-                this.blockingTimeNeeded = this.blockingTimeNeeded - time;
-                console.log('this que', this.queue);
-                this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-                this.stateChanged = !this.stateChanged;
+                this.stateChanged = true;
             }
         }
     }
