@@ -48,6 +48,7 @@ class Scheduler {
     for (let i = 0; i < this.runningQueues.length; i++) {
       if (!this.runningQueues[i].isEmpty()) return false;
     }
+    if (!this.blockingQueue.isEmpty()) return false;
     return true;
   }
 
