@@ -19,6 +19,7 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
+        process.setParentQueue(this);
         return this.processes.push(process);
     }
 
@@ -27,14 +28,13 @@ class Queue {
        return this.processes.shift();
     }
 
-    // Return the least-recently added process without removing it from the list of processes
+    // Return the first added process without removing it from the list of processes
     peek() {
         return this.processes[0];
     }
 
     isEmpty() {
-
-        return this.processes.length > 0;
+        return this.processes.length === 0;
     }
 
     getPriorityLevel() {
@@ -42,7 +42,7 @@ class Queue {
     }
 
     getQueueType() {
-        return this.getCPUQueue();
+        return this.queueType;
     }
 
     // Manages a process's execution for the given amount of time
@@ -50,32 +50,41 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-        if(this.currentProcess.isStateChanged()){
-            this.quantumClock = 0;
-            return;
+        if(!currentProcess.stateChanged){
+            this.quantumClock += time;  
         }
-        if(this.currentProcess.quantum > time) {
+        if(currentProcess.quantum > time) {
+            this.quantumClock = 0;
             this.dequeue();
-            this.quantumClock = 0;
+        } else {
+            this.emitInterrupt()
         }
+        
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-
+        const proc = this.peek();
+        proc.executeProcess(time);
+        this.manageTimeSlice(proc, time);
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-
+        const proc = this.peek();
+        proc.executeBlockingProcess(time);
+        this.manageTimeSlice(proc, time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
+        this.scheduler.handleInterrupt(this, source, interrupt);
+        this.processes.splice(this.processes.indexOf(source), 1);
+        this.dequeue();
 
     }
 }
