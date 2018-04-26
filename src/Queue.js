@@ -1,6 +1,6 @@
-const { SchedulerInterrupt } = require('./constants/index');
+const { SchedulerInterrupt } = require("./constants/index");
 
-// A class representation of a process queue that may hold either a 
+// A class representation of a process queue that may hold either a
 // blocking or non-blocking process
 class Queue {
     constructor(scheduler, quantum, priorityLevel, queueType) {
@@ -19,6 +19,7 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
+        process.queue = this;
         this.processes.push(process);
         return this.processes[this.processes.length - 1];
     }
@@ -36,7 +37,9 @@ class Queue {
     }
 
     isEmpty() {
-        return this.processes === [];
+        return this.processes.length < 1 || this.processes === undefined
+            ? true
+            : false;
     }
 
     getPriorityLevel() {
@@ -49,40 +52,60 @@ class Queue {
 
     // Manages a process's execution for the given amount of time
     // Processes that have had their states changed should not be affected
-    // Once a process has received the alloted time, it needs to be dequeue'd and 
+    // Once a process has received the alloted time, it needs to be dequeue'd and
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-        if(!currentProcess.stateChanged && this.cpuTimeNeeded > 0){
-            currentProcess.cpuTimeNeeded = currentProcess.cpuTimeNeeded - time;
-
-            if(currentProcess.cpuTimeNeeded <= 0) {
-                let target = this.processes.indexOf(currentProcess);
-                this.processes.splice(target, 1);
+        if (!currentProcess.stateChanged) {
+            if (time > this.quantum) {
+                currentProcess.cpuTimeNeeded =
+                    currentProcess.cpuTimeNeeded - this.quantum;
+                if (currentProcess.cpuTimeNeeded <= 0) {
+                    this.quantumClock = 0;
+                    return this.dequeue();
+                } else {
+                    this.quantumClock = this.quantumClock + this.quantum;
+                    this.emitInterrupt(
+                        currentProcess,
+                        SchedulerInterrupt.LOWER_PRIORITY
+                    );
+                }
             } else {
-
-
+                currentProcess.cpuTimeNeeded =
+                    currentProcess.cpuTimeNeeded - time;
+                if (currentProcess.cpuTimeNeeded <= 0) {
+                    this.quantumClock = 0;
+                    return this.dequeue();
+                } else {
+                    this.quantumClock = this.quantumClock + this.quantum;
+                    this.emitInterrupt(
+                        currentProcess,
+                        SchedulerInterrupt.LOWER_PRIORITY
+                    );
+                }
             }
+        } else {
+            this.quantumClock = 0;
         }
-
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
-    doCPUWork(time) {
-
-    }
+    doCPUWork(time) {}
 
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
-    doBlockingWork(time) {
-
-    }
+    doBlockingWork(time) {}
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
+        switch(true){
+            case interrupt === SchedulerInterrupt.PROCESS_READY:
+                this.dequeue();
+                return 
 
+        }
     }
 }
 

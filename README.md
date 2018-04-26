@@ -16,7 +16,7 @@ it for a time quantum (a slice of time), which has been allocated to that queue 
 quantum is up, the process has either completed or it hasn't. If it hasn't, then the process is shunted to the
 next lower priority queue to wait for its turn again. If the process completed during the initial time quantum,
 then it gets discarded and the scheduler moves on to the next process in line.  Queues are processed in
-first-in-first-out (FIFO) order.
+first-in-first-out (this.processes.length - 1IFO) order.
 
 The time quantum is further divided into smaller amounts of time called `work time`.  A process is allowed to work
 for this work time, and then the scheduler will begin the loop over.  If the process has not finished, and has not
