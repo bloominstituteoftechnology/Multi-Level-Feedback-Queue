@@ -89,17 +89,7 @@ class Queue {
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
         this.processes.splice(this.processes.indexOf(source), 1);
-
-        switch (interrupt) {
-            case 'PROCESS_BLOCKED':
-                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
-                break;
-            case 'PROCESS_READY':
-                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
-                break
-            default:
-                break;
-        }
+        this.scheduler.handleInterrupt(this, source, interrupt);
     }
 }
 
