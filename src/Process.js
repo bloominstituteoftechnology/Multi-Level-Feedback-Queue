@@ -5,22 +5,24 @@ const { SchedulerInterrupt } = require('./constants/index');
 // needs in order to complete, or we can specify if the process
 // is blocking; if so, the amount of blocking time needed is
 // randomly determined.
+
 class Process {
     constructor(pid, cpuTimeNeeded=null, blocking=false) {
         this._pid = pid;
         this.queue = null;
-        this.cpuTimeNeeded = cpuTimeNeeded ? cpuTimeNeeded : Math.round(Math.random() * 1000);
+        // this.cpuTimeNeeded = cpuTimeNeeded ? cpuTimeNeeded : Math.round(Math.random() * 1000);
+        this.cpuTimeNeeded = (cpuTimeNeeded !== null) ? cpuTimeNeeded : Math.round(Math.random() * 1000);
         this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
         // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
         this.stateChanged = false;
     }
     
     setParentQueue(queue) {
-
+        return this.queue = queue;
     }
 
     isFinished() {
-
+        return this.stateChanged;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,7 +31,12 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        if (this.blockingTimeNeeded === 0) {
+            return this.cpuTimeNeeded -= time;
+        } else if (this.blockingTimeNeeded !== 0) {
+            SchedulerInterrupt.PROCESS_BLOCKED = true;
+        }
+        return !this.stateChanged;
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -43,11 +50,11 @@ class Process {
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
