@@ -24,6 +24,31 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
+
+        /*
+        while (true) {
+            const time = Date.now();
+            const timeslice = time - this.clock();
+            this.clock = time;
+
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(timeslice);
+            }
+
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                const queue = this.runningQueues[i];
+                if(!queue.isEmpty()) {
+                    queue.doCPUWork(timeslice);
+                    break;
+                }
+            }
+
+            if (this.allQueuesEmpty()) {
+                console.log("No more processes! I can sleep now.");
+                break();
+            }
+        }
+        */
         while (!this.allQueuesEmpty()) {
             const workTime = Date.now() - this.clock;
             this.clock = Date.now();
@@ -51,20 +76,42 @@ class Scheduler {
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-        if (interrupt === 'PROCESS_BLOCKED' || queue.getQueueType() === 'BLOCKING_QUEUE') {
-            this.blockingQueue.enqueue(process);            
-        } else if (interrupt === 'PROCESS_READY') {
-            this.addNewProcess(process);            
-        } else {
-            let priority = queue.getPriorityLevel();
-            priority++;
-
-            if (priority > PRIORITY_LEVELS - 1) {
-                priority = PRIORITY_LEVELS - 1;
-            }
-            
-            this.runningQueues[priority].enqueue(process);
+        switch(interrupt) {
+            case 'PROCESS_BLOCKED':
+                this.blockingQueue.enqueue(process);
+                break;
+            case 'PROCESS_READY':
+                this.addNewProcess(process);
+                break;
+            case 'LOWER_PRIORITY':
+                if (queue.getQueueType() === QueueType.BLOCKING_QUEUE) {
+                    queue.enqueue(process);
+                    break;
+                }
+                const priority =  queue.getPriorityLevel();
+                if (priority === PRIORITY_LEVELS - 1) {
+                    queue.enqueue(process);
+                    break;
+                }
+                this.runningQueues[priority+1].enqueue(process);
+                break;
+            default:
+                break;
         }
+        // if (interrupt === 'PROCESS_BLOCKED' || queue.getQueueType() === 'BLOCKING_QUEUE') {
+        //     this.blockingQueue.enqueue(process);            
+        // } else if (interrupt === 'PROCESS_READY') {
+        //     this.addNewProcess(process);            
+        // } else {
+        //     let priority = queue.getPriorityLevel();
+        //     priority++;
+
+        //     if (priority > PRIORITY_LEVELS - 1) {
+        //         priority = PRIORITY_LEVELS - 1;
+        //     }
+            
+        //     this.runningQueues[priority].enqueue(process);
+        // }
     }
 
     // Private function used for testing; DO NOT MODIFY
