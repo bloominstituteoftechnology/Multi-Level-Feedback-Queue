@@ -24,21 +24,63 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
+        while(1) {
+            const currentTime = Date.now();
+            const workTime = currentTime - this.clock;
 
+            this.clock = workTime;
+
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+
+            for (let i = 0; i < this.runningQueues.length; i++) {
+                if (!this.runningQueues[i].isEmpty()) {
+                    this.runningQueues[i].doCPUWork(workTime);
+                }
+            }
+        }
+        
+        return;
     }
 
-    allEmpty() {
+    allQueuesEmpty() {
+        if (!this.blockingQueue.isEmpty()) {
+            return false;
+        }
 
+        for (let i = 0; i < this.runningQueues.length; i++) {
+            if (!this.runningQueues[i].isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
+        if (interrupt === "PROCESS_BLOCKED") {
+            this.blockingQueue.enqueue(process);
+        } else if (interrupt === "PROCESS_READY") {
+            this.addNewProcess(process);
+        } else if (interrupt === "LOWER_PRIORITY") {
+            if (queue.getQueueType() === QueueType.CPU_QUEUE) {
+                let pLevel = queue.getPriorityLevel();
+                
+                if (pLevel !== PRIORITY_LEVELS - 1) {
+                    pLevel = PRIORITY_LEVELS + 1;
+                }
+                this.runningQueues[pLevel].enqueue(process);
+            } else {
+                this.blockingQueue.enqueue(process);
+            }
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
