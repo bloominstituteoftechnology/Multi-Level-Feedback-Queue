@@ -1,5 +1,5 @@
 const Queue = require("./Queue");
-const { QueueType, PRIORITY_LEVELS } = require("./constants/index");
+const { QueueType, PRIORITY_LEVELS, SchedulerInterrupt } = require("./constants/index");
 
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues
@@ -11,12 +11,7 @@ class Scheduler {
     this.runningQueues = [];
     // Initialize all the CPU running queues
     for (let i = 0; i < PRIORITY_LEVELS; i++) {
-      this.runningQueues[i] = new Queue(
-        this,
-        10 + i * 20,
-        i,
-        QueueType.CPU_QUEUE
-      );
+      this.runningQueues[i] = new Queue(this, 10 + i * 20, i, QueueType.CPU_QUEUE);
     }
   }
 
@@ -25,15 +20,39 @@ class Scheduler {
   // time from the clock property. Don't forget to update the clock property afterwards.
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-  run() {}
+  run() {
+    while(!this.allQueuesEmpty()) {
+      const timeSlice = Date.now() - this.clock;
+      this.clock -= timeSlice;
+      if (!this.blockingQueue.isEmpty()) {
+        this.blockingQueue.doBlockingWork(this.clock);
+      }
+      for (let i = 0; i < this.runningQueues.length; i += 1) {
+        if (!this.runningQueues[i].isEmpty()) {
+          this.runningQueues[i].doCPUWork(this.clock);
+        }
+      }
+    }  
+  }
 
-  allEmpty() {}
+  allEmpty() {
+    for(let i = 0; i < this.runningQueues.length; i += 1) {
+      if(!this.runningQueues[i].isEmpty()) {
+        return false;
+      }
+  }
+  return true;
+  }
 
-  addNewProcess(process) {}
+  addNewProcess(process) {
+    this.runningQueues[0].enqueue(process);
+  }
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-  handleInterrupt(queue, process, interrupt) {}
+  handleInterrupt(queue, process, interrupt) {
+    
+  }
 
   // Private function used for testing; DO NOT MODIFY
   _getCPUQueue(priorityLevel) {
