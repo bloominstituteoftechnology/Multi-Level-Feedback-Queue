@@ -22,9 +22,7 @@ class Process {
     }
 
     isFinished() {
-        if (this.cpuTimeNeeded <= 0) {
-            return true;
-        }
+        return this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <=0;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -48,8 +46,13 @@ class Process {
     // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
 
+        this.blockingTimeNeeded -= time;
+        if (this.blockingTimeNeeded <=0)
+            this.blockingTimeNeeded = 0;
+        if (this.blockingTimeNeeded === 0) {
+            this.stateChanged = true;
 
-
+        }
 
     }
 
@@ -59,7 +62,7 @@ class Process {
     }
 
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY

@@ -34,7 +34,7 @@ class Queue {
     }
 
     isEmpty() {
-        if (this.process.length === 0) {
+        if (this.processes.length === 0) {
             return true;
         }
     }
@@ -52,7 +52,16 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-
+    if (!currentProcess.isStateChanged()) {
+        this.quantumClock += time;
+        if(this.quantumClock > this.quantum) {
+            this.quantumClock = 0;
+            const process = this.dequeue();
+            if (!process.isFinished()){
+                
+            }
+        }
+    }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
@@ -71,7 +80,8 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-
+        this.scheduler.handleInterrupt(this,source,interrupt);
+        
     }
 }
 
