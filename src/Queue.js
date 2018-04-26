@@ -50,7 +50,27 @@ class Queue {
   // Once a process has received the alloted time, it needs to be dequeue'd and
   // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
-    
+    // copied from solution
+    if (currentProcess.isStateChanged()) {
+      this.quantumClock = 0;
+      return;
+    }
+
+    this.quantumClock += time;
+    if (this.quantumClock >= this.quantum) {
+      this.quantumClock = 0;
+      const process = this.dequeue();
+
+      if (!process.isFinished()) {
+        this.scheduler.handleInterrupt(
+          this,
+          process,
+          SchedulerInterrupt.LOWER_PRIORITY
+        );
+      } else {
+        console.log('Process complete!');
+      }
+    }
   }
 
   // Execute the next non-blocking process (assuming this is a CPU queue)
