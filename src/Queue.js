@@ -71,8 +71,8 @@ class Queue {
   // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
         let head = this.peek();
-        this.manageTimeSlice(head, time);
         head.executeProcess(time);
+        this.manageTimeSlice(head, time);
     }
 
   // Execute the next blocking process (assuming this is the blocking queue)
@@ -86,7 +86,10 @@ class Queue {
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
   // The process also needs to be removed from the queue
-    emitInterrupt(source, interrupt) {}
+    emitInterrupt(source, interrupt) {
+        this.scheduler.handleInterrupt(this, source, interrupt);
+        this.processes = this.processes.filter(p => p._pid != source._pid);
+    }
 }
 
 module.exports = Queue;
