@@ -57,9 +57,14 @@ class Queue {
           this.quantumClock = 0;
           return;  
         }
+        
+        this.quantumClock += time;
         if (this.quantumClock >= this.quantum) {
+            const dequeuedProcess = this.dequeue();
             this.quantumClock = 0;
-            const process = this.dequeue();
+            if (!dequeuedProcess.isFinished()) {
+                this.emitInterrupt(dequeuedProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            }
         }
     }
 
@@ -68,7 +73,7 @@ class Queue {
     doCPUWork(time) {
         const process = this.peek();
     // References the next process in line without changing the processes array 
-        process.executeBlockingProcess(time);
+        process.executeProcess(time);
         this.manageTimeSlice(process, time);
     }
 
