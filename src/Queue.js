@@ -20,8 +20,7 @@ class Queue {
   // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
         process.setParentQueue(this);
-        this.processes.push(process);
-        return process;
+        return this.processes.push(process);
     }
 
   // Dequeues the next process in the queue. Return the dequeue'd process
@@ -79,8 +78,8 @@ class Queue {
   // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
         let head = this.peek();
-        this.manageTimeSlice(head, time);
         head.executeBlockingProcess(time);
+        this.manageTimeSlice(head, time);
     }
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
@@ -89,6 +88,15 @@ class Queue {
     emitInterrupt(source, interrupt) {
         this.scheduler.handleInterrupt(this, source, interrupt);
         this.processes = this.processes.filter(p => p._pid != source._pid);
+
+        const blocked = SchedulerInterrupt.PROCESS_BLOCKED;
+        const ready = SchedulerInterrupt.PROCESS_READY;
+
+        if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) {
+            this.scheduler.handleInterrupt(this, source, blocked)
+        } else if (interrupt === SchedulerInterrupt.PROCESS_READY) {
+            this.scheduler.handleInterrupt(this, source, ready);
+        }
     }
 }
 

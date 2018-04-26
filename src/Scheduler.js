@@ -1,5 +1,6 @@
 const Queue = require('./Queue');
-const { QueueType, PRIORITY_LEVELS } = require('./constants/index');
+const { SchedulerInterrupt, QueueType, PRIORITY_LEVELS } = require('./constants/index');
+
 
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues
@@ -26,12 +27,23 @@ class Scheduler {
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-    // let nextTimeSlice = Date.now() - this.clock;
-    // while (!this.allQueuesEmpty) {
-    //     if (this.blockingQueue.length > 0) {
-    //         this.blockingQueue[0]
-    //     }
-    // }
+        while (!this.allQueuesEmpty()) {
+            let currentTime = Date.now()
+            const nextTimeslice = currentTime - this.clock;
+            this.clock = currentTime;
+
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(nextTimeslice);
+            }
+            
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                const queue = this.runningQueues[i];
+                if (!queue.isEmpty()) {
+                    queue.doCPUWork(nextTimeslice);
+                    break;
+                }
+            }
+        }
     }
 
     allQueuesEmpty() {
@@ -51,8 +63,10 @@ class Scheduler {
 
     addNewProcess(process) {
         if (process.blockingTimeNeeded > 0) {
+            process.setParentQueue(this.blockingQueue);
             this.blockingQueue.processes.push(process);
         } else {
+            process.setParentQueue(this.runningQueues[0]);
             this.runningQueues[0].enqueue(process);
         }
     }
@@ -60,16 +74,18 @@ class Scheduler {
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-        if (interrupt === 'PROCESS_BLOCKED') {
+        const { PROCESS_BLOCKED, PROCESS_READY, LOWER_PRIORITY } = SchedulerInterrupt;
+
+        if (interrupt === PROCESS_BLOCKED) {
             this.blockingQueue.enqueue(process);
-        } else if (interrupt === 'PROCESS_READY') {
+        } else if (interrupt === PROCESS_READY) {
             this.addNewProcess(process);
-        } else if (interrupt === 'LOWER_PRIORITY') {
+        } else if (interrupt === LOWER_PRIORITY) {
             if (process.blockingTimeNeeded === 0) {
                 let newQueue =
-                    queue.priorityLevel === PRIORITY_LEVELS - 1
-                    ? PRIORITY_LEVELS - 1
-                    : queue.priorityLevel + 1;
+          queue.priorityLevel === PRIORITY_LEVELS - 1
+            ? PRIORITY_LEVELS - 1
+            : queue.priorityLevel + 1;
                 this.runningQueues[newQueue].enqueue(process);
             } else {
                 this.blockingQueue.enqueue(process);
