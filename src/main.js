@@ -6,6 +6,7 @@ const Process = require('./Process');
 // blocking process, and then runs the scheduler.
 // Feel free to edit this file to execute your scheduler implemetation
 // in a different way.
+
 const main = () => {
     const scheduler = new Scheduler();
     
