@@ -53,7 +53,7 @@ class Queue {
         if(!currentProcess.isStateChanged()) {
             this.quantumClock += time;
             if(this.quantumClock >= this.quantum) {
-                this.quantumClock = 0
+                this.quantumClock = 0;
                 this.dequeue();
                 if(!currentProcess.isFinished()) {
                     this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
