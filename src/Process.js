@@ -6,21 +6,26 @@ const { SchedulerInterrupt } = require('./constants/index');
 // is blocking; if so, the amount of blocking time needed is
 // randomly determined.
 class Process {
-    constructor(pid, cpuTimeNeeded=null, blocking=false) {
+    constructor(pid, cpuTimeNeeded = null, blocking = false) {
         this._pid = pid;
         this.queue = null;
-        this.cpuTimeNeeded = cpuTimeNeeded ? cpuTimeNeeded : Math.round(Math.random() * 1000);
+        this.cpuTimeNeeded = (cpuTimeNeeded !== null) ? cpuTimeNeeded : Math.round(Math.random() * 1000);
         this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
         // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
         this.stateChanged = false;
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue; // set queue property
     }
 
     isFinished() {
-
+        // check if the process has any more CPU or blocking that it needs
+        if (this.cpuTimeNeeded > 0 || this.blockingTimeNeeded > 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,7 +34,14 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
+        this.stateChanged = false;
 
+        if (this.blockingTimeNeeded <= 0) {
+            this.cpuTimeNeeded -= time; //decrement the amount of CPU time
+        } else {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.stateChanged = true; //togggle flag
+        }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -38,16 +50,21 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
+        this.blockingTimeNeeded -= time; //decrement amount of blocking time
 
+        if (this.blockingTimeNeeded <= 0) {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            this.stateChanged = true; //toggle flag
+        }
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
