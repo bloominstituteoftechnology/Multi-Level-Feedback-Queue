@@ -85,7 +85,6 @@ describe('Queue', () => {
 
     test("manageTimeSlice method on process that hasn't received more time than the queue's time quantum", () => {
         const process = new Process(0, 60);
-
         queue.enqueue(process);
         queue.manageTimeSlice(process, 49);
 

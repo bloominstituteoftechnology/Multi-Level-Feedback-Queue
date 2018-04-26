@@ -39,9 +39,10 @@ class Process {
             }else{
                 this.cpuTimeNeeded = this.cpuTimeNeeded - time;
             }
-            // if(this.cpuTimeNeeded > 0){
-            //     this.emitInterrupt(this. SchedulerInterrupt.LOWER_PRIORITY);
-            // }
+            if(this.cpuTimeNeeded > 0){
+                this.queue.emitInterrupt(this, SchedulerInterrupt.LOWER_PRIORITY);
+                this.stateChanged = true;
+            }
         }else{
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = !this.stateChanged;
@@ -57,12 +58,14 @@ class Process {
         if(this.blockingTimeNeeded > 0){
             if(this.blockingTimeNeeded - time < 1){
                 this.blockingTimeNeeded = 0;
+                this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+                this.stateChanged = !this.stateChanged;
             }else{
                 this.blockingTimeNeeded = this.blockingTimeNeeded - time;
+                console.log('this que', this.queue);
+                this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+                this.stateChanged = !this.stateChanged;
             }
-        }else{
-            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
-            this.stateChanged = !this.stateChanged;
         }
     }
 
