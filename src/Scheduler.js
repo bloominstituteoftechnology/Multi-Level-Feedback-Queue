@@ -24,23 +24,57 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
-    }
+     while (1) {
+		   const currentTime = Data.now();
+			 const timeSlice = currentTime - this.clock;
+			 this.clock = currentTime;
+			 if (!this.blockingQueue.isEmpty()) {
+			     this.blockingQueue.doBlockingWork(timeSlice);
+			 }
+			 this.runningQueues.forEach(queue => { 
+					 if (!queue.isEmpty()) queue.doCPUWork(timeSlice);
+					});
+			     if (this.allQueuesEmpty()) break;
+					}
+       }
 
     allEmpty() {
-
-    }
+      let allQueuesEmpty = true;
+			this.runningQueues.forEach(queue => {
+					if (!queue.isEmpty()) allQueuesEmpty = false;
+      });
+			    if (!this.blockingQueue.isEmpty()) allQueuesEmpty = false;
+					return allQueuesEmpty;
+			}
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
-    }
-
+       switch (interrupt) {
+				 case SchedulerInterrupt.PROCESS_BLOCKED:
+					 this.blockingQueue.enqueue(process);
+					 break;
+				 case SchedulerInterrupt.PROCESS_READY: 
+					 this.addNewProcess(process);
+					 break;
+				 case SchedulerInterript.LOWER_PRIORITY:
+					 if (queue.getQueueType() === Queue.CPU_QUEUE) {
+						 const priority = queue.getPriorityLevel();
+						  if (priority < 2) {
+								this.runningQueues[priority+1].enqueue(process);
+							} else { 
+								this.runningQueues[priority].enqueue(process);
+							}
+            } else {
+							   this.blockingQueue.enqueue(process);
+							}
+			    }  
+       }
+    
     // Private function used for testing; DO NOT MODIFY
     _getCPUQueue(priorityLevel) {
         return this.runningQueues[priorityLevel];
