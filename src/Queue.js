@@ -57,11 +57,13 @@ class Queue {
         this.quantumClock += time;
         if (this.quantumClock >= this.quantum) {
             this.quantumClock = 0;
-            const process = this.dequeue();
+            this.dequeue();
 
-            if(!process.isFinished()) {
-                this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
-            } 
+            if(!currentProcess.isFinished()) {
+                this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            } else {
+                console.log("done");
+            }
         }
     }
 
