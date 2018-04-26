@@ -1,5 +1,5 @@
 const Queue = require('./Queue'); 
-const { 
+const {
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
@@ -27,7 +27,7 @@ class Scheduler {
 
     }
 
-    allEmpty() {
+    allQueuesEmpty() {
 
     }
 
