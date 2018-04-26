@@ -38,11 +38,11 @@ class Queue {
     }
 
     getPriorityLevel() {
-        return this.processes
+        return this.priorityLevel;
     }
 
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the given amount of time
