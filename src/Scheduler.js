@@ -38,9 +38,10 @@ class Scheduler {
       for (let i = 0; i < this.runningQueues.length; i++) {
         if (!this.runningQueues[i].isEmpty()) {
           this.runningQueues[i].doCPUWork(timeslice);
-        }
-      }
-    }
+          break; // breaks out of the for loop onto the next while loop iteration
+        }        // once it has done some work on the first non-empty queue, it
+      }          // should move on to the next iteration, otherwise having all queues
+    }            // execute would defeat the purpose of having different priority levels
     this.clock = Date.now();
   }
 
