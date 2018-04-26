@@ -65,7 +65,7 @@ class Scheduler {
         break;
       case SchedulerInterrupt.LOWER_PRIORITY:
         if (queue.getQueueType() === QueueType.BLOCKING_QUEUE) {
-          this.blockingQueue.enqueue(process);
+          queue.enqueue(process);
           break;
         } else {
           if (queue.getPriorityLevel() === PRIORITY_LEVELS - 1) {
@@ -78,6 +78,15 @@ class Scheduler {
         }
         break;
       default:
+      // Sean's live code: caused one more test to fail...
+      // if (queue.getQueueType() === QueueType.CPU_QUEUE) {
+      //   const priorityLevel = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel());
+      //   this.runningQueues[priorityLevel].enqueue(process);
+      //   break;
+      // } else {
+      //   this. blockingQueue.enqueue(process);
+      //   break;
+      // }
     }
   }
 
