@@ -9,29 +9,27 @@ class Process {
   constructor(pid, cpuTimeNeeded = null, blocking = false) {
     this._pid = pid;
     this.queue = null;
-    this.cpuTimeNeeded = cpuTimeNeeded
-      ? cpuTimeNeeded
-      : Math.round(Math.random() * 1000);
+    this.cpuTimeNeeded =
+      cpuTimeNeeded !== null ? cpuTimeNeeded : Math.round(Math.random() * 1000);
     this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
     // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
     this.stateChanged = false;
   }
 
   setParentQueue(queue) {
-    //set parent queue
     this.queue = queue;
   }
 
-  //Lack of cpu blocking.
+  // Checks that this process no longer has any more CPU or blocking time it needs
   isFinished() {
     return this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0;
   }
 
-  // If no blocking time is needed by this process, decrement the amount of
-  // CPU time it needs by the input time
-  // If blocking time is needed by this process, move it to the blocking queue
-  // by emitting the appropriate interrupt
-  // Make sure the `stateChanged` flag is toggled appropriately
+  // Sets this process's `this.stateChanged` property to `false`
+  // Checks to see if this process needs blocking time
+  // If it does, emit a queue interrupt to notify the queue that the process is blocked
+  // Also toggle its `this.stateChanged` property to `true`
+  // Else, decrement this process's `this.cpuTimeNeeded` property by the input `time`
   executeProcess(time) {
     this.stateChanged = false;
     if (this.blockingTimeNeeded > 0) {
@@ -42,11 +40,9 @@ class Process {
     }
   }
 
-  // If this process requires blocking time, decrement the amount of blocking
-  // time it needs by the input time
-  // Once it no longer needs to perform any blocking execution, move it to the
-  // top running queue by emitting the appropriate interrupt
-  // Make sure the `stateChanged` flag is toggled appropriately
+  // Decrement this process's `this.blockingTimeNeeded` by the input `time`
+  // If `this.blockingTimeNeeded` is 0 or less, emit a queue interrupt nofifying
+  // the process is ready and toggle `this.stateChanged` to `true`
   executeBlockingProcess(time) {
     this.blockingTimeNeeded -= time;
     if (this.blockingTimeNeeded <= 0) {
@@ -55,11 +51,12 @@ class Process {
     }
   }
 
-  // Returns this process's stateChanged property
+  // Returns this process's `this.stateChanged` property
   isStateChanged() {
     return this.stateChanged;
   }
 
+  // Gets this process's pid
   get pid() {
     return this._pid;
   }

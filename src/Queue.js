@@ -17,7 +17,6 @@ class Queue {
     this.queueType = queueType;
   }
 
-  // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
     this.processes.push(process);
     process.setParentQueue(this);
@@ -26,7 +25,7 @@ class Queue {
 
   // Dequeues the next process in the queue. Return the dequeue'd process
   dequeue() {
-    return this.process.shift();
+    return this.processes.shift();
   }
 
   // Return the least-recently added process without removing it from the list of processes
@@ -35,7 +34,7 @@ class Queue {
   }
 
   isEmpty() {
-    return this.processes.length <= 0;
+    return this.processes.length === 0;
   }
 
   getPriorityLevel() {
@@ -52,15 +51,19 @@ class Queue {
   // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
     if (currentProcess.isStateChanged()) {
-      this.quantumClock = 0;
-      return;
-    }
-    this.quantumClock += time;
-    if (this.quantumClock >= this.quantum) {
-      const dequeueProcess = this.dequeue();
-      this.quantumClock = 0;
-      if (!dequeueProcess.isFinished()) {
-        this.emitInterrupt(dequeueProcess, SchedulerInterrupt.LOWER_PRIORITY);
+      // this.quantumClock = 0;
+    } else {
+      this.quantumClock += time;
+      if (this.quantumClock >= this.quantum) {
+        this.quantumClock = 0;
+        this.dequeue();
+        if (!currentProcess.isFinished()) {
+          this.scheduler.handleInterrupt(
+            this,
+            currentProcess,
+            SchedulerInterrupt.LOWER_PRIORITY
+          );
+        }
       }
     }
   }
@@ -76,7 +79,7 @@ class Queue {
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
   doBlockingWork(time) {
-    const process = this.peak();
+    const process = this.peek();
     process.executeBlockingProcess(time);
     this.manageTimeSlice(process, time);
   }
@@ -85,10 +88,8 @@ class Queue {
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
   // The process also needs to be removed from the queue
   emitInterrupt(source, interrupt) {
-    for (let i = 0; i < this.process.length; i++) {
-      if (this.process[i] === source) this.process.splice(i, 1);
-    }
     this.scheduler.handleInterrupt(this, source, interrupt);
+    this.processes = this.processes.filter(process => process !== source);
   }
 }
 
