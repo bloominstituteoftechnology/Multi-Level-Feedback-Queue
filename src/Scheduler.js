@@ -31,11 +31,14 @@ class Scheduler {
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
   run() {
     while (!this.allQueuesEmpty()) {
+      console.log('WHILE LOOP');
       const timeslice = Date.now() - this.clock;
       if (!this.blockingQueue.isEmpty()) {
+        console.log('block empty');
         this.blockingQueue.doBlockingWork(timeslice);
       }
       for (let i = 0; i < this.runningQueues.length; i++) {
+        console.log('FOR LOOP');
         if (!this.runningQueues[i].isEmpty()) {
           this.runningQueues[i].doCPUWork(timeslice);
         }
