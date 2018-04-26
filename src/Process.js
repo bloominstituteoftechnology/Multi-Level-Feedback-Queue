@@ -21,7 +21,7 @@ class Process {
     }
 
     setParentQueue(queue) {
-        return (this.queue = queue);
+        return this.queue = queue;
     }
 
     isFinished() {

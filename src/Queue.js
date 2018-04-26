@@ -20,15 +20,12 @@ class Queue {
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
         process.queue = this;
-        this.processes.push(process);
-        return this.processes[this.processes.length - 1];
+        return this.processes.push(process);
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-        let deq = this.processes[0];
-        this.processes = this.processes.slice(1);
-        return deq;
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
@@ -55,6 +52,22 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
+        // if (currentProcess.isStateChanged()){
+        //     this.quantumClock = 0;
+        //     return;
+        // }
+
+        // this.quantumClock += time;
+        // if(this.quantumClock >= this.quantum){
+        //     this.quantumClock = 0;
+        //     this.dequeue();
+
+        //     if(!currentProcess.isFinished()){
+        //         this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.PROCESS_BLOCKED);
+        //     } else {
+        //         console.log("process complete");
+        //     }
+        // }
         if (!currentProcess.stateChanged) {
             if (time > this.quantum) {
                 currentProcess.cpuTimeNeeded =
@@ -76,7 +89,7 @@ class Queue {
                     this.quantumClock = 0;
                     return this.dequeue();
                 } else {
-                    this.quantumClock = this.quantumClock + this.quantum;
+                    this.quantumClock = this.quantumClock + time;
                     this.emitInterrupt(
                         currentProcess,
                         SchedulerInterrupt.LOWER_PRIORITY
@@ -100,11 +113,18 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-        switch(true){
+        switch (true) {
             case interrupt === SchedulerInterrupt.PROCESS_READY:
                 this.dequeue();
-                return 
-
+                this.scheduler.handleInterrupt(this, source, interrupt);
+                return;
+            case interrupt === SchedulerInterrupt.PROCESS_BLOCKED:
+                this.dequeue();
+                this.scheduler.handleInterrupt(this, source, interrupt);
+                return;
+            default:
+                
+                break;
         }
     }
 }
