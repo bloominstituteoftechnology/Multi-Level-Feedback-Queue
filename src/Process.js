@@ -16,11 +16,12 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+       this.queue = queue;      
     }
 
     isFinished() {
-
+        if (this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0) return true;
+				return false;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,25 +30,36 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
-   }
-
-   // If this process requires blocking time, decrement the amount of blocking
+			this.stateChanged = false;
+      if (!this.blockingTimeNeeded) {
+				this.cpuTimeNeeded -= time;
+				if (this.cpuTimeNeeded < 0) this.cpuTimeNeeded = 0;
+      } else {
+				  this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+					this.statedChanged = true;
+				}
+     }
+   
+		// If this process requires blocking time, decrement the amount of blocking
    // time it needs by the input time
    // Once it no longer needs to perform any blocking execution, move it to the 
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+			  if ((this.blockingTimeNeeded -= time) <= 0) {
+			      this.blockingTimeNeeded = 0;
+						this.statedChanged = true;
+						this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+				}
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+       return this.isStateChanged; 
     }
 
     get pid() {
-
+       return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
