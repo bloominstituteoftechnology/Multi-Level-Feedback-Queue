@@ -29,6 +29,7 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
+        this.stateChanged = false;
         if (this.blockingTimeNeeded === 0) {
             this.cpuTimeNeeded = Math.max(this.cpuTimeNeeded-time, 0);
         } else {
@@ -43,6 +44,7 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
+        this.stateChanged = false;
         if (this.blockingTimeNeeded !== 0)
         {
             this.blockingTimeNeeded = Math.max(this.blockingTimeNeeded-time, 0);
