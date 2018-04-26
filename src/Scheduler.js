@@ -40,7 +40,7 @@ class Scheduler {
     }
   }
 
-  allEmpty() {
+  allQueuesEmpty() {
     for (let i = 0; i < this.runningQueues.length; i += 1) {
       if (!this.runningQueues[i].isEmpty()) {
         return false;
