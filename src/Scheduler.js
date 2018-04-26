@@ -1,5 +1,6 @@
 const Queue = require('./Queue'); 
 const { 
+	  SchedulerInterrupt,
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
@@ -31,19 +32,36 @@ class Scheduler {
 			 if (!this.blockingQueue.isEmpty()) {
 			     this.blockingQueue.doBlockingWork(timeSlice);
 			 }
+			 if (this.blockingQueue.isEmpty()) {
+			     console.log("Blocking queue is empty");
 			 this.runningQueues.forEach(queue => { 
 					 if (!queue.isEmpty()) queue.doCPUWork(timeSlice);
 					});
-			     if (this.allQueuesEmpty()) break;
-					}
-       }
+			     let runningQueuesAreEmpty = true;
+					 this.runningQueues.forEach(queue => {
+						if (!queue.isEmpty()) {
+						   console.log("Found a queue that's still running! Queue : ", queue);
+							 return runningQueuesAreEmpty = false;
+						 }
+					})
+					 if (runningQueuesAreEmpty) console.log("Running queues are empty!")
 
-    allEmpty() {
+			     if (runningQueuesAreEmpty && this.blockingQueue.isEmpty()) {
+						 console.log("All the processes have been served!");
+						 break;
+					};
+       }
+		}
+ }
+    allQueuesEmpty() {
       let allQueuesEmpty = true;
 			this.runningQueues.forEach(queue => {
+					if (!queue.isEmpty()) console.log("This queue wasn't empty!", queue);
 					if (!queue.isEmpty()) allQueuesEmpty = false;
       });
+			    console.log(`Are the running queues empty: ${allQueuesEmpty}`);
 			    if (!this.blockingQueue.isEmpty()) allQueuesEmpty = false;
+					console.log(`Are the queues empty: ${allQueuesEmpty}`);
 					return allQueuesEmpty;
 			}
 
@@ -61,7 +79,7 @@ class Scheduler {
 				 case SchedulerInterrupt.PROCESS_READY: 
 					 this.addNewProcess(process);
 					 break;
-				 case SchedulerInterript.LOWER_PRIORITY:
+				 case SchedulerInterrupt.LOWER_PRIORITY:
 					 if (queue.getQueueType() === Queue.CPU_QUEUE) {
 						 const priority = queue.getPriorityLevel();
 						  if (priority < 2) {
