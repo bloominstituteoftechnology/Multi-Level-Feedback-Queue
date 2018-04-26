@@ -39,9 +39,17 @@ class Scheduler {
     }
 
     allQueuesEmpty() {
+        // for(let i = 0; i < this.runningQueues.length; i++) {
+        //     if(!this.runningQueues[i].isEmpty()) {
+        //         return false;
+        //     }
+        // }
+        //return true;
         if(this.blockingQueue.isEmpty()){
             this.runningQueues.forEach(queue => {
-                return !queue.isEmpty();
+                if(!queue.isEmpty()){
+                    return false;
+                }
             });
             return true;
         }
@@ -58,9 +66,11 @@ class Scheduler {
             case 'PROCESS_BLOCKED':
                 this.blockingQueue.enqueue(process);
             break;
+
             case 'PROCESS_READY':
                 this.addNewProcess(process);
             break;
+
             case 'LOWER_PRIORITY':
                 // queue.dequeue();
                 // process.setParentQueue(this.runningQueues[queue.priorityLevel + 1]);
@@ -74,8 +84,9 @@ class Scheduler {
                     }
                 }
                 break;
-            break;
+
             default:
+                break;
         }
     }
 

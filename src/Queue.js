@@ -56,7 +56,7 @@ class Queue {
         }else if(currentProcess.stateChanged){
             this.quantumClock = 0;
         }else{
-            this.quantumClock = time;
+            this.quantumClock += time;
         }
     }
 
