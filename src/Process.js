@@ -29,7 +29,7 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-        this.stateChanged = false;
+        
         if(this.blockingTimeNeeded === 0) {
             this.cpuTimeNeeded -= time;
             this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;
