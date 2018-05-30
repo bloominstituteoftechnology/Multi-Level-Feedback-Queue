@@ -24,11 +24,25 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
+        while (!this.allEmpty()){
+            let now = Date.now();
+            let timeSlice = this.clock - now;
+            this.clock = now; 
+        }
+        if (!this.blockingQueue.length) {
+            this.blockingQueue.doBlockingWork(timeSlice);
+        }
     }
 
     allEmpty() {
+        for (let i = 0; i < PRIORITY_LEVELS; i++) {
+            if (this.runningQueues[i].length > 0)
+                return false;
+        }
+        if (this.blockingQueue.length > 0)
+            return false;
 
+        return true;
     }
 
     addNewProcess(process) {
