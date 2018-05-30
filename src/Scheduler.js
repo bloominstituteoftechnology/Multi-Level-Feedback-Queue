@@ -27,7 +27,7 @@ class Scheduler {
 
     }
 
-    allEmpty() {
+    allQueuesEmpty() {
 
     }
 
