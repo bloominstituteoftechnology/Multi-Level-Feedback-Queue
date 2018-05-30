@@ -16,7 +16,7 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     isFinished() {
@@ -43,11 +43,11 @@ class Process {
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
-    get pid() {
-
+    getPid() {
+        return this.pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
