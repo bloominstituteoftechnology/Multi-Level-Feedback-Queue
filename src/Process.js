@@ -16,11 +16,11 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     isFinished() {
-
+        
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
