@@ -91,7 +91,7 @@ Loop:
         (in our case, the program will be done)
 ```
 
-### Extra Credit
+### Stretch Goals
 Implement priority boosting within your MLFQ. Priority boosting is the idea that there is a global time quantum of,
 say, 500 ms that elapses. Once that global time quantum hits 0, it should reset, and every process in any of the 
 available queues should all be moved back up to the top-level priority queue. This is one such scheme that is 
