@@ -39,7 +39,7 @@ class Scheduler {
       }
     }
 
-    allEmpty() {
+    allQueuesEmpty() {
       return !(this.blockingQueue || this.runningQueues);
     }
 
