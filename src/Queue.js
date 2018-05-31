@@ -52,49 +52,34 @@ class Queue {
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
       
-      if (currentProcess.stateChanged) {
-        this.quantumClock = 0;
-      }
-      
-      this.emitInterrupt(currentProcess, )
-
-
-        // if (this.quantumClock >= this.quantum) {
-
-        // if (currentProcess.isFinished() === false) {
-        //   // move to lower priority queue
+      if (!currentProcess.isStateChanged()) {
+        this.quantumClock += time;
+        
+        if (this.quantumClock >= this.quantum) {
+          this.quantumClock = 0;
+          this.dequeue();
           
-        //   // check if current priority is last
-        //   if (this.priorityLevel === 1) {
-
-        //   }
-        //     emitInterrupt();
-        // } else {
-        //   currentProcess.dequeue();
-        // }
-      // }
+          if (!currentProcess.isFinished()) {
+            this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+          }
+        }
+      }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-      if (this.queueType === 'CPU_QUEUE') {
-        if (this.processes.length >= 1) {
-          this.manageTimeSlice(this.processes[0], time);
-          this.processes[0].executeProcess(time);
-        }
-      }
+      const process = this.peek();
+      process.executeProcess(time);
+      this.manageTimeSlice(process, time);
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-      if (this.queueType === 'BLOCKING_QUEUE') {
-        if (this.processes.length >= 1) {
-          this.manageTimeSlice(this.processes[0], time);
-          this.processes[0].executeBlockingProcess(time);
-        }
-      }
+      const process = this.peek();
+      process.executeBlockingProcess(time);
+      this.manageTimeSlice(process, time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
