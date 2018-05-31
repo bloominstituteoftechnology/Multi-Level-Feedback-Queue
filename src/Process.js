@@ -20,6 +20,7 @@ class Process {
     }
 
     isFinished() {
+        // if both are 0 return true otherwise return false
         return this.blockingTimeNeeded <= 0 && this.cpuTimeNeeded <= 0;
     }
 

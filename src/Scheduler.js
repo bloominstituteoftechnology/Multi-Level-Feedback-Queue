@@ -1,14 +1,11 @@
-const Queue = require('./Queue'); 
-const { 
-    QueueType,
-    PRIORITY_LEVELS,
-} = require('./constants/index');
+const Queue = require("./Queue");
+const { QueueType, PRIORITY_LEVELS } = require("./constants/index");
 
 // A class representing the scheduler
-// It holds a single blocking queue for blocking processes and three running queues 
+// It holds a single blocking queue for blocking processes and three running queues
 // for non-blocking processes
-class Scheduler { 
-    constructor() { 
+class Scheduler {
+    constructor() {
         this.clock = Date.now();
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];
@@ -23,22 +20,60 @@ class Scheduler {
     // time from the clock property. Don't forget to update the clock property afterwards.
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-    run() {
 
+    run() {
+        while (!this.allQueuesEmpty()) {
+            const time = Date.now();
+            const workTime = time - this.clock;
+            this.clock = time;
+
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                if (!this.runningQueues[i].isEmpty()) {
+                    this.runningQueues[i].doCPUWork(workTime);
+                }
+            }
+        }
     }
 
-    allEmpty() {
-
+    allQueuesEmpty() {
+        for (let i = 0; i < this.runningQueues.length; i++) {
+            if (!this.runningQueues[i].isEmpty()) return false;
+        }
+        return true;
     }
 
     addNewProcess(process) {
-
+        return this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-    handleInterrupt(queue, process, interrupt) {
 
+    handleInterrupt(queue, process, interrupt) {
+        switch (interrupt) {
+            case "PROCESS_BLOCKED":
+                this.blockingQueue.enqueue(process);
+                break;
+            case "PROCESS_READY":
+                this.addNewProcess(process);
+                break;
+            case "LOWER_PRIORITY":
+                if (queue.getQueueType() === "BLOCKING_QUEUE") {
+                    this.blockingQueue.enqueue(process);
+                } else {
+                    if (queue.getPriorityLevel() !== 2) {
+                        this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process);
+                    } else {
+                        this.runningQueues[2].enqueue(process);
+                    }
+                }
+                break;
+            default:
+                console.log("Interrupt Error");
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
