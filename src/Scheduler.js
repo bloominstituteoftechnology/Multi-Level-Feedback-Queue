@@ -31,6 +31,7 @@ class Scheduler {
       const workTime = currentTime - this.clock;
       this.clock = currentTime;
 
+
       if (!this.blockingQueue.isEmpty()) {
         this.blockingQueue.doBlockingWork(workTime);
       }
