@@ -50,7 +50,9 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-
+        setInterval(() => {
+            console.log(1);
+        }, time)
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
@@ -69,7 +71,7 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-
+        this.scheduler.handleInterrupt(this, source, interrupt)
     }
 }
 

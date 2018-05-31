@@ -20,7 +20,8 @@ class Process {
     }
 
     isFinished() {
-
+        if (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0) return true;
+        return false;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,16 +30,32 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
+        if (this.blockingTimeNeeded === 0) {
+            for (let i = 0; i < time; i++) {
+                if (this.cpuTimeNeeded > 0) this.cpuTimeNeeded--;
+            }
+        }
+        else {
+            this.stateChanged = true;
+            this.queue.emitInterrupt(this ,PROCESS_BLOCKED);
+        }
+    }
 
-   }
-
-   // If this process requires blocking time, decrement the amount of blocking
-   // time it needs by the input time
-   // Once it no longer needs to perform any blocking execution, move it to the 
-   // top running queue by emitting the appropriate interrupt
-   // Make sure the `stateChanged` flag is toggled appropriately
+    // If this process requires blocking time, decrement the amount of blocking
+    // time it needs by the input time
+    // Once it no longer needs to perform any blocking execution, move it to the 
+    // top running queue by emitting the appropriate interrupt
+    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+        if (this.blockingTimeNeeded > 0) {
+            for (let i = 0; i < time; i++) {
+                if (this.blockingTimeNeeded > 0) this.blockingTimeNeeded--;
+            }
+        }
+        if (this.blockingTimeNeeded === 0) {
+            this.stateChanged = true;
+            this.queue.emitInterrupt(this ,PROCESS_READY);
+        }
     }
 
     // Returns this process's stateChanged property
