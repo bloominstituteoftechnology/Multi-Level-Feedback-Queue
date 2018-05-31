@@ -24,12 +24,9 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
 
-    allQueuesEmpty() {
-      return !(this.blockingQueue || this.runningQueues);
-    }
 
     run() {
-      while (allQueuesEmpty() === false) {
+      while (this.allQueuesEmpty() === false) {
         let timeSlice = this.clock - Date.now();
         this.clock = this.clock - timeSlice;
 
@@ -45,6 +42,11 @@ class Scheduler {
       }
     }
 
+    allQueuesEmpty() {
+      return !(this.blockingQueue || this.runningQueues);
+    }
+
+
     addNewProcess(process) {
       if (process.blockingTimeNeeded) {
         this.blockingQueue.enqueue(process);
@@ -57,13 +59,13 @@ class Scheduler {
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
       switch (interrupt) {
-        case PROCESS_BLOCKED:
+        case 'PROCESS_BLOCKED':
           this.blockingQueue.enqueue(process);
           break;
-        case PROCESS_READY:
+        case 'PROCESS_READY':
           this.runningQueues[0].enqueue(process);
           break;
-        case LOWER_PRIORITY:
+        case 'LOWER_PRIORITY':
           let priority = queue.getPriorityLevel();
           if (priority === 3) {
             this.runningQueues[3].enqueue(process);
