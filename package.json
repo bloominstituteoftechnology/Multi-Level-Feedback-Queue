@@ -13,7 +13,7 @@
         "type": "git",
         "url": "git+https://github.com/LambdaSchool/Multi-Level-Feedback-Queue.git"
     },
-    "author": "Sean Chen",
+    "author": "Sean Chen, Edward Manda",
     "license": "ISC",
     "devDependencies": {
         "babel-jest": "^19.0.0",
