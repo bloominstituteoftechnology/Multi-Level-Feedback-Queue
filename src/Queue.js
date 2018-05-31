@@ -1,5 +1,5 @@
 const { SchedulerInterrupt } = require('./constants/index');
-
+// Drugs are bad MMMKAY
 // A class representation of a process queue that may hold either a 
 // blocking or non-blocking process
 class Queue {
