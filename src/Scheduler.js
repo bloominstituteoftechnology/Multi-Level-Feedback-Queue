@@ -25,15 +25,65 @@ class Scheduler {
   // time from the clock property. Don't forget to update the clock property afterwards.
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-  run() {}
+  run() {
+    while (true) {
+      const time = Date.now();
+      const workTime = time - this.clock;
+      this.clock = time;
 
-  allQueuesEmpty() {}
+      if (!this.blockingQueue.isEmpty()) {
+        this.blockingQueue.doBlockingWork(workTime);
+      }
+      for (let i = 0; i < PRIORITY_LEVELS; i++) {
+        const queue = this.runningQueues[i];
+        if (!queue.isEmpty()) {
+          queue.doCPUWork(workTime);
+          break;
+        }
+      }
+      if (this.allQueuesEmpty()) {
+        console.log('No more processes');
+        break;
+      }
+    }
+  }
 
-  addNewProcess(process) {}
+  allQueuesEmpty() {
+    return this.runningQueues.every(queue => queue.processes.length === 0);
+  }
+
+  addNewProcess(process) {
+    this.runningQueues[0].enqueue(process);
+  }
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-  handleInterrupt(queue, process, interrupt) {}
+  handleInterrupt(queue, process, interrupt) {
+    switch (interrupt) {
+      case 'PROCESS_BLOCKED':
+        this.blockingQueue.enqueue(process);
+        break;
+      case 'PROCESS_READY':
+        this.addNewProcess(process);
+        break;
+      case 'LOWER_PRIORITY':
+        if (queue.getQueueType() === QueueType.BLOCKING_QUEUE) {
+          queue.enqueue(process);
+          break;
+        }
+
+        const priority = queue.getPriorityLevel();
+        if (priority === PRIORITY_LEVELS - 1) {
+          queue.enqueue(process);
+          break;
+        }
+
+        this.runningQueues[priority + 1].enqueue(process);
+        break;
+      default:
+        break;
+    }
+  }
 
   // Private function used for testing; DO NOT MODIFY
   _getCPUQueue(priorityLevel) {
