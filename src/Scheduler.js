@@ -10,6 +10,7 @@ const {
 class Scheduler { 
     constructor() { 
         this.clock = Date.now();
+        this.globalQuantum = 500;
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];
         // Initialize all the CPU running queues
@@ -41,6 +42,21 @@ class Scheduler {
           }
         }
         this.clock = Date.now();
+        this.globalQuantum -= timeSlice;
+
+        if (this.globalQuantum === 0) {
+          for (let i = 1; i < this.runningQueues.length; i++) {
+            let currentQueue = this.runningQueues[i];
+            
+            if (!currentQueue.isEmpty()) {
+              currentQueue.processes.forEach(process => {
+                let currentProcess = currentQueue.dequeue();
+                this.runningQueues[0].enqueue(currentProcess);
+              });
+            }
+          }
+          this.globalQuantum = 500;
+        }
       }
     }
 
