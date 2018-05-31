@@ -19,28 +19,45 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
+       this.processes.unshift(process);   
+       process.setParentQueue(this);
+       return process;
+        
 
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
+        let decPro = this.processes.shift();
+        return decPro;
+        
 
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
+        let peeker = this.processes[this.processes.length - 1];
+        return peeker;
 
     }
 
     isEmpty() {
+        if(this.processes.length === 0){
+            return true;
+        }
+        else{
+            return false;
+        }
 
     }
 
     getPriorityLevel() {
+        return this.priorityLevel;
 
     }
 
     getQueueType() {
+        return this.queueType;
 
     }
 

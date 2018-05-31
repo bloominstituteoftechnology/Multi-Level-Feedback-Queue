@@ -17,9 +17,15 @@ class Process {
     
     setParentQueue(queue) {
 
+        return this.queue = queue;
+
     }
 
     isFinished() {
+
+        if (this.blockingTimeNeeded > 0){
+            return false;
+        }
 
     }
 
@@ -29,6 +35,14 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
+
+        if (this.blockingTimeNeeded > 0){
+            // blocking = true;
+            this.stateChanged = true;
+        }
+        else{
+            return this.cpuTimeNeeded 
+        }
 
    }
 
@@ -43,10 +57,11 @@ class Process {
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     get pid() {
+        return this._pid
 
     }
 
