@@ -23,28 +23,36 @@ class Scheduler {
     // time from the clock property. Don't forget to update the clock property afterwards.
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-    run() {
-      while (allEmpty() === false) {
-        let timeSlice = this.clock - Date.now();
-        this.clock = this.clock - timeSlice;
-
-        if (this.blockingQueue) {
-          this.blockingQueue[0].doBlockingWork(timeSlice);
-        }
-        
-        for (let i = 0; i < this.runningQueues.length(); i++) {
-          this.runningQueues[i].doCPUWork(timeSlice);
-        }
-
-      }
-    }
 
     allQueuesEmpty() {
       return !(this.blockingQueue || this.runningQueues);
     }
 
-    addNewProcess(process) {
+    run() {
+      while (allQueuesEmpty() === false) {
+        let timeSlice = this.clock - Date.now();
+        this.clock = this.clock - timeSlice;
 
+        if (this.blockingQueue) {
+          this.blockingQueue[0].doBlockingWork(timeSlice);
+        } else {
+          
+          for (let i = 0; i < this.runningQueues.length(); i++) {
+            this.runningQueues[i].doCPUWork(timeSlice);
+          }
+        }
+
+      }
+    }
+
+    addNewProcess(process) {
+      if (process.blockingTimeNeeded) {
+        process.setParentQueue(this.blockingQueue);
+        this.blockingQueue.processes.push(process);
+      } else {
+        process.setParentQueue(this.runningQueues[0]);
+        this.runningQueues[0].processes.push(process);
+      }
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant

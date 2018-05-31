@@ -19,22 +19,23 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
+      process.setParentQueue(this);
       this.processes.push(process);
       return process;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-      return this.processes.pop();
+      return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-      return this.processes[this.processes.length - 1];
+      return this.processes[0];
     }
 
     isEmpty() {
-      return this.processes.length() == 0;
+      return this.processes.length === 0;
     }
 
     getPriorityLevel() {
@@ -50,34 +51,37 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-
-      if (currentProcess.stateChanged === false) {
-        currentProcess.executeProcess(time);
+      
+      if (currentProcess.stateChanged) {
+        this.quantumClock = 0;
       }
+      
+      this.emitInterrupt(currentProcess, )
 
-      if (quantumClock >= quantum) {
 
-        if (currentProcess.isFinished() === false) {
-          // move to lower priority queue
+        // if (this.quantumClock >= this.quantum) {
+
+        // if (currentProcess.isFinished() === false) {
+        //   // move to lower priority queue
           
-          // check if current priority is last
-          if (this.priorityLevel === 1) {
+        //   // check if current priority is last
+        //   if (this.priorityLevel === 1) {
 
-          }
-            emitInterrupt();
-        } else {
-          currentProcess.dequeue();
-        }
-      }
+        //   }
+        //     emitInterrupt();
+        // } else {
+        //   currentProcess.dequeue();
+        // }
+      // }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
       if (this.queueType === 'CPU_QUEUE') {
-        manageTimeSlice(this.processes[0], this.quantum);
         if (this.processes.length >= 1) {
-          this.processes[1].executeProcess(this.quantum);
+          this.manageTimeSlice(this.processes[0], time);
+          this.processes[0].executeProcess(time);
         }
       }
     }
@@ -86,9 +90,9 @@ class Queue {
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
       if (this.queueType === 'BLOCKING_QUEUE') {
-        manageTimeSlice(this.processes[0], this.quantum);
         if (this.processes.length >= 1) {
-          this.processes[1].executeBlockingProcess(this.quantum);
+          this.manageTimeSlice(this.processes[0], time);
+          this.processes[0].executeBlockingProcess(time);
         }
       }
     }
@@ -97,13 +101,9 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-      if (interrupt === PROCESS_BLOCKED) {
-        
-      } else if (interrupt === PROCESS_READY) {
-        
-      }
-
-      
+      let processIndex = this.processes.indexOf(source);
+      this.scheduler.handleInterrupt(this, source, interrupt);
+      this.processes.splice(processIndex, 1);
     }
 }
 
