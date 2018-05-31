@@ -7,7 +7,7 @@ const { SchedulerInterrupt } = require('./constants/index');
 // randomly determined.
 class Process {
     constructor(pid, cpuTimeNeeded=null, blocking=false) {
-        this._pid = pid;
+        this.pid = pid;
         this.queue = null;
         this.cpuTimeNeeded = (cpuTimeNeeded !== null) ? cpuTimeNeeded : Math.round(Math.random() * 1000);
         this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
@@ -20,7 +20,7 @@ class Process {
     }
 
     isFinished() {
-        if (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0) return true;
+        if (this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0) return true;
         return false;
     }
 
@@ -36,8 +36,8 @@ class Process {
             }
         }
         else {
-            this.stateChanged = true;
-            this.queue.emitInterrupt(this ,PROCESS_BLOCKED);
+            this.stateChanged = !this.stateChanged;
+            this.queue.emitInterrupt(this , 'PROCESS_BLOCKED');
         }
     }
 
@@ -53,8 +53,8 @@ class Process {
             }
         }
         if (this.blockingTimeNeeded === 0) {
-            this.stateChanged = true;
-            this.queue.emitInterrupt(this ,PROCESS_READY);
+            this.stateChanged = !this.stateChanged;
+            this.queue.emitInterrupt(this , 'PROCESS_READY');
         }
     }
 
@@ -63,7 +63,7 @@ class Process {
         return this.stateChanged;
     }
 
-    getPid() {
+    pid() {
         return this.pid;
     }
 
