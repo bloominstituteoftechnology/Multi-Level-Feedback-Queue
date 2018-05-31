@@ -29,18 +29,18 @@ class Scheduler {
   run() {
     while (!this.allQueuesEmpty()) {
       const workTime = Date.now() - this.clock;
+      this.clock = Date.now();
       
       if (!this.blockingQueue.isEmpty()) {
         this.blockingQueue.doBlockingWork(workTime);
       }
-      for (let i = 0; i < PRIORITY_LEVELS; i++) {
-        if (this.runningQueues[i].isEmpty()) {
+      for (let i = 0; i < this.runningQueues.length; i++) {
+        if (!this.runningQueues[i].isEmpty()) {
           this.runningQueues[i].doCPUWork(workTime);
           break;
         }
       }
     }
-    this.clock = Date.now();
   }
 
   allQueuesEmpty() {
