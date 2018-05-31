@@ -47,25 +47,33 @@ class Scheduler {
 
     addNewProcess(process) {
       if (process.blockingTimeNeeded) {
-        process.setParentQueue(this.blockingQueue);
-        this.blockingQueue.processes.push(process);
+        this.blockingQueue.enqueue(process);
       } else {
-        process.setParentQueue(this.runningQueues[0]);
-        this.runningQueues[0].processes.push(process);
+        this.runningQueues[0].enqueue(process);
       }
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-      if (interrupt === 'PROCESS_BLOCKED') {
-
-      } else if (interrupt === 'PROCESS_READY') {
-
-      } else {
-
+      switch (interrupt) {
+        case PROCESS_BLOCKED:
+          this.blockingQueue.enqueue(process);
+          break;
+        case PROCESS_READY:
+          this.runningQueues[0].enqueue(process);
+          break;
+        case LOWER_PRIORITY:
+          let priority = queue.getPriorityLevel();
+          if (priority === 3) {
+            this.runningQueues[3].enqueue(process);
+          } else {
+            this.runningQueues[priority + 1].enqueue(process);
+          }
+          break;
       }
     }
+       
 
     // Private function used for testing; DO NOT MODIFY
     _getCPUQueue(priorityLevel) {
