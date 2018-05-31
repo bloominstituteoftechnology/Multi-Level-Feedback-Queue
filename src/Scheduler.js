@@ -24,21 +24,57 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
+        while (!this.allEmpty()) {
+            const curTime = Date.now();
+            const workTime = curTime - this.clock;
+            this.clock = curTime;
 
+            if(!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+
+            this.runningQueues.forEach(queue => {
+                if(!queue.isEmpty()) queue.doCPUWork(workTime);
+            });
+             }
+        
+        this.clock = Date.now();
     }
 
     allEmpty() {
-
+        return this.runningQueues.every((queue) => queue.processes.length === 0);
     }
 
     addNewProcess(process) {
-
+        const highestQueue = this.runningQueues[0];
+        highestQueue.enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
+        switch (interrupt) {
+            case SchedulerInterrupt.PROCESS_BLOCKED:
+            this.blockingQueue.enqueue(process);
+            break;
+            case SchedulerInterrupt.PRIORITY_READY:
+            this.addNewProcess(process);
+            break;
+            case SchedulerInterrupt.LOWER_PRIORITY:
+            if(queue.getQueueType() === QueueType.BLOCKING_QUEUE) {
+                queue.enqueue(process);
+                break;
+         }
+         const priority = queue.getPriorityLevel();
+         if (priority === PRIORITY_LEVELS -1) {
+             queue.enqueue(process);
+             break;
+         }
+         this.runningQueues[priority + 1].enqueue(process);
+         break;
+         default:
+         break;
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
