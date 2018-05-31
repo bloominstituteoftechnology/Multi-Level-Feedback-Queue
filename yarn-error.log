@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn run test tests/Queue.test.js
+  /usr/local/bin/node /usr/local/bin/yarn run test tests/Scheduler.test.js
 
 PATH: 
   /Users/ajuber/Documents/mongodb/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Postgres.app/Contents/Versions/latest/bin:/Users/ajuber/Documents/mongodb/bin
@@ -3983,7 +3983,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c jest --verbose tests/Queue.test.js
+  Arguments: -c jest --verbose tests/Scheduler.test.js
   Directory: /Users/ajuber/LambdaSchool/week-17-operating-systems/Multi-Level-Feedback-Queue
   Output:
   
