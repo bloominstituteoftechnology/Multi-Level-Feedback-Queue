@@ -1,5 +1,6 @@
 const Queue = require('./Queue'); 
 const { 
+    SchedulerInterrupt,
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
@@ -27,18 +28,44 @@ class Scheduler {
 
     }
 
-    allEmpty() {
+    allQueuesEmpty() {
+        if(!this.blockingQueue.isEmpty()) {
+            return false;
+        }
 
+        for(let i = 0; i < PRIORITY_LEVELS; i++) {
+            if(!this.runningQueues[i].isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
+        if(interrupt === SchedulerInterrupt.PROCESS_BLOCKED) {
+            process.stateChanged = false;
+            this.blockingQueue.enqueue(process);
+        } else if(interrupt === SchedulerInterrupt.PROCESS_READY) {
+            process.stateChanged = false;
+            this.addNewProcess(process);
+        } else if(interrupt === SchedulerInterrupt.LOWER_PRIORITY) {
+            process.stateChanged = false;
 
+            if(process.blockingTimeNeeded > 0) {
+                this.blockingQueue.dequeue();
+                this.blockingQueue.enqueue(process);
+            } else {
+                const newLevel = queue.priorityLevel < PRIORITY_LEVELS-1 ? queue.priorityLevel+1 : queue.priorityLevel;
+                this.runningQueues[newLevel].enqueue(process);
+            }
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY

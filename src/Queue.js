@@ -19,29 +19,39 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+        process.setParentQueue(this);
+        this.processes.push(process);
+        return this.peek();
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
+        if(this.isEmpty()) {
+            return undefined;
+        }
 
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
+        if(this.isEmpty()) {
+            return undefined;
+        }
 
+        return this.processes[0];
     }
 
     isEmpty() {
-
+        return this.processes.length == 0;
     }
 
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the given amount of time
@@ -49,7 +59,11 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-
+        if(currentProcess.stateChanged) {
+            this.quantumClock = 0;
+        } else {
+            this.quantumClock = time;
+        }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
@@ -68,7 +82,20 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
+        let indexOfProcess = -1;
+        for(let i = 0; i < this.processes.length; i++) {
+            const process = this.processes[i];
+            if(process.pid == source.pid) {
+                indexOfProcess = i;
+                break;
+            }
+        }
 
+        if(indexOfProcess > -1) {
+            this.processes.splice(indexOfProcess, 1);
+        }
+
+        this.scheduler.handleInterrupt(this, source, interrupt);
     }
 }
 

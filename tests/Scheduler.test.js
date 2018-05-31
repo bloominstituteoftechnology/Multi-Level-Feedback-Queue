@@ -31,7 +31,7 @@ describe('Scheduler', () => {
         const topPriorityRunningQueue = scheduler._getCPUQueue(0);
         const lowerPriorityRunningQueue = scheduler._getCPUQueue(1);
 
-        expect(topPriorityRunningQueue.peek()).toBe(process); 
+        expect(topPriorityRunningQueue.peek()).toBe(process);
         expect(lowerPriorityRunningQueue.peek()).toBeUndefined();
         expect(scheduler.allQueuesEmpty()).toBe(false);
         
