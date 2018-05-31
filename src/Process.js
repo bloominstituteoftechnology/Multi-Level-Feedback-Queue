@@ -35,13 +35,19 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
+        this.stateChanged = false;
 
         if (this.blockingTimeNeeded > 0){
             // blocking = true;
+            this.scheduler.handleInterrupt(
+                this,
+                queue,
+                PROCESS_BLOCKED
+            );
             this.stateChanged = true;
         }
         else{
-            return this.cpuTimeNeeded 
+            return this.cpuTimeNeeded -= time; 
         }
 
    }
