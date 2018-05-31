@@ -1,5 +1,11 @@
 const Queue = require("./Queue");
-const { QueueType, PRIORITY_LEVELS } = require("./constants/index");
+const {
+  QueueType,
+  PRIORITY_LEVELS,
+  PROCESS_BLOCKED,
+  PROCESS_READY,
+  LOWER_PRIORITY
+} = require("./constants/index");
 
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues
@@ -25,16 +31,36 @@ class Scheduler {
   // time from the clock property. Don't forget to update the clock property afterwards.
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-  run() {}
+  run() {
+    while (true) {
+      const time = Date.now();
+      const workTime = time - this.clock;
+      this.clock = time;
 
-  allEmpty() {
-    if (this.blockingQueue.isEmpty()) {
-      for (let i = 0; i < this.runningQueues.length; i++) {
-        if (!this.runningQueues[i].length) {
-          return false;
+      if (!this.blockingQueue.isEmpty()) {
+        this.blockingQueue.doBlockingWork(workTime);
+      }
+      for (let i = 0; i < PRIORITY_LEVELS; i++) {
+        const queue = this.runningQueues[i];
+        if (!queue.isEmpty()) {
+          queue.doCPUWork(workTime);
         }
       }
     }
+  }
+
+  allQueuesEmpty() {
+    for (let i = 0; i < this.runningQueues.length; i++) {
+      if (this.runningQueues[i].length > 0) {
+        console.log("\n\nRUNNING QUEUE:\n\n", i, this.runningQueues[i]);
+        return false;
+      }
+    }
+    console.log("\n\nBLOCKING QUEUE:\n\n", this.blockingQueue);
+    if (!this.blockingQueue.isEmpty()) {
+      return false;
+    }
+
     return true;
   }
 
