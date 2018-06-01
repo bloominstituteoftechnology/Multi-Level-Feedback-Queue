@@ -6,15 +6,15 @@ class Queue {
     constructor(scheduler, quantum, priorityLevel, queueType) {
         this.processes = [];
         // The queue's priority level; the lower the number, the higher the priority
-        this.priorityLevel = priorityLevel;
+        this.priorityLevel = priorityLevel; // assigned by scheduler 
         // The queue's parent scheduler
         this.scheduler = scheduler;
         // The queue's allotted time slice; each process in this queue is executed for this amount of time in total
         // This may be done over multiple scheduler iterations
-        this.quantum = quantum;
+        this.quantum = quantum; // timeslice asosiated with each queue, highest priority has lowest quantum
         // A counter to keep track of how much time the queue has been executing so far
-        this.quantumClock = 0;
-        this.queueType = queueType;
+        this.quantumClock = 0; // counter, when cpu starts executing process, increment until quantum threshold is reached
+        this.queueType = queueType; // blocking or running
     }
 
     // Enqueues the given process. Return the enqueue'd process
@@ -68,7 +68,15 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
+        // remove process from que
+        this.processes = this.processes.filter(process => process !== source);
 
+        if (interrupt === 'PROCESS_BLOCKED') {
+            this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+        }
+        if (interrupt === 'PROCESS_READY') {
+            this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+        }
     }
 }
 
