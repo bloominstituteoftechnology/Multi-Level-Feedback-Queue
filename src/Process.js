@@ -15,13 +15,14 @@ class Process {
         this.stateChanged = false;
     }
     
-    setParentQueue(queue) {;
+    // Set the queue passed in to the current queue
+    setParentQueue(queue) {
         this.queue = queue;
-        return this.queue;
     }
 
     isFinished() {
-        if (this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0) return true;
+        // If both times are 0, it means process is executed and finished
+        if (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0) return true;
         return false;
     }
 
@@ -31,15 +32,15 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-        if (this.blockingTimeNeeded > 0) {
-            this.setParentQueue;
+        // Checks to see if blocking time is needed
+            // Changes the state to blocking queue from cpu queue
+            // Set the flag to true
+        // Decrement the cpu time (time process takes to run) by the process allotted
+        // If cputime is negative, set it to 0 (just makes more sense than negative time)
+        if (this.blockingTimeNeeded > 0) { 
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = true;
         }
-        this.setParentQueue;
-        if (this.cpuTimeNeeded > time) {
-            SchedulerInterrupt.LOWER_PRIORITY;
-        }
-        // SchedulerInterrupt.PROCESS_READY;
         this.cpuTimeNeeded -= time;
         if (this.cpuTimeNeeded < 0) this.cpuTimeNeeded = 0;
    }
@@ -49,10 +50,14 @@ class Process {
    // Once it no longer needs to perform any blocking execution, move it to the 
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
-    executeBlockingProcess(time) {;
+    executeBlockingProcess(time) {
+        // Currently in the blocking queue - decrement the blocking time needed by block time
+        // Set time to 0 if negative because it makes more sense
+        // Change state from blocking queue to cpu queue / running queue
+        // Sets flag to true
         this.blockingTimeNeeded -= time;
         if (this.blockingTimeNeeded < 0) this.blockingTimeNeeded = 0;
-        this.setParentQueue;
+        this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
         this.stateChanged = true;
     }
 
