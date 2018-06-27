@@ -15,12 +15,13 @@ class Process {
         this.stateChanged = false;
     }
     
-    setParentQueue(queue) {
-
+    setParentQueue(queue) { // **
+        this.queue = queue;
+        return this.blockingTimeNeeded <= 0 && this.cpuTimeNeeded <= 0;
     }
 
-    isFinished() {
-
+    isFinished() { // **
+        return true;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -28,8 +29,19 @@ class Process {
     // If blocking time is needed by this process, move it to the blocking queue
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
-    executeProcess(time) {
-
+    executeProcess(time) { // **
+        if(this.blockingTimeNeeded > 0) {
+            SchedulerInterrupt.PROCESS_BLOCKED;
+            this.setParentQueue;
+            this.stateChanged = true;
+        }
+        this.setParentQueue;
+        if (this.cpuTimeNeeded > time) {
+            SchedulerInterrupt.LOWER_PRIORITY;
+            this.setParentQueue;
+        }
+        SchedulerInterrupt.PROCES_READY;
+        this.cpuTimeNeeded -= time;
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -37,21 +49,23 @@ class Process {
    // Once it no longer needs to perform any blocking execution, move it to the 
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
-    executeBlockingProcess(time) {
-
+    executeBlockingProcess(time) { // ** 
+        this.blockingTimeNeeded -= time;
+        this.setParentQueue;
+        this.stateChanged = true;
     }
 
     // Returns this process's stateChanged property
-    isStateChanged() {
-
+    isStateChanged() { // **
+        return this.stateChanged;
     }
 
-    get pid() {
-
+    get pid() { // **
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
-    _getParentQueue() {
+    _getParentQueue() { // **
         return this.queue;
     }
 }
