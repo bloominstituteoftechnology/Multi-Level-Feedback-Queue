@@ -28,18 +28,18 @@ class Scheduler {
   run() {}
 
   allQueuesEmpty() {
-    let isEmpty = false;
+    let emptyQueues = 0;
     for (let i = 0; i < this.runningQueues.length; i++) {
-      if (this.runningQueues[i].length !== 0) {
-        isEmpty = !isEmpty;
+      if (this.runningQueues[i].processes.length === 0) {
+        emptyQueues++;
       }
     }
-    return isEmpty ? true : false;
+    return emptyQueues === this.runningQueues.length ? true : false;
   }
 
   addNewProcess(process) {
     // add a new process to the highest priority queue
-    return this.runningQueues[0].enqueue(process);
+    this.runningQueues[0].enqueue(process);
   }
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
