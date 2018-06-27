@@ -28,7 +28,14 @@ class Scheduler {
     }
 
     allQueuesEmpty() {
-
+        if (this.blockingQueue.processes.length === 0) {
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                if (this.runningQueues[i].processes.length > 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     addNewProcess(process) {
