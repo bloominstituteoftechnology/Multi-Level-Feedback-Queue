@@ -52,6 +52,25 @@ class Queue {
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
 
+        if (currentProcess.isStateChanged()) {
+            this.quantumClock = 0;
+            return;
+        }
+
+        this.quantumClock += time;
+
+        if (this.quantumClock >= this.quantum) {
+            this.quantumClock = 0;
+            this.dequeue();
+        }
+
+        if(!currentProcess.isFinished()) {
+            // TODO: code handle Interrupt in scheduler
+            this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+        }
+        else {
+            console.log("Process complete!");
+        }
 
     }
 
