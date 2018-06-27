@@ -47,11 +47,12 @@ class Process {
 
     // Returns this process's stateChanged property
     isStateChanged() {
+        return this.stateChanged;
 
     }
 
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
