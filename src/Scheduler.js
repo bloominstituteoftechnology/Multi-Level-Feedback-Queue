@@ -25,17 +25,26 @@ class Scheduler {
   // time from the clock property. Don't forget to update the clock property afterwards.
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-  run() {}
+  run() {
+    // while (this.allQueuesEmpty() === false) {
+    //   console.log(this.clock);
+    //   //   this.runningQueues[0].timeslice
+    // }
+  }
 
   allQueuesEmpty() {
+    if (this.runningQueues[0] === undefined) return true;
     for (let i = 0; i < this.runningQueues.length - 1; i++) {
       if (this.runningQueues[i].isEmpty() === false) {
         return false;
-      } else return true;
+      }
     }
+    return true;
   }
 
-  addNewProcess(process) {}
+  addNewProcess(process) {
+    this.runningQueues[0].enqueue(process);
+  }
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.

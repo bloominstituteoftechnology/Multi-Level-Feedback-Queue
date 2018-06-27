@@ -37,7 +37,9 @@ class Queue {
   }
 
   isEmpty() {
-    return arr[0] === undefined;
+    if (this.processes[0] === undefined) {
+      return true;
+    } else return false;
   }
 
   getPriorityLevel() {
