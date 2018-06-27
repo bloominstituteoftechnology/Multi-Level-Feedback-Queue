@@ -19,6 +19,7 @@ class Queue {
 
 	// Enqueues the given process. Return the enqueue'd process
 	enqueue(process) {
+		process.setParentQueue(this.queueType);
 		const length = this.processes.push(process);
 		return this.processes[length - 1];
 	}
@@ -30,7 +31,7 @@ class Queue {
 
 	// Return the least-recently added process without removing it from the list of processes
 	peek() {
-		return this.processes[this.processes.length - 1];
+		return this.processes[0];
 	}
 
 	isEmpty() {
@@ -45,24 +46,31 @@ class Queue {
 		return this.queueType;
 	}
 
-	// Manages a process's execution for the given amount of time
-	// Processes that have had their states changed should not be affected
+	// Manages a process's execution for the given amount of time.
+	// Processes that have had their states changed should not be affected.
 	// Once a process has received the alloted time, it needs to be dequeue'd and 
 	// then handled accordingly, depending on whether it has finished executing or not
 	manageTimeSlice(currentProcess, time) {
+		// if the state has not been changed...
+		if (!currentProcess.isStateChanged()) {
 
+		}
 	}
 
 	// Execute the next non-blocking process (assuming this is a CPU queue)
 	// This method should call `manageTimeSlice` as well as execute the next running process
 	doCPUWork(time) {
-
+		const process = this.peek();
+		process.executeProcess(time);
+		this.manageTimeSlice(process, time);
 	}
 
 	// Execute the next blocking process (assuming this is the blocking queue)
 	// This method should call `manageTimeSlice` as well as execute the next blocking process
 	doBlockingWork(time) {
-
+		const process = this.peek();
+		process.executeBlockingProcess(time);
+		this.manageTimeSlice(process, time);
 	}
 
 	// The queue's interrupt handler for notifying when a process needs to be moved to a different queue
