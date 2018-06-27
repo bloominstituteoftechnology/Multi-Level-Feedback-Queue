@@ -19,7 +19,8 @@ class Queue {
 
   // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
-      
+    this.processes.push(process);
+    // console.log("this process:", this.processes);
   }
 
   // Dequeues the next process in the queue. Return the dequeue'd process
@@ -33,11 +34,11 @@ class Queue {
   }
 
   isEmpty() {
-
+    return this.processes.length < 1; // or: length === 0;
   }
 
   getPriorityLevel() {
-
+    return this.priorityLevel;
   }
 
   getQueueType() {
