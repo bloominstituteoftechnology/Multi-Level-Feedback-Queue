@@ -27,7 +27,9 @@ class Queue {
   dequeue() {}
 
   // Return the least-recently added process without removing it from the list of processes
-  peek() {}
+  peek() {
+    return this.processes[0];
+  }
 
   isEmpty() {
     return this.processes.length === 0 ? true : false;
