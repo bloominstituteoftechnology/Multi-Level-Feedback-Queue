@@ -28,11 +28,17 @@ class Scheduler {
 	}
 
 	allQueuesEmpty() {
-
+      return this.blockingQueue.isEmpty() &&
+         this.runningQueues[0].isEmpty() &&
+         this.runningQueues[1].isEmpty() &&
+         this.runningQueues[2].isEmpty();
 	}
 
 	addNewProcess(process) {
-
+      if (process.blocking) this.blockingQueue.enqueue(process);
+      
+      // add process to highest priority non-blocking queue
+      else this.runningQueues[0].enqueue(process); 
 	}
 
 	// The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
