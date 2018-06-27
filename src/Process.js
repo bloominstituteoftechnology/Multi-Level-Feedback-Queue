@@ -14,31 +14,36 @@ class Process {
         // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
         this.stateChanged = false;
     }
-    
-    setParentQueue(queue) {
 
+    setParentQueue(queue) {
+      this.queue = queue;
     }
 
     isFinished() {
-
+      return this.cpuTimeNeeded ? false: true;
     }
 
-    // If no blocking time is needed by this process, decrement the amount of 
+    // If no blocking time is needed by this process, decrement the amount of
     // CPU time it needs by the input time
     // If blocking time is needed by this process, move it to the blocking queue
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+      if (this.blockingTimeNeeded) {
+        this.stateChanged = !this.stateChanged;
+        return SchedulerInterrupt.PROCESS_BLOCKED;
+      } else {
+        this.cpuTimeNeeded -= time;
+      }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
    // time it needs by the input time
-   // Once it no longer needs to perform any blocking execution, move it to the 
+   // Once it no longer needs to perform any blocking execution, move it to the
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+      
     }
 
     // Returns this process's stateChanged property
