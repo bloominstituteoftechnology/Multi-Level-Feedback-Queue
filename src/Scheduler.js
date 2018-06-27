@@ -26,12 +26,16 @@ class Scheduler {
     run() {
         while(!this.allQueuesEmpty()) {
             const slice = Date.now() - this.clock;
+            //Time parameter that is passed into doBlockingwork and cpuwork
             this.clock = Date.now();
+            //New this.clock time for the next usage
             if(!this.blockingQueue.isEmpty()) {
+                //If the blocking queue is not empty do blocking work
                 this.blockingQueue.doBlockingWork(slice);
             }
             for(let i = 0; i < this.runningQueues.length; i++) {
                 if(!this.runningQueues[i].isEmpty()) {
+                    //if running queue at any value on its array isnt empty do cpuwork
                     this.runningQueues[i].doCPUWork(slice);
                 };
             }
@@ -50,6 +54,7 @@ class Scheduler {
 
     addNewProcess(process) {
         this.runningQueues[0].enqueue(process);
+        //adds a new process at the first point of the array.
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
@@ -58,22 +63,27 @@ class Scheduler {
         switch(interrupt) {
             case 'PROCESS_BLOCKED': 
             this.blockingQueue.enqueue(process);
+            //sets process blocked and puts the process into the blocking queue
             break;
             case 'PROCESS_READY':
             this.addNewProcess(process);
+            //sets process ready and adds it to the running queue
             break;
             case 'LOWER_PRIORITY': 
             if(queue.getQueueType() === 'BLOCKING_QUEUE') {
                 queue.enqueue(process);
+                //Checks if the queue type is blocking queue then enqueues it 
                 break;
             }
             //Blocking queue comes from the constructor as does priority levels
             if(queue.getPriorityLevel() === PRIORITY_LEVELS - 1) {
                 queue.enqueue(process);
+                //Checks priority level if its lower than the current one then enqueue;
                 break;
             }
             else {
                 this.runningQueues[queue.priorityLevel + 1].enqueue(process);
+                //else it adds the next point after the priority level to queue
             }
         }
     }
