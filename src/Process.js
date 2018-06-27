@@ -13,6 +13,7 @@ class Process {
 		this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
 		// A bool representing whether this process was toggled from blocking to non-blocking or vice versa
 		this.stateChanged = false;
+		this.blocking = blocking;
 	}
 	
 	setParentQueue(queue) {
