@@ -24,15 +24,17 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
+        while(!this.blockingQueue.isEmpty() || !this.runningQueues.isEmpty()) {
 
+        }
     }
 
     allQueuesEmpty() {
-
+        return this.blockingQueue.isEmpty() && this.runningQueues.isEmpty();
     }
 
     addNewProcess(process) {
-
+        
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant

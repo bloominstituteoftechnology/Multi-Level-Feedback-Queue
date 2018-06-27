@@ -20,8 +20,8 @@ class Process {
     }
 
     isFinished() {
-        let cpu = this.cpuTimeNeeded === 0;
-        let block = this.blockingTimeNeeded === 0;
+        let cpu = this.cpuTimeNeeded <= 0;
+        let block = this.blockingTimeNeeded <= 0;
         return cpu && block;
     }
 
@@ -36,6 +36,11 @@ class Process {
             this.stateChanged = !this.stateChanged;
         } else {
             this.cpuTimeNeeded -= time;
+            if (this.cpuTimeNeeded < 0) {
+                this.cpuTimeNeeded = 0;
+                // SchedulerInterrupt.PROCESS_BLOCKED;
+                // this.stateChanged = !this.stateChanged;
+            }
         }
    }
 
@@ -47,6 +52,11 @@ class Process {
     executeBlockingProcess(time) {
         if(this.blockingTimeNeeded) {
             this.blockingTimeNeeded -= time;
+            if (this.blockingTimeNeeded < 0) {
+                this.blockingTimeNeeded = 0;
+                // SchedulerInterrupt.PROCESS_READY;
+                // this.stateChanged = !this.stateChanged;
+            }
         } else {
             SchedulerInterrupt.PROCESS_READY;
             this.stateChanged = !this.stateChanged;
