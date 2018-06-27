@@ -51,12 +51,12 @@ class Process {
           this.blockingTimeNeeded -=time;
      // if blocking time less than zero set blocking time to 0
      if(this.blockingTimeNeeded < 0) this.blockingTimeNeeded =0;
-    /* if blocking time is equal to zero 
-       
-    */
-     if(this.blockingTimeNeeded===0){
-            this.stateChanged = true;
-            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY)
+    // if blocking time is equal to zero 
+    if(this.blockingTimeNeeded===0){
+    // set flag to true
+        this.stateChanged = true;
+// emit intrerupt for process ready
+        this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY)
             
             }
       }
@@ -64,11 +64,13 @@ class Process {
 
   // Returns this process's stateChanged property
   isStateChanged() {
+      // return the state changed property on the proecess object.
 return this.stateChanged;
 
   }
 
   get pid() {
+      // return the pid property on the process object
       return this._pid;
   }
 
