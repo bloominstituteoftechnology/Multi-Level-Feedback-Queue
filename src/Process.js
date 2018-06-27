@@ -20,7 +20,8 @@ class Process {
     }
 
     isFinished() {
-
+        //Must return a boolean like isEmpty()?
+        return (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0);
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
