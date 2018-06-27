@@ -16,11 +16,11 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     isFinished() {
-
+        this.isStateChanged = true;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,7 +29,7 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        this.isStateChanged = true;
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -38,16 +38,16 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+        this.isStateChanged = true;
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.isStateChanged;
     }
 
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
