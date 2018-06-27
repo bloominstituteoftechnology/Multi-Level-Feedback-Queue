@@ -10,6 +10,7 @@ const {
 class Scheduler { 
     constructor() { 
         this.clock = Date.now();
+        //This is just logging the time when the scheduler is initialized
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];
         // Initialize all the CPU running queues
@@ -18,13 +19,21 @@ class Scheduler {
         }
     }
 
+
+    run() {
     // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
+        if this.runningQueues (!== []) {
+
+        }
+    //       needs to have a while loop that logs the current time with Date.now() then figure out
+    //         the work time (diff between the current time now, and last loop ran)
+    //          so this is the ammount of time you feed into do blocking work, and do cpu work
+    //           then log block to be current
+    
     // Calculate the time slice for the next iteration of the scheduler by subtracting the current
     // time from the clock property. Don't forget to update the clock property afterwards.
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-    run() {
-
     }
 
     allQueuesEmpty() {

@@ -16,7 +16,7 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        //will be called when it's moved into the queue?
     }
 
     isFinished() {
@@ -29,7 +29,7 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        //the time here is the worktime as created in run() inside of the scheduler constructor
    }
 
    // If this process requires blocking time, decrement the amount of blocking
