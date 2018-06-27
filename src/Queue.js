@@ -19,6 +19,7 @@ class Queue {
 
   // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
+    process.queue = this;
     this.processes.push(process);
     return this.processes[this.processes.length - 1];
   }
@@ -31,9 +32,7 @@ class Queue {
 
   // Return the least-recently added process without removing it from the list of processes
   peek() {
-    if (this.processes[0]) {
-      return this.processes[this.processes.length - 1];
-    } else return null;
+    return this.processes[0];
   }
 
   isEmpty() {
@@ -58,6 +57,7 @@ class Queue {
     while (this.quantumClock < this.quantum) {
       this.quantumClock++;
     }
+    // this.currentProcess.executeProcess(time);
     this.dequeue(currentProcess);
     this.quantumClock = 0;
   }
@@ -65,15 +65,15 @@ class Queue {
   // Execute the next non-blocking process (assuming this is a CPU queue)
   // This method should call `manageTimeSlice` as well as execute the next running process
   doCPUWork(time) {
-    if (getQueueType === "CPU_QUEUE") {
-      manageTimeSlice(this.enqueue, time);
+    if (this.queueType === "CPU_QUEUE") {
+      this.manageTimeSlice(this.enqueue, time);
     } else return null;
   }
 
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
   doBlockingWork(time) {
-    if (getQueueType === "BLOCKING_QUEUE") {
+    if (this.queueType === "BLOCKING_QUEUE") {
       manageTimeSlice(this.enqueue, time);
     } else return null;
   }
