@@ -1,5 +1,5 @@
-const Queue = require('./Queue'); 
-const { 
+const Queue = require('./Queue');
+const {
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
@@ -7,8 +7,8 @@ const {
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues 
 // for non-blocking processes
-class Scheduler { 
-    constructor() { 
+class Scheduler {
+    constructor() {
         this.clock = Date.now();
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];
@@ -32,13 +32,33 @@ class Scheduler {
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
+        switch (interrupt) {
+            case 'PROCESS_BLOCKED':
+                this.blockingQueue.enqueue(process);
+                break;
+            case 'PROCESS_READY':
+                this.addNewProcess(process);
+                break;
+            case 'LOWER_PRIORITY':
+                if (queue.getQueueType() === QueueType.BLOCKING_QUEUE) {
+                    this.blockingQueue.enqueue(process);
+                } else {
+                    if (queue.getPriorityLevel() === PRIORITY_LEVELS - 1) {
+                        this.runningQueues[queue.getPriorityLevel()].enqueue(process);
+                    } else {
+                        this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process);
+                    }
+                }
+                break;
+            default:
 
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
