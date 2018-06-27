@@ -37,7 +37,9 @@ class Process {
   executeBlockingProcess(time) {}
 
   // Returns this process's stateChanged property
-  isStateChanged() {}
+  isStateChanged() {
+    return this.stateChanged;
+  }
 
   get pid() {
     return this._pid;
