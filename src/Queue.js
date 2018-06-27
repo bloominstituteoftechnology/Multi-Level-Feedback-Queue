@@ -52,11 +52,10 @@ class Queue {
   // Once a process has received the alloted time, it needs to be dequeue'd and
   // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
-    if (!currentProcess.stateChanged) {
-      for (let i = 0; i < time; i++) {
-        if (i == time - 1) {
-        }
-      }
+    if (currentProcess.stateChanged) {
+      this.quantumClock = 0;
+    } else if (currentProcess.cpuTimeNeeded > time) {
+      this.quantumClock = time;
     }
   }
 
