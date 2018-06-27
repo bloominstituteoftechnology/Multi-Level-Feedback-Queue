@@ -75,15 +75,14 @@ class Scheduler {
                 //Checks if the queue type is blocking queue then enqueues it 
                 break;
             }
-            //Blocking queue comes from the constructor as does priority levels
+            // Blocking queue comes from the constructor as does priority levels
             if(queue.getPriorityLevel() === PRIORITY_LEVELS - 1) {
                 queue.enqueue(process);
-                //Checks priority level if its lower than the current one then enqueue;
-                break;
+                //Adds a process back to the lower priority queue if it was already there
             }
             else {
                 this.runningQueues[queue.priorityLevel + 1].enqueue(process);
-                //else it adds the next point after the priority level to queue
+                //Moves a non blocking queue process to lower priority
             }
         }
     }
