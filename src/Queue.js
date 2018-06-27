@@ -21,11 +21,14 @@ class Queue {
   enqueue(process) {
     this.processes.push(process);
     process.setParentQueue(this);
-    return this.processes[this.processes.length - 1];
+    return process;
   }
 
   // Dequeues the next process in the queue. Return the dequeue'd process
-  dequeue() {}
+  dequeue() {
+    let next = this.processes.shift();
+    return next;
+  }
 
   // Return the least-recently added process without removing it from the list of processes
   peek() {
