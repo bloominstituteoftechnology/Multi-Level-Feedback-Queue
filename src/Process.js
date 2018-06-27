@@ -20,7 +20,12 @@ class Process {
     this.queue = queue;
   }
 
-  isFinished() {}
+  isFinished() {
+    if (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0) {
+      return true;
+    }
+    return false;
+  }
 
   // If no blocking time is needed by this process, decrement the amount of
   // CPU time it needs by the input time
