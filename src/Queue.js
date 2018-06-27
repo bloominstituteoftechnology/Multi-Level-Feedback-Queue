@@ -18,13 +18,17 @@ class Queue {
     }
 
     // Enqueues the given process. Return the enqueue'd process
+    // enqueue -> | 3 | 2 | 1 | -> dequeue
     enqueue(process) {
-
+        this.processes.unshift(process);
+        return process;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
+    // enqueue -> | 3 | 2 | 1 | -> dequeue
     dequeue() {
-
+        const temp = this.processes.shift();
+        return temp;
     }
 
     // Return the least-recently added process without removing it from the list of processes
