@@ -30,11 +30,11 @@ class Process {
 	// by emitting the appropriate interrupt
 	// Make sure the `stateChanged` flag is toggled appropriately
 	executeProcess(time) {
-		if (!this.blockingTimeNeeded) this.cpuTimeNeeded -= time;
+		if (!this.blockingTimeNeeded) this.cpuTimeNeeded = Math.max(this.cpuTimeNeeded - time, 0);
 
 		if (this.blockingTimeNeeded > 0) {
-			this.setParentQueue(SchedulerInterrupt.PROCESS_BLOCKED);
-			this.stateChanged = !this.stateChanged;
+			this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+			this.stateChanged = true;
 		}
    }
 
@@ -44,11 +44,11 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
 	executeBlockingProcess(time) {
-		if (this.blockingTimeNeeded) this.blockingTimeNeeded -= time;
+		if (this.blockingTimeNeeded) this.cpuTimeNeeded = Math.max(this.cpuTimeNeeded - time, 0);
 
 		if (!this.blockingTimeNeeded) {
-			this.setParentQueue(SchedulerInterrupt.PROCESS_READY);
-			this.stateChanged = !this.stateChanged;
+			this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+			this.stateChanged = true;
 		}
 	}
 
