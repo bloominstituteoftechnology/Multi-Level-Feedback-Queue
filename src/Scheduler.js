@@ -24,21 +24,58 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
+        while(!this.allQueuesEmpty()) {
+            const slice = Date.now() - this.clock;
+            this.clock = Date.now();
+            if(!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(slice);
+            }
+            for(let i = 0; i < this.runningQueues.length; i++) {
+                if(!this.runningQueues[i].isEmpty()) {
+                    this.runningQueues[i].doCPUWork(slice);
+                };
+            }
+        }
     }
 
     allQueuesEmpty() {
-
+        //Basically checking if the queues have lengths to see if they are or are not empty
+        if(this.blockingQueue.length > 0) return false;
+        for(let i = 0; i < this.runningQueues.length; i++) {
+            if(this.runningQueues[i].processes.length > 0) return false;
+        }
+        // if(this.runningQueues.processes.length > 0) return false;
+        return true;
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
+        switch(interrupt) {
+            case 'PROCESS_BLOCKED': 
+            this.blockingQueue.enqueue(process);
+            break;
+            case 'PROCESS_READY':
+            this.addNewProcess(process);
+            break;
+            case 'LOWER_PRIORITY': 
+            if(queue.getQueueType() === 'BLOCKING_QUEUE') {
+                queue.enqueue(process);
+                break;
+            }
+            //Blocking queue comes from the constructor as does priority levels
+            if(queue.getPriorityLevel() === PRIORITY_LEVELS - 1) {
+                queue.enqueue(process);
+                break;
+            }
+            else {
+                this.runningQueues[queue.priorityLevel + 1].enqueue(process);
+            }
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
