@@ -17,11 +17,11 @@ class Process {
 	}
 	
 	setParentQueue(queue) {
-
+		this.queue = queue;
 	}
 
 	isFinished() {
-
+		return !this.cpuTimeNeeded && !this.blockingTimeNeeded;
 	}
 
 	// If no blocking time is needed by this process, decrement the amount of 
@@ -33,7 +33,7 @@ class Process {
 		if (!this.blockingTimeNeeded) this.cpuTimeNeeded -= time;
 
 		if (this.blockingTimeNeeded > 0) {
-			// move process to the blocking queue - PROCESS_BLOCKED
+			this.setParentQueue(SchedulerInterrupt.PROCESS_BLOCKED);
 			this.stateChanged = !this.stateChanged;
 		}
    }
@@ -47,7 +47,7 @@ class Process {
 		if (this.blockingTimeNeeded) this.blockingTimeNeeded -= time;
 
 		if (!this.blockingTimeNeeded) {
-			// move process to the top running queue - PROCESS_READY
+			this.setParentQueue(SchedulerInterrupt.PROCESS_READY);
 			this.stateChanged = !this.stateChanged;
 		}
 	}
