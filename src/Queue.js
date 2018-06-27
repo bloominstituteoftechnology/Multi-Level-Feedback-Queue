@@ -1,4 +1,4 @@
-const { SchedulerInterrupt } = require('./constants/index');
+const { SchedulerInterrupt } = require('./constants');
 
 // A class representation of a process queue that may hold either a 
 // blocking or non-blocking process
@@ -19,29 +19,31 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+        this.processes.push(process);
+        process.setParentQueue(this);
+        return process;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
-    dequeue() {
-
+    dequeue() { 
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+        return this.processes[0];
     }
 
     isEmpty() {
-
+        return this.processes.length === 0;
     }
 
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the given amount of time
@@ -49,7 +51,7 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-
+        
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
