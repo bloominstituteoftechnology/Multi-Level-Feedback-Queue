@@ -18,13 +18,15 @@ class Queue {
     }
 
     // Enqueues the given process. Return the enqueue'd process
+    // adds an item of data awaiting processing to a queue of items
     enqueue(process) {
-
+        console.log(this.processes);
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
+    // removes an item of data awaiting processsing to a a que of items. 
     dequeue() {
-
+        
     }
 
     // Return the least-recently added process without removing it from the list of processes
