@@ -80,7 +80,7 @@ describe('Process', () => {
         expect(process.isStateChanged()).toEqual(false);
     });
 
-    test("executeProcess function on blocking process", () => {
+    test.only("executeProcess function on blocking process", () => {
         const process = new Process(0, 10, true);
         process.blockingTimeNeeded = 15;
         process.setParentQueue(queue);
