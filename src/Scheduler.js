@@ -49,8 +49,9 @@ class Scheduler {
       case "PROCESS_BLOCKED":
         this.blockingQueue.enqueue(process);
         break;
-      // case "PROCESS_READY":
-      //   break;
+      case "PROCESS_READY":
+        this.addNewProcess(process);
+        break;
       // case "LOWER_PRIORITY":
       //   break;
       default:
