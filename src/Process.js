@@ -16,11 +16,11 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+      this.queue = queue;
     }
 
     isFinished() {
-
+      
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,8 +29,8 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
-   }
+      
+    }
 
    // If this process requires blocking time, decrement the amount of blocking
    // time it needs by the input time
