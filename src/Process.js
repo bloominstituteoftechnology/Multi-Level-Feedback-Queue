@@ -16,11 +16,13 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        //Really simple set the parent queue to queue
+        this.queue = queue;
     }
 
     isFinished() {
-
+        //Must return a boolean like isEmpty() and needs to check cpu and blocking time needed
+        return (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0);
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,7 +31,20 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        if(this.blockingTimeNeeded === 0) {
+            //Checks if blocking time is not needed and keeps the same state if true
+            this.stateChanged = false;
+            //Decrement cpu time needed by time
+            this.cpuTimeNeeded -= time;
+            if(this.cpuTimeNeeded < 0) this.cpuTimeNeeded = 0;
+            //Need to insure cpu time needed isnt below 0
+        }
+        else {
+            this.stateChanged = true;
+            //if the process needs blockingtime then the state has changed
+            this.queue.emitInterrupt(this, 'PROCESS_BLOCKED');
+            //Emit the interrupt process blocked since it has blocking time needed
+        }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -38,16 +53,27 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+            this.blockingTimeNeeded -= time;
+            //I dont need to check for blocking time since its assumed we then decrement by time on the blocking time needed
+            if(this.blockingTimeNeeded < 0) this.blockingTimeNeeded = 0;
+            //Need to insure that blocking time needed isnt less than 0
+            if(this.blockingTimeNeeded === 0) {
+            this.stateChanged = true;
+            //if blocking time is 0 then the state is changed
+            this.queue.emitInterrupt(this, 'PROCESS_READY');
+            // if the state has changed then this process is ready so we must emit the interrupt
+        }
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
+        //Simple return of the property;
     }
 
     get pid() {
-
+        return this._pid;
+        //Simple return of the property;
     }
 
     // Private function used for testing; DO NOT MODIFY
