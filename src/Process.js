@@ -39,7 +39,9 @@ class Process {
   // Returns this process's stateChanged property
   isStateChanged() {}
 
-  get pid() {}
+  get pid() {
+    return this._pid;
+  }
 
   // Private function used for testing; DO NOT MODIFY
   _getParentQueue() {
