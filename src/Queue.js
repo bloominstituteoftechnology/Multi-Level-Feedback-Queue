@@ -28,7 +28,9 @@ class Queue {
 
   isEmpty() {}
 
-  getPriorityLevel() {}
+  getPriorityLevel() {
+    return this.priorityLevel;
+  }
 
   getQueueType() {
     return this.queueType;
