@@ -16,7 +16,7 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     isFinished() {
