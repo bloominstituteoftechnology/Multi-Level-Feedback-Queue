@@ -40,7 +40,7 @@ class Queue {
     }
 
     getPriorityLevel() {
-
+      return this.priorityLevel;
     }
 
     getQueueType() {
