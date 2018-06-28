@@ -24,13 +24,17 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-        while(!this.blockingQueue.isEmpty() || !this.runningQueues.every(queue => queue.isEmpty())) {
-            let currentTime = Date.now();
-            let timeSlice = currentTime - this.clock;
+        while(!this.allQueuesEmpty()) {
+            const timeSlice = Date.now() - this.clock;
+            this.clock = Date.now();
+            
             if (!this.blockingQueue.isEmpty()) {
-                
+                this.blockingQueue.doBlockingWork(timeSlice)
             }
-            this.clock = date.now();
+
+            this.runningQueues.forEach(queue => {
+                if(!queue.isEmpty()) queue.doCPUWork(timeSlice);
+            });
         }
     }
 
@@ -45,7 +49,33 @@ class Scheduler {
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
+        switch(interrupt) {
+            case 'PROCESS_BLOCKED':
+                this.blockingQueue.enqueue(process);
+                break;
+            case 'PROCESS_READY':
+                this.addNewProcess(process);
+                break;
+            case 'LOWER_PRIORITY':
+                switch(queue.getQueueType()) {
+                    case 'CPU_QUEUE':
+                        let priority = queue.getPriorityLevel() + 1;
 
+                        if(priority > PRIORITY_LEVELS - 1) {
+                            priority = PRIORITY_LEVELS - 1;
+                        }
+
+                        this.runningQueues[priority].enqueue(process);
+                        break;
+                    case 'BLOCKING_QUEUE':
+                        this.blockingQueue.enqueue(process);
+                        break;
+                    default:
+                        break;
+                }
+            default:
+                break;
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY

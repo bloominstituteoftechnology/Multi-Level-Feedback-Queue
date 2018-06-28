@@ -38,8 +38,6 @@ class Process {
             this.cpuTimeNeeded -= time;
             if (this.cpuTimeNeeded < 0) {
                 this.cpuTimeNeeded = 0;
-                // SchedulerInterrupt.PROCESS_BLOCKED;
-                // this.stateChanged = !this.stateChanged;
             }
         }
    }
@@ -54,8 +52,6 @@ class Process {
             this.blockingTimeNeeded -= time;
             if (this.blockingTimeNeeded < 0) {
                 this.blockingTimeNeeded = 0;
-                // SchedulerInterrupt.PROCESS_READY;
-                // this.stateChanged = !this.stateChanged;
             }
         } else {
             SchedulerInterrupt.PROCESS_READY;
