@@ -26,24 +26,31 @@ class Scheduler {
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
   run() {
+    // console.log(`run() called`);
     let currentTime = Date.now();
     let workTime = currentTime - this.clock;
     this.clock = Date.now();
-    while (this.allQueuesEmpty() === false) {
-      this.blockingQueue.doBlockingWork(workTime);
-      for (let i = 0; i < this.runningQueues.length; i++) {
-        currentTime = Date.now();
-        workTime = currentTime - this.clock;
-        this.clock = Date.now();
-        this.runningQueues[i].doCPUWork(workTime);
-      }
+    // while (this.allQueuesEmpty() === false) {
+    // console.log("while loop for run() called");
+    this.blockingQueue.doBlockingWork(workTime);
+    // currentTime = Date.now();
+    // workTime = currentTime - this.clock;
+    // this.clock = Date.now();
+    for (let i = 0; i < this.runningQueues.length; i++) {
+      // console.log("RUNNING QUEUE " + i + " WAS RUN");
+      currentTime = Date.now();
+      workTime = currentTime - this.clock;
+      this.clock = Date.now();
+      this.runningQueues[i].doCPUWork(workTime);
     }
+    // }
     // if (this.allQueuesEmpty() === false) {
     //   this.run();
     // }
   }
 
   allQueuesEmpty() {
+    // console.log(`allQueuesEmpty() called`);
     if (this.runningQueues[0] === undefined) return true;
     for (let i = 0; i < this.runningQueues.length; i++) {
       if (this.runningQueues[i].isEmpty() === false) {
@@ -54,17 +61,24 @@ class Scheduler {
   }
 
   addNewProcess(process) {
+    // console.log(
+    //   `addNewProcess(${process._pid}(console shows pid only)) called`
+    // );
     this.runningQueues[0].enqueue(process);
   }
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
   handleInterrupt(queue, process, interrupt) {
+    // console.log(
+    //   `handleInterrupt(${queue.priorityLevel}, ${
+    //     process._pid
+    //   }, ${interrupt}) called`
+    // );
     if (interrupt === "PROCESS_BLOCKED") {
       this.blockingQueue.enqueue(process);
     } else if (interrupt === "PROCESS_READY") {
       this.addNewProcess(process);
-      // this.runningQueues[0].enqueue(process);
     } else if (interrupt === "LOWER_PRIORITY") {
       if (queue.priorityLevel === 2) {
         return;
@@ -80,11 +94,13 @@ class Scheduler {
 
   // Private function used for testing; DO NOT MODIFY
   _getCPUQueue(priorityLevel) {
+    // console.log(`_getCPUQueue(${priorityLevel}) called`);
     return this.runningQueues[priorityLevel];
   }
 
   // Private function used for testing; DO NOT MODIFY
   _getBlockingQueue() {
+    // console.log(`_getBlockingQueue() called`);
     return this.blockingQueue;
   }
 }

@@ -36,16 +36,19 @@ class Queue {
   }
 
   isEmpty() {
+    // console.log("isEmpty() called");
     if (this.processes[0] === undefined) {
       return true;
     } else return false;
   }
 
   getPriorityLevel() {
+    // console.log("getPriorityLevel() called");
     return this.priorityLevel;
   }
 
   getQueueType() {
+    // console.log("getQueueType() called");
     return this.queueType;
   }
 
@@ -55,6 +58,7 @@ class Queue {
   // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
     // if (currentProcess.isStateChanged() === false) {
+    // console.log(`manageTimeSlice(${currentProcess._pid}, ${time}) called`);
     while (this.quantumClock + time <= this.quantum) {
       currentProcess.executeProcess(time);
       this.quantumClock += time;
@@ -74,7 +78,15 @@ class Queue {
   // Execute the next non-blocking process (assuming this is a CPU queue)
   // This method should call `manageTimeSlice` as well as execute the next running process
   doCPUWork(time) {
-    if (this.queueType === "CPU_QUEUE") {
+    // console.log(`doCPUWORK(${time}) called`);
+    // console.log(
+    //   "doCPUWORK processes: ======================================\n" +
+    //     this.processes
+    // );
+    if (
+      this.queueType ===
+      "CPU_QUEUE" /*Due to other bugs uncommenting this will cause the program to run forever: && this.processes[0] != undefined */
+    ) {
       this.manageTimeSlice(this.processes[0], time);
     } else return null;
   }
@@ -82,7 +94,15 @@ class Queue {
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
   doBlockingWork(time) {
-    if (this.queueType === "BLOCKING_QUEUE") {
+    // console.log(`doBlockingWork(${time}) called`);
+    // console.log(
+    //   "doBlockingWork processes: ======================================\n" +
+    //     this.processes
+    // );
+    if (
+      this.queueType ===
+      "BLOCKING_QUEUE" /*Due to other bugs uncommenting this will cause the program to run forever: && this.processes[0] != undefined */
+    ) {
       this.manageTimeSlice(this.processes[0], time);
     } else return null;
   }
@@ -91,6 +111,11 @@ class Queue {
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
   // The process also needs to be removed from the queue
   emitInterrupt(source, interrupt) {
+    // console.log(
+    //   `emitInterrupt(${
+    //     source._pid
+    //   }(console shows pid only),${interrupt}) called`
+    // );
     // if (interrupt === "PROCESS_BLOCKED" && this.queueType === "CPU_QUEUE") {
     //   for (let i = 0; i < this.processes.length - 1; i++) {
     //     if (this.processes[i]._pid === source._pid) {
