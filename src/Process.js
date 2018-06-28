@@ -20,7 +20,7 @@ class Process {
     }
 
     isFinished() {
-      return !(this.cpuTimeNeeded || this.blockingTimeNeeded) ? true : false;
+      return this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -31,8 +31,9 @@ class Process {
     executeProcess(time) {
       if (this.blockingTimeNeeded <= 0) {
         this.cpuTimeNeeded -= time;
+        if (this.cpuTimeNeeded < 0) this.cpuTimeNeeded = 0;
       } else {
-        SchedulerInterrupt.PROCESS_BLOCKED;
+        this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
         this.stateChanged = true;
       }
     }
@@ -45,8 +46,10 @@ class Process {
     executeBlockingProcess(time) {
       if (this.blockingTimeNeeded >= 0) {
         this.blockingTimeNeeded -= time;
-      } else {
-        SchedulerInterrupt.PROCESS_READY;
+      }
+      if (this.blockingTimeNeeded <= 0) {
+        this.blockingTimeNeeded = 0;
+        this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
         this.stateChanged = true;
       }
     }
