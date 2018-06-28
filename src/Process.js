@@ -34,13 +34,17 @@ class Process {
   // by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
   executeProcess(time) {
+    this.stateChanged = false; // always flip to false when executing
     if (this.blockingTimeNeeded !== 0) {
       // blocking queue
-      
+
+      this.stateChanged = true;
     } else {
       this.cpuTimeNeeded -= time;
-      if (this.cpuTimeNeeded < 0) {
+      if (this.cpuTimeNeeded <= 0) {
         this.cpuTimeNeeded = 0;
+      } else if (this.cpuTimeNeeded > 0) {
+        this.blockingTimeNeeded += this.cpuTimeNeeded;
       }
     }
   }
@@ -50,7 +54,9 @@ class Process {
   // Once it no longer needs to perform any blocking execution, move it to the
   // top running queue by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
-  executeBlockingProcess(time) {}
+  executeBlockingProcess(time) {
+
+  }
 
   // Returns this process's stateChanged property
   isStateChanged() {

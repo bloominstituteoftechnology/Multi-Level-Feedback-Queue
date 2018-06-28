@@ -19,7 +19,6 @@ class Queue {
 
   // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
-    // console.log("this process:", this.processes);
     process.setParentQueue(this);
     return this.processes.push(process); // don't forget to return
   }
@@ -51,7 +50,6 @@ class Queue {
   // Once a process has received the alloted time, it needs to be dequeue'd and
   // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
-    // console.log("Current process:", currentProcess);
     if (currentProcess.stateChanged) {
       this.quantumClock = 0; // if state is changed
     } else if (currentProcess.cpuTimeNeeded - time > 0) {
@@ -74,8 +72,14 @@ class Queue {
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
-  // The process also needs to be removed from the queue
-  emitInterrupt(source, interrupt) {}
+  emitInterrupt(source, interrupt) {
+    console.log(this);
+    console.log(source);
+    console.log(interrupt);
+    if (interrupt = "PROCESS_BLOCKED") {
+      // source.
+    }
+  }
 }
 
 module.exports = Queue;

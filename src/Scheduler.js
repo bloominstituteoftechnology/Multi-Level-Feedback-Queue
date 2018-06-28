@@ -34,7 +34,6 @@ class Scheduler {
   }
 
   allQueuesEmpty() {
-    // console.log(this.runningQueues);
     for (let i = 0; i < PRIORITY_LEVELS; i++) {
       if (this.runningQueues[i].processes.length > 0) {
         return false; // false if any of the arrays is not empty
@@ -44,14 +43,30 @@ class Scheduler {
   }
 
   addNewProcess(process) {
-    // console.log(this.runningQueues[process._pid].processes);
     return this.runningQueues[process._pid].processes.push(process); // use pid of process to sort to appropriate array
-
   }
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-  handleInterrupt(queue, process, interrupt) {}
+  handleInterrupt(queue, process, interrupt) {
+    console.log("queue", queue);
+    console.log("process", process);
+    console.log("interrupt", interrupt);
+    // console.log(this.runningQueues);
+    if (interrupt == "PROCESS_BLOCKED") {
+      queue.processes.push(process);
+    }
+    if (interrupt == "PROCESS_READY") {
+      // process ready
+    }
+    if (interrupt == "LOWER_PRIORITY") {
+      // lower priority
+    }
+    console.log("post-queue", queue);
+    console.log("post-process", process);
+    console.log("post-interrupt", interrupt);
+    // console.log(this.blockingQueue.scheduler);
+  }
 
   // Private function used for testing; DO NOT MODIFY
   _getCPUQueue(priorityLevel) {
