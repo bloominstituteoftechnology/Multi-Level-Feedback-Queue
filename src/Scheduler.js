@@ -1,5 +1,6 @@
 const Queue = require('./Queue'); 
 const { 
+    SchedulerInterrupt,
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
@@ -24,21 +25,49 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
+        while (!this.allQueuesEmpty()) {
+            const delta = Date.now() - this.clock;
+            this.clock = Date.now();
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(delta);
+            }
+            // Have the first non-empty queue do some CPU work.
+            // Change this when I can ensure that the 0-prio queue always has an item
+            this.runningQueues.find(queue => !queue.isEmpty()).doCPUWork(delta);
+        }
     }
 
     allQueuesEmpty() {
-
+        return this.runningQueues.every(queue => queue.isEmpty())
+            && this.blockingQueue.isEmpty();
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
+        switch (interrupt) {
+            case SchedulerInterrupt.PROCESS_BLOCKED:
+                this.blockingQueue.enqueue(process);
+                break;
+            case SchedulerInterrupt.PROCESS_READY:
+                this.addNewProcess(process);
+                break;
+            case SchedulerInterrupt.LOWER_PRIORITY:
+                const priority = queue.priorityLevel;
+                const type = queue.getQueueType();
+                if (type == QueueType.BLOCKING_QUEUE || priority == PRIORITY_LEVELS - 1) {
+                    queue.enqueue(process)
+                } else {
+                    this.runningQueues[priority + 1].enqueue(process);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
