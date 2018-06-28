@@ -103,7 +103,7 @@ describe('Scheduler', () => {
         const blockingQueueSpy = sinon.spy(blockingQueue, 'doBlockingWork');
         const queue1Spy = sinon.spy(queue1, 'doCPUWork');
 
-        scheduler.addNewProcess(process1)
+        scheduler.addNewProcess(process1);
         scheduler.addNewProcess(process2);
         scheduler.addNewProcess(process3);
         scheduler.run();
