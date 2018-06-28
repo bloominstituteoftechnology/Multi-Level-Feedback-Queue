@@ -42,15 +42,15 @@ class Scheduler {
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
         
-        if(interrupt === 'PROCESS_BLOCKED') {
-            // DO SOMTHING
-        } else if(interrupt === 'PROCESS_READY') {
+    //     if(interrupt === 'PROCESS_BLOCKED') {
+    //         // DO SOMTHING
+    //     } else if(interrupt === 'PROCESS_READY') {
 
-        } else if(interrupt === 'LOWER_PRIORITY') {
+    //     } else if(interrupt === 'LOWER_PRIORITY') {
 
-        } else {
-            console.log(`There was an errror in ${interrupt}`);
-        }
+    //     } else {
+    //         console.log(`There was an errror in ${interrupt}`);
+    //     }
     }
 
     // Private function used for testing; DO NOT MODIFY
