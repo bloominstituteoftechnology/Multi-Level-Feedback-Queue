@@ -65,7 +65,12 @@ class Queue {
         if (currentProcess.isFinished()) {
           console.log("Proccess Finished");
         } else {
-          // FILL THIS IN!
+          // Scheduler lowers priority
+          this.scheduler.handleInterrupt(
+            this,
+            currentProcess,
+            SchedulerInterrupt.LOWER_PRIORITY
+          );
         }
       }
     }
@@ -82,9 +87,7 @@ class Queue {
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
   // The process also needs to be removed from the queue
-  emitInterrupt(source, interrupt) {
-    
-  }
+  emitInterrupt(source, interrupt) {}
 }
 
 module.exports = Queue;
