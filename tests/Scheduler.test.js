@@ -44,7 +44,7 @@ describe('Scheduler', () => {
         expect(scheduler.allQueuesEmpty()).toBe(true);
     });
 
-    test("handleInterrupt method moves a process to blocking queue upon receiving a PROCESS_BLOCKED interrupt", () => {
+    test.only("handleInterrupt method moves a process to blocking queue upon receiving a PROCESS_BLOCKED interrupt", () => {
         const process = new Process(0);
         const blockingQueue = scheduler._getBlockingQueue();
         const queueSpy = sinon.spy(blockingQueue, 'enqueue');

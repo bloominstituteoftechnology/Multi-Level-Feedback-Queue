@@ -163,7 +163,7 @@ describe('Queue', () => {
         expect(schedulerSpy.getCalls().length).toBe(0);
     });
 
-    test("emitInterrupt method removes the source process from the queue", () => {
+    test.only("emitInterrupt method removes the source process from the queue", () => {
         const process1 = new Process(0);
         const process2 = new Process(1);
         const process3 = new Process(2);
