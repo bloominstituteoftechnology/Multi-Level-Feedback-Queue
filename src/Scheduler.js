@@ -4,6 +4,14 @@ const {
     PRIORITY_LEVELS,
 } = require('./constants/index');
 
+const intterruptType = {
+
+    PROCESS_BLOCKED: 'PROCESS_BLOCKED',
+    PROCESS_READY: 'PROCESS_READY',
+    LOWER_PRIORITY: 'LOWER_PRIORITY'
+
+};
+
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues 
 // for non-blocking processes
@@ -39,6 +47,22 @@ class Scheduler {
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
 
+        switch (interrupt) {
+            case intterruptType.PROCESS_BLOCKED:
+                this.blockingQueue.enqueue(process);
+                break;
+            case intterruptType.PROCESS_READY:
+                this.addNewProcess(process);
+                break;
+            case intterruptType.LOWER_PRIORITY:
+                if (queue.getQueueType() === QueueType.CPU_QUEUE) {
+                    const priorityLevel = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1);
+                    this.runningQueues[priorityLevel].enqueue(process);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
