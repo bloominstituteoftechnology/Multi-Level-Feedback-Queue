@@ -26,6 +26,9 @@ class Scheduler {
         }
     }
 
+    getTime() {
+        return Date.now();
+    }
     // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
     // Calculate the time slice for the next iteration of the scheduler by subtracting the current
     // time from the clock property. Don't forget to update the clock property afterwards.
@@ -33,6 +36,34 @@ class Scheduler {
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
 
+        while (true) {
+
+            const time = this.getTime();
+
+            // get clock time
+            const workTime = this.clock;
+
+            this.clock = time;
+
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+
+            for (let proprity = 0; proprity < PRIORITY_LEVELS; proprity++) {
+
+                const queue = this.runningQueues(proprity);
+
+                if (!queue.isEmpty()) {
+                    queue.doCPUWork(workTime);
+                    break;
+                }
+            }
+
+            if (this.allQueuesEmpty()) {
+                console.log(`Time to sleep`);
+                break;
+            }
+        }
     }
 
     allQueuesEmpty() {
