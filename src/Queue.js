@@ -36,19 +36,19 @@ class Queue {
   }
 
   isEmpty() {
-    // console.log("isEmpty() called");
+    console.log(`isEmpty() for ${this.queueType} ${this.priorityLevel} called`);
     if (this.processes[0] === undefined) {
       return true;
     } else return false;
   }
 
   getPriorityLevel() {
-    // console.log("getPriorityLevel() called");
+    console.log("getPriorityLevel() called");
     return this.priorityLevel;
   }
 
   getQueueType() {
-    // console.log("getQueueType() called");
+    console.log("getQueueType() called");
     return this.queueType;
   }
 
@@ -57,36 +57,35 @@ class Queue {
   // Once a process has received the alloted time, it needs to be dequeue'd and
   // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
-    // if (currentProcess.isStateChanged() === false) {
-    // console.log(`manageTimeSlice(${currentProcess._pid}, ${time}) called`);
-    while (this.quantumClock + time <= this.quantum) {
-      currentProcess.executeProcess(time);
-      this.quantumClock += time;
+    if (currentProcess.isStateChanged() === false) {
+      console.log(`manageTimeSlice(${currentProcess._pid}, ${time}) called`);
+      while (this.quantumClock + time <= this.quantum) {
+        currentProcess.executeProcess(time);
+        this.quantumClock += time;
+      }
+      if (
+        currentProcess.isFinished() === false &&
+        currentProcess.isStateChanged() === false
+      ) {
+        this.emitInterrupt(currentProcess, "LOWER_PRIORITY");
+      } else {
+        this.quantumClock = 0;
+        this.dequeue(currentProcess);
+      }
     }
-    if (
-      currentProcess.isFinished() === false &&
-      currentProcess.isStateChanged() === false
-    ) {
-      this.emitInterrupt(currentProcess, "LOWER_PRIORITY");
-    } else {
-      this.quantumClock = 0;
-      this.dequeue(currentProcess);
-    }
-    // }
+    // this.quantumClock = 0;
   }
 
   // Execute the next non-blocking process (assuming this is a CPU queue)
   // This method should call `manageTimeSlice` as well as execute the next running process
   doCPUWork(time) {
-    // console.log(`doCPUWORK(${time}) called`);
-    // console.log(
-    //   "doCPUWORK processes: ======================================\n" +
-    //     this.processes
-    // );
-    if (
-      this.queueType ===
-      "CPU_QUEUE" /*Due to other bugs uncommenting this will cause the program to run forever: && this.processes[0] != undefined */
-    ) {
+    if (this.isEmpty()) return;
+    console.log(`doCPUWORK(${time}) called`);
+    console.log(
+      "doCPUWORK processes: ======================================\n" +
+        this.processes[0]
+    );
+    if (this.queueType === "CPU_QUEUE" && this.processes[0] !== undefined) {
       this.manageTimeSlice(this.processes[0], time);
     } else return null;
   }
@@ -94,16 +93,18 @@ class Queue {
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
   doBlockingWork(time) {
-    // console.log(`doBlockingWork(${time}) called`);
-    // console.log(
-    //   "doBlockingWork processes: ======================================\n" +
-    //     this.processes
-    // );
+    if (this.isEmpty()) return;
+    console.log(`doBlockingWork(${time}) called`);
+    console.log(
+      "doBlockingWork processes: ======================================" +
+        this.processes[0]
+    );
     if (
-      this.queueType ===
-      "BLOCKING_QUEUE" /*Due to other bugs uncommenting this will cause the program to run forever: && this.processes[0] != undefined */
+      this.queueType === "BLOCKING_QUEUE" &&
+      this.processes[0] !== undefined
     ) {
       this.manageTimeSlice(this.processes[0], time);
+      this.processes[0].executeBlockingProcess(time);
     } else return null;
   }
 
@@ -111,11 +112,7 @@ class Queue {
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
   // The process also needs to be removed from the queue
   emitInterrupt(source, interrupt) {
-    // console.log(
-    //   `emitInterrupt(${
-    //     source._pid
-    //   }(console shows pid only),${interrupt}) called`
-    // );
+    console.log(`emitInterrupt(${source._pid},${interrupt}) called`);
     // if (interrupt === "PROCESS_BLOCKED" && this.queueType === "CPU_QUEUE") {
     //   for (let i = 0; i < this.processes.length - 1; i++) {
     //     if (this.processes[i]._pid === source._pid) {

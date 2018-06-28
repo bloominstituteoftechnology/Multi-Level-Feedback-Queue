@@ -17,7 +17,7 @@ class Process {
   }
 
   setParentQueue(queue) {
-    // console.log(`setParentQueue(${queue.priorityLevel}) called`);
+    console.log(`setParentQueue(${queue.priorityLevel}) called`);
     this.queue = queue;
   }
 
@@ -33,7 +33,8 @@ class Process {
   // by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
   executeProcess(time) {
-    // console.log(`executeProcess(${time}) called`);
+    console.log(`executeProcess(${time}) called`);
+    this.stateChanged = false;
     if (this.blockingTimeNeeded <= 0) {
       this.cpuTimeNeeded = Math.max(this.cpuTimeNeeded - time, 0);
     } else {
@@ -48,11 +49,13 @@ class Process {
   // top running queue by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
   executeBlockingProcess(time) {
-    // console.log(`executeBlockingProcess(${time}) called`);
+    console.log(`executeBlockingProcess(${time}) called`);
     if (this.blockingTimeNeeded > 0) {
       this.blockingTimeNeeded = Math.max(this.blockingTimeNeeded - time, 0);
     }
     if (this.blockingTimeNeeded <= 0) {
+      console.log(`BLOCKING FOR ${this._pid} OVER!!!`);
+      // making this.stateChanged = false here makes less infinite run bugs, so fix that later
       this.stateChanged = true;
       this.queue.emitInterrupt(this, "PROCESS_READY");
     }
@@ -60,18 +63,18 @@ class Process {
 
   // Returns this process's stateChanged property
   isStateChanged() {
-    // console.log(`isStateChanged() called`);
+    console.log(`isStateChanged() called: ${this._pid} ${this.stateChanged}`);
     return this.stateChanged;
   }
 
   get pid() {
-    // console.log(`get pid() called`);
+    console.log(`get pid() called`);
     return this._pid;
   }
 
   // Private function used for testing; DO NOT MODIFY
   _getParentQueue() {
-    // console.log(`_getParentQueue() called`);
+    console.log(`_getParentQueue() called`);
     return this.queue;
   }
 }
