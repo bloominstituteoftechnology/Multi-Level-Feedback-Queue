@@ -28,6 +28,7 @@ class Scheduler {
   run() {
     let currentTime = Date.now();
     let workTime = currentTime - this.clock;
+    this.blockingQueue.doCPUWork(workTime);
     for (let i = 0; i < runningQueues.length - 1; i++) {
       currentTime = Date.now();
       workTime = currentTime - this.clock;
@@ -54,7 +55,20 @@ class Scheduler {
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-  handleInterrupt(queue, process, interrupt) {}
+  handleInterrupt(queue, process, interrupt) {
+    if (interrupt === "PROCESS_BLOCKED") {
+      this.blockingQueue.enqueue(process);
+    } else if (interrupt === "PROCESS_READY") {
+      this.runningQueues[0].enqueue(process);
+    } else if (interrupt === "LOWER_PRIORITY") {
+      for (let i = 0; i < this.runningQueues.length - 1; i++) {
+        if (this.runningQueues[i].prioritylevel < queue.priorityLevel) {
+          this.runningQueues[i].enqueue(process);
+          return;
+        }
+      }
+    }
+  }
 
   // Private function used for testing; DO NOT MODIFY
   _getCPUQueue(priorityLevel) {

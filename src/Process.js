@@ -21,7 +21,9 @@ class Process {
   }
 
   isFinished() {
-    return this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0;
+    if (this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0) {
+      return true;
+    } else return false;
   }
 
   // If no blocking time is needed by this process, decrement the amount of
@@ -31,8 +33,10 @@ class Process {
   // Make sure the `stateChanged` flag is toggled appropriately
   executeProcess(time) {
     if (this.blockingTimeNeeded <= 0) {
-      this.cpuTimeNeeded -= time;
+      this.cpuTimeNeeded = Math.max(this.cpuTimeNeeded - time, 0);
+    } else {
       this.stateChanged = true;
+      this.queue.emitInterrupt(this, "PROCESS_BLOCKED");
     }
   }
 
@@ -43,8 +47,11 @@ class Process {
   // Make sure the `stateChanged` flag is toggled appropriately
   executeBlockingProcess(time) {
     if (this.blockingTimeNeeded > 0) {
-      this.blockingTimeNeeded -= time;
+      this.blockingTimeNeeded = Math.max(this.blockingTimeNeeded - time, 0);
+    }
+    if (this.blockingTimeNeeded <= 0) {
       this.stateChanged = true;
+      this.queue.emitInterrupt(this, "PROCESS_READY");
     }
   }
 
