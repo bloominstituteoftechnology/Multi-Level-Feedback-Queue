@@ -85,7 +85,7 @@ class Queue {
         if (interrupt === 'PROCESS_READY') {
             this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
         }
-        this.processes = this.processes.filter(process => process != source);
+        this.dequeue();
     }
 }
 
