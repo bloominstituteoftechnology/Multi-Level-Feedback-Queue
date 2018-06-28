@@ -2,6 +2,7 @@ const Queue = require('./Queue');
 const { 
     QueueType,
     PRIORITY_LEVELS,
+    SchedulerInterrupt,
 } = require('./constants/index');
 
 // A class representing the scheduler
@@ -24,10 +25,32 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
+        while (true) {
+            const time = Date.now();
+            const workTime = time - this.clock;
+            this.clock = time;
 
+            if (this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                const queue = this.runningQueues[i];
+                if(!queue.isEmpty()) {
+                    queue.doCPUWork(workTime);
+                    break;
+                }
+            }
+
+            if (this.allQueuesEmpty()) {
+                // console.log("idle node");
+                break;
+            }
+        }
     }
 
     allQueuesEmpty() {
+        return this.runningQueues.every((queue) => queue.isEmpty()) && this.blockingQueue.isEmpty();
     }
 
     addNewProcess(process) {
@@ -37,6 +60,20 @@ class Scheduler {
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
+        switch(interrupt) {
+            case SchedulerInterrupt.PROCESS_BLOCKED:
+                this.blockingQueue.enqueue(process);
+                break;
+            case SchedulerInterrupt.PROCESS_READY:
+                this.addNewProcess(process);
+                break;
+            case SchedulerInterrupt.LOWER_PRIORITY:
+                if (queue.getQueueType() === QueueType.CPU_QUEUE) {
+                    const priorityLevel = Math.min(PRIORITY_LEVELS = 1, queue.getPriorityLevel() + 1);
+                } else {
+                    this.blockingQueue.enqueue(process);
+                }
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
