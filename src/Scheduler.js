@@ -1,7 +1,8 @@
 const Queue = require('./Queue'); 
 const { 
 	QueueType,
-	PRIORITY_LEVELS,
+   PRIORITY_LEVELS,
+   SchedulerInterrupt
 } = require('./constants/index');
 
 // A class representing the scheduler
@@ -24,7 +25,16 @@ class Scheduler {
 	// On every iteration of the scheduler, if the blocking queue is not empty, blocking work
 	// should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
 	run() {
+      if (this.allQueuesEmpty()) {
+         console.log("ALL QUEUES EMPTY... EXECUTION COMPLETE!\n");
+         return;
+      }
 
+      // calculate the time slice - workingTime = curr - this.clock
+
+      // update the clock - this.clock = curr
+
+      // 
 	}
 
 	allQueuesEmpty() {
@@ -35,16 +45,28 @@ class Scheduler {
 	}
 
 	addNewProcess(process) {
-      if (process.blocking) this.blockingQueue.enqueue(process);
-      
-      // add process to highest priority non-blocking queue
-      else this.runningQueues[0].enqueue(process); 
+      this.runningQueues[0].enqueue(process);
 	}
 
 	// The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
 	// Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
 	handleInterrupt(queue, process, interrupt) {
+      switch(interrupt) {
+         // move process to top priority queue
+         case SchedulerInterrupt.PROCESS_READY:
+            queue.enqueue(process);
+            break;
+         
+         // move process to blocking queue
+         case SchedulerInterrupt.PROCESS_BLOCKED:
+            queue.enqueue(process);
+            break;
 
+         // if its a blocking process, move to end of blocking queue
+         // else move it down one priority. if already at last priority, move to end of the line
+         case SchedulerInterrupt.LOWER_PRIORITY:
+            break;
+      }
 	}
 
 	// Private function used for testing; DO NOT MODIFY

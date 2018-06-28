@@ -35,7 +35,7 @@ class Queue {
 	}
 
 	isEmpty() {
-		return this.processes.length > 0;
+		return this.processes.length === 0;
 	}
 
 	getPriorityLevel() {
@@ -77,7 +77,17 @@ class Queue {
 	// Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
 	// The process also needs to be removed from the queue
 	emitInterrupt(source, interrupt) {
+		this.dequeue();
 
+		// sent from executeProcess() - move source to blocking queue
+		if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED) {
+			this.scheduler.handleInterrupt(this.scheduler.blockingQueue, source, interrupt);
+		}
+
+		// sent from executeBlockingProcess() - move source to top of running queue
+		if (interrupt === SchedulerInterrupt.PROCESS_READY) {
+			this.scheduler.handleInterrupt(this.scheduler.runningQueues[0], source, interrupt);
+		}
 	}
 }
 
