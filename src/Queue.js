@@ -20,6 +20,7 @@ class Queue {
   // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
     // console.log("this process:", this.processes);
+    process.setParentQueue(this);
     return this.processes.push(process); // don't forget to return
   }
 
@@ -50,15 +51,16 @@ class Queue {
   // Once a process has received the alloted time, it needs to be dequeue'd and
   // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
-    console.log("Current process:", currentProcess);
+    // console.log("Current process:", currentProcess);
     if (currentProcess.stateChanged) {
       this.quantumClock = 0; // if state is changed
-    } else if (currentProcess.cpuTimeNeeded - time > 0) { // time need > time alloted
+    } else if (currentProcess.cpuTimeNeeded - time > 0) {
+      // time need > time alloted
       currentProcess.cpuTimeNeeded = 0;
       currentProcess.blockingTimeNeeded = currentProcess.cpuTimeNeeded - time;
       this.quantumClock = time;
     } else {
-        return; // when no blocking is needed
+      return; // when no blocking is needed
     }
   }
 
