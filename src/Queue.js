@@ -53,9 +53,25 @@ class Queue {
   // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
     if (currentProcess.stateChanged) {
+      // process will move to another queue
       this.quantumClock = 0;
-    } else if (currentProcess.cpuTimeNeeded > time) {
-      this.quantumClock = time;
+      return;
+    }
+
+    this.quantumClock += time; // keep track of process execution time
+    if (this.quantumClock >= this.quantum) {
+      this.quantumClock = 0;
+      const process = this.dequeue();
+      if (!process.isFinished()) {
+        // process could not finish in the queue's quantum
+        this.scheduler.handleInterrupt(
+          this,
+          process,
+          SchedulerInterrupt.LOWER_PRIORITY
+        );
+      } else {
+        console.log(`Process ${process._pid} finished!`);
+      }
     }
   }
 
