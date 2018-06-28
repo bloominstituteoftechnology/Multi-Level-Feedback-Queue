@@ -20,7 +20,7 @@ class Process {
     }
 
     isFinished() {
-      
+      return !(this.cpuTimeNeeded || this.blockingTimeNeeded) ? true : false;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -52,7 +52,7 @@ class Process {
 
     // Private function used for testing; DO NOT MODIFY
     _getParentQueue() {
-        return this.queue;
+      return this.queue;
     }
 }
 
