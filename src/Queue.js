@@ -11,7 +11,7 @@ class Queue {
 		this.scheduler = scheduler;
 		// The queue's allotted time slice; each process in this queue is executed for this amount of time in total
 		// This may be done over multiple scheduler iterations
-		this.quantum = quantum;
+		this.quantum = quantum; // 50, 10, 30, 50
 		// A counter to keep track of how much time the queue has been executing so far
 		this.quantumClock = 0;
 		this.queueType = queueType;
@@ -19,7 +19,7 @@ class Queue {
 
 	// Enqueues the given process. Return the enqueue'd process
 	enqueue(process) {
-		process.setParentQueue(this.queueType);
+		process.setParentQueue(this);
 		const length = this.processes.push(process);
 		return this.processes[length - 1];
 	}
@@ -51,9 +51,13 @@ class Queue {
 	// Once a process has received the alloted time, it needs to be dequeue'd and 
 	// then handled accordingly, depending on whether it has finished executing or not
 	manageTimeSlice(currentProcess, time) {
-		// if the state has not been changed...
-		if (!currentProcess.isStateChanged()) {
+		if (currentProcess.isStateChanged()) this.quantumClock = 0;
+		else this.quantumClock += time;
 
+		if (this.quantumClock >= this.quantum) {
+			this.quantumClock = 0;
+			if (currentProcess.isFinished()) this.dequeue();
+			else this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
 		}
 	}
 
