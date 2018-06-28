@@ -29,7 +29,17 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        this.stateChanged = false;
+        if (this.blockingTimeNeeded === 0) {
+            if (this.cpuTimeNeeded - time < 0) {
+                this.cpuTimeNeeded = 0;
+              } else {
+                this.cpuTimeNeeded -= time;
+              }
+        } else {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.stateChanged = true;
+        }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
