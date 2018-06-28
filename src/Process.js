@@ -35,17 +35,16 @@ class Process {
   executeProcess(time) {
     // use exe time difference to check for process completion
     const timeDiff = this.cpuTimeNeeded - time;
-    if (timeDiff <= 0 && !this.stateChanged) {
-      // process is completed and non-blocking
-      this.cpuTimeNeeded = 0;
-    } else if (!this.isFinished() && !this.stateChanged) {
-      // process is not completed and non-blocking
-      this.cpuTimeNeeded -= time;
-    } else if (this.blockingTimeNeeded > 0) {
-      // process is blocking - requires cpu time and blocking time
-      this.queue.emitInterrupt(this, "PROCESS_BLOCKED");
+    if (this.blockingTimeNeeded > 0) {
+      // process is blocking
       this.stateChanged = !this.stateChanged;
-      // this.cpuTimeNeeded = Math.abs(this.blockingTimeNeeded - time);
+      this.queue.emitInterrupt(this, "PROCESS_BLOCKED");
+    } else if (timeDiff > 0) {
+      // process is not blocking and is incomplete
+      this.cpuTimeNeeded = timeDiff;
+    } else {
+      // process is complete
+      this.cpuTimeNeeded = 0;
     }
   }
   // If this process requires blocking time, decrement the amount of blocking
