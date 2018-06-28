@@ -25,7 +25,33 @@ class Scheduler {
   // time from the clock property. Don't forget to update the clock property afterwards.
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-  run() {}
+  run() {
+    while (true) {
+      // loop inifinitely until all queues are empty
+      const time = Date.now(); // current time
+      const workTime = time - this.clock; // time elapsed since last loop - given to process
+      this.clock = time;
+
+      // check block queue for processes
+      if (!this.blockingQueue.isEmpty()) {
+        this.blockingQueue.doBlockingWork(workTime);
+      }
+
+      // do some work on the running queues
+      for (let i = 0; i < PRIORITY_LEVELS; i++) {
+        const queue = this.runningQueues[i];
+        if (!queue.isEmpty()) {
+          queue.doCPUWork(workTime);
+          break; // go to the next iteration of the while loop
+        }
+      }
+
+      // check all queues
+      if (this.allQueuesEmpty()) {
+        break; // exit loop as soon as all processes are finished
+      }
+    }
+  }
 
   allQueuesEmpty() {
     let emptyQueues = 0;
@@ -34,7 +60,7 @@ class Scheduler {
         emptyQueues++;
       }
     }
-    return emptyQueues === this.runningQueues.length ? true : false;
+    return emptyQueues === this.runningQueues.length;
   }
 
   addNewProcess(process) {
@@ -55,19 +81,17 @@ class Scheduler {
         this.addNewProcess(process);
         break;
       case "LOWER_PRIORITY":
-        // if process is not blocking - move to the next low priority queue
-        if (!process.stateChanged) {
-          let idx = this.runningQueues.indexOf(queue);
-          this.runningQueues[idx + 1].enqueue(process);
+        // non-blocking process - moved to lower priority queue
+        if (queue.getQueueType() === QueueType.CPU_QUEUE) {
+          // move to the next lower priority queue
+          const priorityLevel = Math.min(
+            PRIORITY_LEVELS - 1, // special case: process could already be in the lowest priority queue
+            queue.getPriorityLevel() + 1 // generally the next lowest priority
+          );
+          this.runningQueues[priorityLevel].enqueue(process);
+        } else {
+          this.blockingQueue.enqueue(process);
         }
-
-        // else if (process.stateChanged) {
-        //   // if process is blocking - move to the endof the blocking queue
-        //   this.blockingQueue.enqueue(process);
-        // } else {
-        //   // else add process back to the end of the lowest priority queue
-        //   this.runningQueues[runningQlen - 1].enqueue(process);
-        // }
         break;
       default:
         break;
