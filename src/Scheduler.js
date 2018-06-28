@@ -51,7 +51,7 @@ class Scheduler {
 
             for (let proprity = 0; proprity < PRIORITY_LEVELS; proprity++) {
 
-                const queue = this.runningQueues(proprity);
+                const queue = this.runningQueues[proprity];
 
                 if (!queue.isEmpty()) {
                     queue.doCPUWork(workTime);
@@ -89,6 +89,9 @@ class Scheduler {
                 if (queue.getQueueType() === QueueType.CPU_QUEUE) {
                     const priorityLevel = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1);
                     this.runningQueues[priorityLevel].enqueue(process);
+                }
+                else {
+                    this.blockingQueue.enqueue(process);
                 }
                 break;
             default:
