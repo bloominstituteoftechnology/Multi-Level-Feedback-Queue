@@ -86,7 +86,15 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-
+        let index = this.processes.indexOf(source);
+        this.processes.splice(index, 1);
+        if(interrupt === SchedulerInterrupt.PROCESS_BLOCKED) {
+            this.scheduler.handleInterrupt(this, source, interrupt);
+        }
+        if (interrupt === SchedulerInterrupt.PROCESS_READY) {
+            this.scheduler.handleInterrupt(this, source, interrupt);
+        }
+        
     }
 }
 
