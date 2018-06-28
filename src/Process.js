@@ -1,9 +1,9 @@
 const {SchedulerInterrupt} = require('./constants/index');
 
 // A class representation of a process that may be blocking or non-blocking. We
-// can specify how much CPU time a process needs in order to complete, or we
-// can specify if the process is blocking; if so, the amount of blocking time
-// needed is randomly determined.
+// can specify how much CPU time a process needs in order to complete, or we can
+// specify if the process is blocking; if so, the amount of blocking time needed
+// is randomly determined.
 class Process {
     constructor(pid, cpuTimeNeeded = null, blocking = false) {
         this._pid = pid;
@@ -33,19 +33,17 @@ class Process {
     // the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
         //sest the statechanged to false
-        this.stateChanged === false;
+        this.stateChanged = false;
         if (this.blockingTimeNeeded === 0) {
-
             this.cpuTimeNeeded -= time;
-            //checks blocking time equals 0
-            if (this.cpuTimeNeeded < 0) {
-                this.cpuTimeNeeded = 0;
-            } else {
-                this
-                    .queue
-                    .emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-                this.stateChanged.changed = true
-            }
+            this.cpuTimeNeeded = this.cpuTimeNeeded > 0
+                ? this.cpuTimeNeeded
+                : 0;
+        } else {
+            this
+                .queue
+                .emitInterrupt(this.SchedulerInterrupt.PROCESS_BLOCKCED);
+            this.stateChanged = true;
         }
     }
 
@@ -55,10 +53,14 @@ class Process {
     // interrupt Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
         this.blockingTimeNeeded -= time;
-        this.blockingTimeNeeded = this.blockingTimeNeeded > 0 ? this.blockingTimeNeeded : 0;
+        this.blockingTimeNeeded = this.blockingTimeNeeded > 0
+            ? this.blockingTimeNeeded
+            : 0;
 
-        if(!this.blockingTimeNeeded) {
-            this.queue.emitInterrupt(this, 'Process is ready!');
+        if (!this.blockingTimeNeeded) {
+            this
+                .queue
+                .emitInterrupt(this, 'Process is ready!');
             this.stateChanged = true;
         }
     }
