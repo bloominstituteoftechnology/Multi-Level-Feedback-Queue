@@ -39,7 +39,7 @@ class Scheduler {
     }
 
     allQueuesEmpty() {
-        return this.runningQueues.every(queue => queue.isEmpty() && this.blockingQueue.isEmpty());
+        return this.runningQueues.every(queue => queue.isEmpty()) && this.blockingQueue.isEmpty();
     }
 
     addNewProcess(process) {
@@ -59,11 +59,13 @@ class Scheduler {
             case 'LOWER_PRIORITY':
                 switch(queue.getQueueType()) {
                     case 'CPU_QUEUE':
-                        let priority = queue.getPriorityLevel() + 1;
+                        const priority = queue.getPriorityLevel() + 1;
 
                         if(priority > PRIORITY_LEVELS - 1) {
                             priority = PRIORITY_LEVELS - 1;
                         }
+
+                        const priority = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1);
 
                         this.runningQueues[priority].enqueue(process);
                         break;
