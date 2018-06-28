@@ -32,11 +32,19 @@ class Queue {
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        return (this.queue[0] !== null) ? this.queue[0] : null;
+        return() => {
+            if(this.queue[0] !== null) {
+                this.queue[0]
+            } else null;
+        } 
     }
 
     isEmpty() {
-
+        if(this.queue.processes == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     getPriorityLevel() {
@@ -77,7 +85,7 @@ class Queue {
     emitInterrupt(source, interrupt) {
         if(interrupt === 'PROCESS_BLOCKED') {
             // MOVE TO THE BLOCKED QUEUE
-            this.process[0];
+           // this.process[0];
         } else if(interrupt === 'PROCESS_READY') {
             // move to the non blocking queue
         }
