@@ -1,5 +1,11 @@
 const { SchedulerInterrupt } = require('./constants/index');
+const intterruptType = {
 
+    PROCESS_BLOCKED: 'PROCESS_BLOCKED',
+    PROCESS_READY: 'PROCESS_READY',
+    LOWER_PRIORITY: 'LOWER_PRIORITY'
+
+};
 // A class representation of a process queue that may hold either a 
 // blocking or non-blocking process
 class Queue {
@@ -97,7 +103,19 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
+        const index = this.processes.indexOf(source);
+        this.processes.splice(index, 1);
 
+        switch (interrupt){
+            case intterruptType.PROCESS_BLOCKED:
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+                break;
+            case intterruptType.PROCESS_READY:
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+                break;
+            default:
+                break;
+        }
     }
 }
 
