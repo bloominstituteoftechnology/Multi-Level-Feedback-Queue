@@ -63,7 +63,7 @@ class Process {
         if (!this.blockingTimeNeeded) {
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
             this.stateChanged = !this.stateChanged;
-            console.log(this.queue.emitInterupt);
+            //console.log(this.queue.emitInterupt);
             
         }
         
