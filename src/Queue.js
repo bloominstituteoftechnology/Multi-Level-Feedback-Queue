@@ -61,6 +61,7 @@ class Queue {
             } else {
                 if (currentProcess.isFinished()) {
                     this.dequeue();
+                    this.quantumClock = 0;
                 }
             }
 
@@ -70,7 +71,7 @@ class Queue {
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-
+        this.manageTimeSlice(this.processes[0], time);
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
@@ -84,7 +85,7 @@ class Queue {
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
         this.dequeue();
-        
+
     }
 }
 
