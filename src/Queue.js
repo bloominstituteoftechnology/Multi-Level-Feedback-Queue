@@ -20,6 +20,7 @@ class Queue {
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
       this.processes.push(process);
+      process.setParentQueue(this);
       return process;
     }
 
@@ -34,7 +35,7 @@ class Queue {
     }
 
     isEmpty() {
-      return this.process.length ? false : true;
+      return this.processes.length ? false : true;
     }
 
     getPriorityLevel() {
@@ -50,26 +51,40 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-
+      if (!currentProcess.isStateChanged()) {
+        this.quantumClock += time;
+        if (this.quantumClock >= this.quantum) {
+          this.quantumClock = 0;
+          this.dequeue();
+          if (!currentProcess.isFinished()) {
+            this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+          }
+        }
+      }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-
+        const PROC = this.peek();
+        this.manageTimeSlice(PROC, time);
+        PROC.executeProcess(time);
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-
+      const PROC = this.peek();
+      this.manageTimeSlice(PROC, time);
+      PROC.executeBlockingProcess(time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-
+      this.scheduler.handleInterrupt(this, source, interrupt);
+      this.processes = this.processes.filter((i) => i !== source );
     }
 }
 
