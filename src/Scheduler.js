@@ -25,22 +25,22 @@ class Scheduler {
 	// On every iteration of the scheduler, if the blocking queue is not empty, blocking work
 	// should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
 	run() {
-      if (this.allQueuesEmpty()) {
-         console.log("ALL QUEUES EMPTY... EXECUTION COMPLETE!\n");
-         return;
+
+      while (!this.allQueuesEmpty()) {
+         const slice = Date.now() - this.clock;
+         this.clock = Date.now();
+
+         if (!this.blockingQueue.isEmpty()) this.blockingQueue.doBlockingWork(slice);
+
+         this.runningQueues.forEach(runner => !runner.isEmpty() ? runner.doCPUWork(slice) : null);
       }
 
-      // calculate the time slice - workingTime = curr - this.clock
-
-      // update the clock - this.clock = curr
-
-      // 
 	}
 
 	allQueuesEmpty() {
-      return this.blockingQueue.isEmpty() &&
-         this.runningQueues[0].isEmpty() &&
-         this.runningQueues[1].isEmpty() &&
+      return this.blockingQueue.isEmpty() && 
+         this.runningQueues[0].isEmpty() && 
+         this.runningQueues[1].isEmpty() && 
          this.runningQueues[2].isEmpty();
 	}
 
@@ -54,17 +54,24 @@ class Scheduler {
       switch(interrupt) {
          // move process to top priority queue
          case SchedulerInterrupt.PROCESS_READY:
-            queue.enqueue(process);
+            this.addNewProcess(process);
             break;
          
          // move process to blocking queue
          case SchedulerInterrupt.PROCESS_BLOCKED:
-            queue.enqueue(process);
+            this.blockingQueue.enqueue(process);
             break;
 
          // if its a blocking process, move to end of blocking queue
          // else move it down one priority. if already at last priority, move to end of the line
          case SchedulerInterrupt.LOWER_PRIORITY:
+            // if (queue.getQueueType() === QueueType.BLOCKING_QUEUE) this.blockingQueue.enqueue(process);
+            // else if (queue.getPriorityLevel() === 2) this.runningQueues[2].enqueue(process);
+            if (queue.getQueueType() === QueueType.BLOCKING_QUEUE || queue.getPriorityLevel() === 2) queue.enqueue(process);
+            else this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process);
+            break;
+
+         default:
             break;
       }
 	}
