@@ -27,25 +27,48 @@ class Scheduler {
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
   run() {
     // while ther are processes in the ques or whiel the ues are not empty
-    while (!this.allQueuesEmpty()) {
-      // subtracting the current time from the clock, and setting that into the clock variable,
-      const currentSlice = Date.now() - this.clock;
-      this.clock -= currentSlice;
-      // check if the blocking queue is not empty.
-      if (!this.blockingQueue.isEmpty()) {
-        // when the blocking queue is not empty call do blocking work and pass in the time variable
-        this.blockingQueue.doBlockingWork(this.clock);
-      }
-      // iterate over the running queues.
+    // while (!this.allQueuesEmpty()) {
+    //   // subtracting the current time from the clock, and setting that into the clock variable,
+    //   const currentSlice = Date.now() - this.clock;
+    //   this.clock -= currentSlice;
+    //   // check if the blocking queue is not empty.
+    //   if (!this.blockingQueue.isEmpty()) {
+    //     // when the blocking queue is not empty call do blocking work and pass in the time variable
+    //     this.blockingQueue.doBlockingWork(this.clock);
+    //   }
+    //   // iterate over the running queues.
 
-      for (let i = 0; i < this.runningQueues.length; i++) {
-        // performing and if to check if running queues at the index of i is not empty
-        if (!this.runningQueues[i].isEmpty()) {
-          // if it is not then do cpu work at the index of i passing in the time variable
-          this.runningQueues[i].doCPUWork(this.clock);
+    //   for (let i = 0; i < this.runningQueues.length; i++) {
+    //     // performing and if to check if running queues at the index of i is not empty
+    //     if (!this.runningQueues[i].isEmpty()) {
+    //       // if it is not then do cpu work at the index of i passing in the time variable
+    //       this.runningQueues[i].doCPUWork(this.clock);
+    //     }
+    //   }
+    // }
+    while (true) {
+        //log the current time
+        const time = Date.now();
+        // time logged by the last loop iteration
+        const workTime = time - this.clock;
+        this.clock = time;
+
+        if (!this.blockingQueue.isEmpty()) {
+            this.blockingQueue.doBlockingWork(workTime);
         }
-      }
-    }
+
+        for (let i = 0; i < PRIORITY_LEVELS; i++) {
+            const queue = this.runningQueues[i];
+            if (!queue.isEmpty()) {
+                queue.doCPUWork(workTime);
+                break;
+            }
+        }
+
+        if (this.aaaaallQueuesEmpty()) {
+            break;
+        }
+}
   }
 
   allQueuesEmpty() {
@@ -58,7 +81,7 @@ class Scheduler {
       }
     }
     // returns true if the blocking que is empty if all ques are empty, Hurrah!!
-    return this.blockingQueue.isEmpty();
+    return true;
   }
 
   addNewProcess(process) {
@@ -89,7 +112,7 @@ class Scheduler {
           // else the priority level is  equals priority levels minus one,
           if (queue.getPriorityLevel() === PRIORITY_LEVELS - 1) {
             // add in the process at the current process
-            this.runningQueues[que.getPriorityLevel()].enqueue(process);
+            this.runningQueues[queue.getPriorityLevel()].enqueue(process);
           } else {
             // else add it too the the next priority level.
             this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process);
