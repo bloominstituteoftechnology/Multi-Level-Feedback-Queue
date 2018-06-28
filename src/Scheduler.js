@@ -29,7 +29,7 @@ class Scheduler {
     let currentTime = Date.now();
     let workTime = currentTime - this.clock;
     this.blockingQueue.doCPUWork(workTime);
-    for (let i = 0; i < runningQueues.length - 1; i++) {
+    for (let i = 0; i < this.runningQueues.length - 1; i++) {
       currentTime = Date.now();
       workTime = currentTime - this.clock;
       this.runningQueues[i].doCPUWork(workTime);
@@ -59,10 +59,14 @@ class Scheduler {
     if (interrupt === "PROCESS_BLOCKED") {
       this.blockingQueue.enqueue(process);
     } else if (interrupt === "PROCESS_READY") {
-      this.runningQueues[0].enqueue(process);
+      this.addNewProcess(process);
+      // this.runningQueues[0].enqueue(process);
     } else if (interrupt === "LOWER_PRIORITY") {
+      if (queue.priorityLevel === 2) {
+        return;
+      }
       for (let i = 0; i < this.runningQueues.length - 1; i++) {
-        if (this.runningQueues[i].prioritylevel < queue.priorityLevel) {
+        if (this.runningQueues[i].priorityLevel > queue.priorityLevel) {
           this.runningQueues[i].enqueue(process);
           return;
         }
