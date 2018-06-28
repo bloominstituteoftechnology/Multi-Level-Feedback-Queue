@@ -20,7 +20,7 @@ class Queue {
   // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
     this.processes.push(process);
-    process.setParentQueue(this.processes);
+    process.setParentQueue(this);
     return process;
   }
 
@@ -50,7 +50,9 @@ class Queue {
   // Processes that have had their states changed should not be affected
   // Once a process has received the alloted time, it needs to be dequeue'd and
   // then handled accordingly, depending on whether it has finished executing or not
-  manageTimeSlice(currentProcess, time) {}
+  manageTimeSlice(currentProcess, time) {
+    currentProcess.currentProcess.dequeue();
+  }
 
   // Execute the next non-blocking process (assuming this is a CPU queue)
   // This method should call `manageTimeSlice` as well as execute the next running process
@@ -65,7 +67,7 @@ class Queue {
   // The process also needs to be removed from the queue
   emitInterrupt(source, interrupt) {
     interrupt === "PROCESS_BLOCKED" ? source.executeBlockingProcess() : null;
-    interrupt === "PROCESS_READY" ? source.executeBlockingProcess() : null;
+    interrupt === "PROCESS_READY" ? source.executeProcess() : null;
   }
 }
 
