@@ -41,23 +41,26 @@ class Process {
     } else if (!this.isFinished() && !this.stateChanged) {
       // process is not completed and non-blocking
       this.cpuTimeNeeded -= time;
+    } else if (this.blockingTimeNeeded > 0) {
+      // process is blocking - requires cpu time and blocking time
+      this.queue.emitInterrupt(this, "PROCESS_BLOCKED");
+      this.stateChanged = !this.stateChanged;
+      // this.cpuTimeNeeded = Math.abs(this.blockingTimeNeeded - time);
     }
-
-    // if (this.blockingTimeNeeded === 0) {
-    //   this.cpuTimeNeeded -= time;
-    // } else {
-    //   // process is blocked
-    //   this.stateChanged = true;
-    //   return SchedulerInterrupt.PROCESS_BLOCKED;
-    // }
   }
-
   // If this process requires blocking time, decrement the amount of blocking
   // time it needs by the input time
   // Once it no longer needs to perform any blocking execution, move it to the
   // top running queue by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
-  executeBlockingProcess(time) {}
+  executeBlockingProcess(time) {
+    this.stateChanged = true;
+    if (this.cpuTimeNeeded <= this.blockingTimeNeeded) {
+      // process is blocking and completed
+      this.blockingTimeNeeded = 0;
+      this.queue.emitInterrupt(this, "PROCESS_READY");
+    }
+  }
 
   // Returns this process's stateChanged property
   isStateChanged() {
