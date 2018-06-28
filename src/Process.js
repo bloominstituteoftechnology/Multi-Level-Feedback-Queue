@@ -41,7 +41,7 @@ class Process {
             }
             //console.log(this.cpuTimeNeeded);
         } else {
-            this.queue = SchedulerInterrupt.PROCESS_BLOCKED;
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = !this.stateChanged;
         }
    }
@@ -61,7 +61,7 @@ class Process {
         }
         
         if (!this.blockingTimeNeeded) {
-            //this.queue = SchedulerInterrupt.PROCESS_READY;
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
             this.stateChanged = !this.stateChanged;
             console.log(this.queue.emitInterupt);
             
