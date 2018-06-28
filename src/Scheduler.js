@@ -22,14 +22,13 @@ class Scheduler {
 
     run() {
     // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
-        if this.runningQueues (!== []) {
+    while (this.runningQueues !== []) {
 
-        }
+    }
     //       needs to have a while loop that logs the current time with Date.now() then figure out
     //         the work time (diff between the current time now, and last loop ran)
     //          so this is the ammount of time you feed into do blocking work, and do cpu work
     //           then log block to be current
-    
     // Calculate the time slice for the next iteration of the scheduler by subtracting the current
     // time from the clock property. Don't forget to update the clock property afterwards.
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
@@ -44,10 +43,10 @@ class Scheduler {
 
     }
 
+
+    handleInterrupt(queue, process, interrupt) {
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-    handleInterrupt(queue, process, interrupt) {
-
     }
 
     // Private function used for testing; DO NOT MODIFY

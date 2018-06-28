@@ -7,10 +7,14 @@ const Process = require('./Process');
 // Feel free to edit this file to execute your scheduler implemetation
 // in a different way.
 const main = () => {
+    //creates a new instance of the Scheduler class
     const scheduler = new Scheduler();
     
+    //create 100 random processes
     for (let i = 1; i < 101; i++) {
+        //Randomly assign blocking process or not (25% chance of blocking)
         let rollForBlockingProcess = Math.random() < 0.25;
+        //Create new Process class, then calls addNewProcess() method and plugs in new Process created
         scheduler.addNewProcess(new Process(i + 1000, null, rollForBlockingProcess));
     }
 
