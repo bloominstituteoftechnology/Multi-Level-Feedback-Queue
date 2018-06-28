@@ -18,7 +18,10 @@ class Queue {
   }
 
   // Enqueues the given process. Return the enqueue'd process
-  enqueue(process) {}
+  enqueue(process) {
+      process.setParentQueue(this);
+      return this.processes.push(process);
+  }
 
   // Dequeues the next process in the queue. Return the dequeue'd process
   dequeue() {
@@ -31,7 +34,7 @@ class Queue {
   }
 
   isEmpty() {
-    return this.processes === 0;
+    return this.processes.length === 0;
   }
 
   getPriorityLevel() {
