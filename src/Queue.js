@@ -21,30 +21,31 @@ class Queue {
     // adds an item of data awaiting processing to a queue of items
     enqueue(process) {
         //console.log(this.processes);
-        this.queue.push(process);
+        //this.queue.push(process);
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     // removes an item of data awaiting processsing to a a que of items. 
     dequeue() {
-        return this.queue.shift();
+        //return this.queue.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        return() => {
-            if(this.queue[0] !== null) {
-                this.queue[0]
-            } else null;
-        } 
+        // return() => {
+        //     if(this.queue[0] !== null) {
+        //         this.queue[0]
+        //     } else null;
+        // } 
     }
 
     isEmpty() {
-        if(this.queue.processes == 0) {
+        if(this.processes.length <= 0) {
             return true;
         } else {
             return false;
         }
+        //return this.processes.length;
     }
 
     getPriorityLevel() {
@@ -86,13 +87,12 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-        if(interrupt === 'PROCESS_BLOCKED') {
+        //if(interrupt === 'PROCESS_BLOCKED') {
             // MOVE TO THE BLOCKED QUEUE
            // this.process[0];
 
-        } else if(interrupt === 'PROCESS_READY') {
+        //} else if(interrupt === 'PROCESS_READY') {
             // move to the non blocking queue
-        }
     }
 }
 
