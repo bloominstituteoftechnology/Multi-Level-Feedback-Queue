@@ -29,7 +29,7 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-        if (this.blocking) {
+        if (this.blockingTimeNeeded) {
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = true;
         } else {
@@ -45,6 +45,7 @@ class Process {
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
         if (this.blockingTimeNeeded) {
+            if (time > this.blockingTimeNeeded) time = this.blockingTimeNeeded;
             this.blockingTimeNeeded -= time;
         }
         if (this.blockingTimeNeeded <= 0) {
