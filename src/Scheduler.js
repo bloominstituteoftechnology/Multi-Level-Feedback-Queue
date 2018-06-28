@@ -28,7 +28,11 @@ class Scheduler {
     }
 
     allQueuesEmpty() {
-
+        for(let i = 0; i < this.runningQueues.length; i++) {
+            if(!this.runningQueues[i].isEmpty()) {
+                return false; 
+            }
+        }
     }
 
     addNewProcess(process) {
