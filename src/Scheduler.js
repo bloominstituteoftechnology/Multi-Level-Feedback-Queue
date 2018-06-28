@@ -24,15 +24,42 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
+        // for (let i = 0; PRIORITY_LEVELS > i; i++) {
+            
+        //     console.log("These are the processes",this.runningQueues[i].processes )
+        // }
+        let condition = 0;
+        let count = 0;
+        while (this.runningQueues.length > 0 && this.blockingQueue.length > 0 && condition === 0) {
+            console.log("Queus are not 0");
+            count++;
+            if (count === 250) {
+                condition = 1;
+            }
+        }
 
     }
 
     allQueuesEmpty() {
-
+        if (this.blockingQueue.length === - 1 && this.runningQueues.length === - 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     addNewProcess(process) {
-
+        // for (let i = 0; PRIORITY_LEVELS > i; i++) {
+        //     let compare = [];
+        //     console.log("These are the processes",this.runningQueues[i].processes, compare )
+        //     if (this.runningQueues[i].processes === compare) {
+        //         this.runningQueues[i].processes = process;
+        //         console.log("new process ", this.runningQueues[i].processes);
+        //         return process;
+        //     } 
+        // }
+        console.log("Passed in process", process, this.runningQueues[0]);
+        this.runningQueues.unshift(process)
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
@@ -41,7 +68,7 @@ class Scheduler {
 
     }
 
-    // Private function used for testing; DO NOT MODIFY
+    // Private function used for testing; DO NOT MODIFY 
     _getCPUQueue(priorityLevel) {
         return this.runningQueues[priorityLevel];
     }

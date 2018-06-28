@@ -16,11 +16,15 @@ class Process {
     }
 
     setParentQueue(queue) {
-      return  this.queue = queue;
+        return this.queue = queue;
     }
 
     isFinished() {
-        return true;
+        if (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -33,23 +37,30 @@ class Process {
             // this.stateChanged = true;
             // this.stateChanged = true;
             this.isStateChanged();
-            SchedulerInterrupt.PROCESS_BLOCKED;
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             // this.executeBlockingProcess(time + this.blockingTimeNeeded);
             this.setParentQueue(QueueType.BLOCKING_QUEUE);
 
         }
+        console.log("This is the cpuTimeNeeded, and the time", this.cpuTimeNeeded, time);
         this.cpuTimeNeeded -= time;
+        console.log("This is AFTER cpuTimeNeeded, and the time", this.cpuTimeNeeded, time);
         if (this.cpuTimeNeeded > 0) {
-            SchedulerInterrupt.LOWER_PRIORITY;
+            this.queue.emitInterrupt(this, SchedulerInterrupt.LOWER_PRIORITY);
+            // SchedulerInterrupt.LOWER_PRIORITY;
         }
         if (this.cpuTimeNeeded === 0) {
             // this.isStateChanged();
+            // this.cpuTimeNeeded = 0;
             this.isFinished();
+            return this.cpuTimeNeeded;
         } else if (this.cpuTimeNeeded < 0) {
             this.cpuTimeNeeded = 0;
             // this.isStateChanged();
             this.isFinished();
+            return this.cpuTimeNeeded;
         }
+    //    return this.executeProcess(time);
     }
 
     // If this process requires blocking time, decrement the amount of blocking
@@ -58,37 +69,43 @@ class Process {
     // top running queue by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
+        console.log("Execute Blocking Invoked, blockingTimeNeeded and time", this.blockingTimeNeeded, time);
         if (this.blockingTimeNeeded > 0) {
+            console.log("blockingTimeNeeded", this.blockingTimeNeeded);
             this.blockingTimeNeeded -= time;
-
-
-        }
+            console.log("AFTER blockingTimeNeeded", this.blockingTimeNeeded);
+        };
         if (this.blockingTimeNeeded == 0) {
             // this.stateChanged = false;
             this.isStateChanged();
             // this.stateChanged = true;
-            SchedulerInterrupt.PROCESS_READY;
+            Queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            // SchedulerInterrupt.PROCESS_READY;
             this.setParentQueue(QueueType.CPU_QUEUE);
         }
         if (this.blockingTimeNeeded < 0) {
             this.blockingTimeNeeded = 0;
-            SchedulerInterrupt.PROCESS_READY;
+            this.isStateChanged();
+            Queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            // SchedulerInterrupt.PROCESS_READY;
             this.setParentQueue(QueueType.CPU_QUEUE);
         }
+        
+        // this.executeBlockingProcess(time);
 
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
         // console.log("Is state invoked", this.stateChanged);
-        //  this.stateChanged ? !this.stateChanged : this.stateChanged;
-         if (this.stateChanged === false) {
-             this.stateChanged = true;
-         } else {
-             this.stateChanged = false;
-         }
-        //  console.log("Is state invoked After", this.stateChanged);
-         return this.stateChanged;
+        this.stateChanged ? !this.stateChanged : !this.stateChanged;
+        //  if (this.stateChanged === false) {
+        //      this.stateChanged = true;
+        //  } else {
+        //      this.stateChanged = false;
+        //  }
+        // console.log("Is state invoked After", this.stateChanged);
+        return this.stateChanged;
     }
 
     get pid() {
