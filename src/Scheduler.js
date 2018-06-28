@@ -24,35 +24,27 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-        while (true) {
-            const time = Date.now();
-            const workTime = time - this.clock;
-            this.clock = time;
-      
-            if (!this.blockingQueue.isEmpty()) {
-              this.blockingQueue.doBlockingWork(workTime);
-            }
-      
-            for (let i = 0; i < PRIORITY_LEVELS; i++) {
-              const queue = this.runningQueues[i];
-              if (!queue.isEmpty()) {
-                queue.doCPUWork(workTime);
-                break;
-              }
-            }
-      
-            if (this.allQueuesEmpty()) {
-              return;
-            }
+        while (this.allQueuesEmpty() === false) {
+          let currentTime = Date.now();
+          let Time = currentTime - this.clock;
+          this.clock = currentTime;
+          this.blockingQueue.doBlockingWork(Time);
+          for (let i = 0; i < this.runningQueues.length; i++) {
+            this.runningQueues[i].doCPUWork(Time);
+          }
+        }
+        if (this.runningQueues === 0) {
+        console.log(`Run Done`);
         }
     }
 
     allQueuesEmpty() {
-        let empty = true;
-        for (let i = 0; i < PRIORITY_LEVELS; i++) {
-          if (this.runningQueues[i].isEmpty() === false) empty = false;
-        }
-        return empty;
+        for (let i = 0; i < this.runningQueues.length; i++) {
+            if (!this.runningQueues[i].isEmpty()) {
+              return false;
+            }
+          }
+          return true;
     }
 
     addNewProcess(process) {
@@ -63,25 +55,26 @@ class Scheduler {
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
         switch (interrupt) {
-            case SchedulerInterrupt.PROCESS_BLOCKED:
+            case 'PROCESS_BLOCKED':
               this.blockingQueue.enqueue(process);
               break;
-            case SchedulerInterrupt.PROCESS_READY:
+      
+            case 'PROCESS_READY':
               this.addNewProcess(process);
               break;
-            case SchedulerInterrupt.LOWER_PRIORITY:
-                if (queue.getQueueType() === QueueType.CPU_QUEUE) {
-                const priorityLevel = Math.min(
-                  PRIORITY_LEVELS - 1,
-                  queue.getPriorityLevel() + 1
-                );
-                this.runningQueues[priorityLevel].enqueue(process);
-              } else {
+      
+            case 'LOWER_PRIORITY':
+              if (queue.getQueueType() === QueueType.BLOCKING_QUEUE) {
                 this.blockingQueue.enqueue(process);
+              } else {
+                if (queue.getPriorityLevel() === PRIORITY_LEVELS - 1) {
+                  this.runningQueues[queue.getPriorityLevel()].enqueue(process);
+                } else {
+                  this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process);
+                }
               }
               break;
             default:
-              break;
           }
     }
 
