@@ -16,12 +16,11 @@ class Process {
     }
     
     setParentQueue(queue) { // **
-        this.queue = queue;
-        return this.blockingTimeNeeded <= 0 && this.cpuTimeNeeded <= 0;
+        this.queue = queue; // this.queue from above, set as the queue passed in. 
     }
 
     isFinished() { // **
-        return true;
+        return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -30,18 +29,16 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) { // **
-        if(this.blockingTimeNeeded > 0) {
-            SchedulerInterrupt.PROCESS_BLOCKED;
-            this.setParentQueue;
-            this.stateChanged = true;
+        this.stateChanged = false; // sets stateChanged to false.
+        if(this.blockingTimeNeeded === 0) { // no blocking time needed...
+            this.cpuTimeNeeded -= time; // decrement the time from the CPU time needed. 
+            if(this.cpuTimeNeeded < 0) { // if blocking time needed is less than 0
+                this.cpuTimeNeeded = 0; // cpu time needed is zero.
+            }
+        } else { // if none of these...
+            this.stateChanged = true; // state changed is true, and emit processed blocked. 
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
         }
-        this.setParentQueue;
-        if (this.cpuTimeNeeded > time) {
-            SchedulerInterrupt.LOWER_PRIORITY;
-            this.setParentQueue;
-        }
-        SchedulerInterrupt.PROCES_READY;
-        this.cpuTimeNeeded -= time;
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -50,9 +47,14 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) { // ** 
-        this.blockingTimeNeeded -= time;
-        this.setParentQueue;
-        this.stateChanged = true;
+        this.blockingTimeNeeded -= time; // decrement the blocking time needed by time.
+        if (this.blockingTimeNeeded < 0) {
+            this.blockingTimeNeeded = 0;
+        }
+        if(this.blockingTimeNeeded === 0) {
+            this.stateChanged = true; // ***** <-------- how do we know what the proper state changed is supposed to be, and when to set it?
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY); // found in test. 
+        }
     }
 
     // Returns this process's stateChanged property
