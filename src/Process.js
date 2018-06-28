@@ -16,13 +16,19 @@ class Process {
     }
     
     setParentQueue(queue) {
-        this.queue = queue[queue.length];
+        if(this.blockingTimeNeeded > 0) {
+        
+        } else if(this.cpuTimeNeeded > 0) {
+        
+        }
+        
+        return this.queue;
     }
 
     isFinished() {
         if(cpuTimeNeeded <= 0) {
-            this.setParentQueue(null);
-        }
+            return true;
+        } else return false;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
