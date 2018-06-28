@@ -1,0 +1,72 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn jest Queue.test.js
+
+PATH: 
+  /Library/Frameworks/Python.framework/Versions/3.6/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Library/Frameworks/Python.framework/Versions/3.6/bin
+
+Yarn version: 
+  1.5.1
+
+Node version: 
+  8.10.0
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  {
+      "name": "ls-multi-level-feedback-queue",
+      "version": "1.0.0",
+      "description": "LambadSchool's Multi-level feedback queue exercise",
+      "main": "index.js",
+      "scripts": {
+          "start": "node src/main.js",
+          "test": "jest --verbose",
+          "lint": "eslint",
+          "test:watch": "npm test --watch"
+      },
+      "repository": {
+          "type": "git",
+          "url": "git+https://github.com/LambdaSchool/Multi-Level-Feedback-Queue.git"
+      },
+      "author": "Sean Chen",
+      "license": "ISC",
+      "devDependencies": {
+          "babel-jest": "^19.0.0",
+          "eslint": "^3.17.1",
+          "eslint-config-airbnb": "^14.1.0",
+          "eslint-plugin-import": "^2.2.0",
+          "eslint-plugin-jsx-a11y": "^4.0.0",
+          "eslint-plugin-react": "^6.10.3",
+          "jest": "^19.0.2",
+          "regenerator-runtime": "^0.10.3",
+          "sinon": "^4.0.1"
+      },
+      "dependencies": {
+          "babel-preset-es2015": "^6.24.0",
+          "eslint-config-airbnb-base": "^11.1.3",
+          "eslint-plugin-import": "^2.2.0"
+      }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: Command failed.
+  Exit code: 1
+  Command: sh
+  Arguments: -c /Users/kevintan/git/Week17-Processes_System_Calls_and_Scheduling/Multi-Level-Feedback-Queue/node_modules/.bin/jest Queue.test.js
+  Directory: /Users/kevintan/git/Week17-Processes_System_Calls_and_Scheduling/Multi-Level-Feedback-Queue
+  Output:
+  
+      at ProcessTermError.MessageError (/usr/local/lib/node_modules/yarn/lib/cli.js:186:110)
+      at new ProcessTermError (/usr/local/lib/node_modules/yarn/lib/cli.js:226:113)
+      at ChildProcess.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:30281:17)
+      at emitTwo (events.js:126:13)
+      at ChildProcess.emit (events.js:214:7)
+      at maybeClose (internal/child_process.js:925:16)
+      at Process.ChildProcess._handle.onexit (internal/child_process.js:209:5)
