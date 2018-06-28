@@ -24,20 +24,61 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
+        if(this.allQueuesEmpty() === false) {
+            this.run();
+        } else {
+            return;
+        }
     }
 
     allQueuesEmpty() {
-
+        let queuesEmpty = true;
+        // MY NOTE:  if blocking queue is empty and all running queues are empty, check queues = true
+        if(this.blockingQueue.length === 0) {
+            for(let i = 0; i < PRIORITY_LEVELS; i++) {
+                if(this.runningQueues[i].length > 0) {
+                    queuesEmpty = false;
+                }
+            }
+        } else {
+            queuesEmpty = false;
+        }
+        return queuesEmpty;
     }
 
     addNewProcess(process) {
-
+        if(process.blockingTimeNeeded > 0){
+            this.scheduler.blockingQueue.push(process);
+        } else {
+            this.scheduler.runningQueues[0].push(process);
+        }
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
+        switch(interrupt){
+            case "PROCESS_BLOCKED":
+                this.blockingQueue.enqueue(process);
+                queue.dequeue();
+                console.log(this.blockingQueue.processes[0]);
+                return this.blockingQueue.processes[0];
+
+            case "PROCESS_READY":
+                this.runningQueues[0].enqueue(process);
+                queue.dequeue();
+                break;
+            case "LOWER_PRIORITY":
+                for(let i = 0; i < runningQueues.length; i++){
+                    if(queue === runningQueues[i]){
+                        this.runningQueues[i+1].enqueue(process);
+                        queue.dequeue();
+                        break;
+                    }
+                }
+                break;
+        }
+
 
     }
 
