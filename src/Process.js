@@ -20,7 +20,8 @@ class Process {
     }
 
     isFinished() {
-       return this.cpuTimeNeeded <= 0 ? true : false;
+           return (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0);
+       }
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,13 +30,14 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-        if (this.blockingTimeNeeded > 0) {
-            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED)
-            this.stateChanged = !this.stateChanged;
+        if (this.blockingTimeNeeded === 0) {
+            this.cpuTimeNeeded -= time;
+            this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;
+            this.stateChanged = false;
         } else {
-        this.cpuTimeNeeded -= time;
-        this.cpuTimeNeeded <= 0 ? 0 : this.cpuTimeNeeded;
-    }   
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.stateChanged = true;
+        }   
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -44,12 +46,13 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-        if(this.blockingTimeNeeded > 0) {
-            (this.blockingTimeNeeded -= this.cpuTimeNeeded)
-        } else {
-        this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY)
-        this.stateChanged = !this.stateChanged;
-        }
+        this.blockingTimeNeeded -= time; 
+        this.blockingTimeNeeded = this.blockingTimeNeeded > 0 ? this.blockingtimeNeeded : 0;
+        
+        if(this.blockingTimeNeeded === 0) {
+            this.stateChanged = !this.stateChanged; 
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY)
+        } 
     }
 
     // Returns this process's stateChanged property
