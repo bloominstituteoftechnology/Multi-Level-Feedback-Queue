@@ -48,15 +48,18 @@ class Queue {
     }
 
     getPriorityLevel() {
-        
+        return this.priorityLevel;
     }
 
     getQueueType() {
-        if(this.priorityLevel == 0) {
-            this.queueType = 'BLOCKING_QUEUE';
-        } else {
-            this.queueType = 'CPU_QUEUE';
-        }
+        // if(SchedulerInterrupt.PROCESS_BLOCKED === true) {
+        //    return this.queueType = 'BLOCKING_QUEUE';
+        // } else if(SchedulerInterrupt.PROCESS_READY === true) {
+        //    return this.queueType = 'CPU_QUEUE';
+        // } else {
+        //     return this.queueType = 'CPU_QUEUE';
+        // }
+        return this.queueType;
     }
 
     // Manages a process's execution for the given amount of time
@@ -86,6 +89,7 @@ class Queue {
         if(interrupt === 'PROCESS_BLOCKED') {
             // MOVE TO THE BLOCKED QUEUE
            // this.process[0];
+
         } else if(interrupt === 'PROCESS_READY') {
             // move to the non blocking queue
         }
