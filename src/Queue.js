@@ -19,29 +19,35 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+        process.setParentQueue(this);
+        this.processes.push(process);
+        return this.processes[this.processes.length - 1];
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+       return this.processes[0];
     }
 
     isEmpty() {
-
+        if (!this.processes[0]) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     getQueueType() {
-
+        return this.queueType;
     }
 
     // Manages a process's execution for the given amount of time
@@ -49,13 +55,23 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
+        if (!currentProcess.stateChanged) {
+            if (time < this.quantum) {
+                this.quantumClock += time;
+            } else {
+                if (currentProcess.isFinished()) {
+                    this.dequeue();
+                    this.quantumClock = 0;
+                }
+            }
 
+        }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-
+        this.manageTimeSlice(this.processes[0], time);
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
@@ -68,6 +84,7 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
+        this.dequeue();
 
     }
 }

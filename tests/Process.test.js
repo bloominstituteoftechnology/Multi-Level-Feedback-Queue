@@ -98,6 +98,7 @@ describe('Process', () => {
         const process2 = new Process(0, 5, true);
         process2.setParentQueue(queue);
         process2.blockingTimeNeeded = 10;
+    
 
         const queueSpy = sinon.spy(queue, 'emitInterrupt');
         process1.executeBlockingProcess(10);
