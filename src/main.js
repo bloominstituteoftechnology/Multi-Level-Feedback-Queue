@@ -7,14 +7,14 @@ const Process = require('./Process');
 // Feel free to edit this file to execute your scheduler implemetation
 // in a different way.
 const main = () => {
-    const scheduler = new Scheduler();
-    
-    for (let i = 1; i < 101; i++) {
-        let rollForBlockingProcess = Math.random() < 0.25;
-        scheduler.addNewProcess(new Process(i + 1000, null, rollForBlockingProcess));
-    }
+  const scheduler = new Scheduler();
+  
+  for (let i = 1; i < 101; i++) {
+    let rollForBlockingProcess = Math.random() < 0.25;
+    scheduler.addNewProcess(new Process(i + 1000, null, rollForBlockingProcess));
+  }
 
-    scheduler.run();
+  scheduler.run();
 };
 
 main();
