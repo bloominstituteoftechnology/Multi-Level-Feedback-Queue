@@ -24,21 +24,51 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
+      // while(this.allQueuesEmpty) {
+      //   const TIME = Date.now();
+      //   this.clock = TIME - this.clock;
+      //   if (!this.blockingQueue.isEmpty()) {
+      //     this.blockingQueue.doBlockingWork(this.clock);
+      //     this.runningQueues[0].doCPUWork(this.clock);
+      //   } else {
+      //       for(let i = 0; i < this.runningQueues.length; i++) {
+      //         if (!this.runningQueues[i].isEmpty()){
+      //           this.runningQueues[i].doCPUWork(this.clock);
+      //         }
+      //       }
+      //   }
+      // }
     }
 
     allQueuesEmpty() {
-
+      for(let i = 0; i < this.runningQueues.length; i++) {
+        if (!this.runningQueues[i].isEmpty()) {
+          return false;
+        }
+      }
+      return this.blockingQueue.isEmpty();
     }
 
     addNewProcess(process) {
-
+      this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
+      if (interrupt === 'LOWER_PRIORITY') {
+        if (queue.getQueueType() === 'BLOCKING_QUEUE') {
+          this.blockingQueue.processes[this.blockingQueue.processes.length] = process;
+        }
+        else if (queue.getPriorityLevel() < PRIORITY_LEVELS - 1) {
+          this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process);
+        }
+        else {
+          this.runningQueues[PRIORITY_LEVELS - 1].enqueue(process);
+        }
+      }
+      else if (interrupt === 'PROCESS_READY') this.addNewProcess(process);
+      else if (interrupt === 'PROCESS_BLOCKED') this.blockingQueue.enqueue(process);
     }
 
     // Private function used for testing; DO NOT MODIFY

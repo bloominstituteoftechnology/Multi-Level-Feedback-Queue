@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const Queue = require('../src/Queue');
 const Process = require('../src/Process');
 const Scheduler = require('../src/Scheduler');
-const { 
+const {
     SchedulerInterrupt,
     QueueType,
     PRIORITY_LEVELS,
@@ -31,10 +31,10 @@ describe('Scheduler', () => {
         const topPriorityRunningQueue = scheduler._getCPUQueue(0);
         const lowerPriorityRunningQueue = scheduler._getCPUQueue(1);
 
-        expect(topPriorityRunningQueue.peek()).toBe(process); 
+        expect(topPriorityRunningQueue.peek()).toBe(process);
         expect(lowerPriorityRunningQueue.peek()).toBeUndefined();
         expect(scheduler.allQueuesEmpty()).toBe(false);
-        
+
         lowerPriorityRunningQueue.enqueue(topPriorityRunningQueue.dequeue());
 
         expect(scheduler.allQueuesEmpty()).toBe(false);
@@ -67,7 +67,7 @@ describe('Scheduler', () => {
     test("handleInterrupt method moves a non-blocking process to a lower priority queue upon receiving a LOWER_PRIORITY interrupt", () => {
         const process = new Process(0);
         const topLevelQueue = scheduler._getCPUQueue(0);
-        const nextLevelQueue = scheduler._getCPUQueue(1); 
+        const nextLevelQueue = scheduler._getCPUQueue(1);
         scheduler.handleInterrupt(topLevelQueue, process, SchedulerInterrupt.LOWER_PRIORITY);
 
         expect(nextLevelQueue.peek()).toBe(process);
