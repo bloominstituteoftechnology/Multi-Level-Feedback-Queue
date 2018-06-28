@@ -59,15 +59,15 @@ class Scheduler {
             case 'LOWER_PRIORITY':
                 switch(queue.getQueueType()) {
                     case 'CPU_QUEUE':
-                        const priority = queue.getPriorityLevel() + 1;
+                        // const priority = queue.getPriorityLevel() + 1;
 
-                        if(priority > PRIORITY_LEVELS - 1) {
-                            priority = PRIORITY_LEVELS - 1;
-                        }
+                        // if(priority > PRIORITY_LEVELS - 1) {
+                        //     priority = PRIORITY_LEVELS - 1;
+                        // }
 
-                        const priority = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1);
+                        // const priority = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1);
 
-                        this.runningQueues[priority].enqueue(process);
+                        this.runningQueues[Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1)].enqueue(process);
                         break;
                     case 'BLOCKING_QUEUE':
                         this.blockingQueue.enqueue(process);
