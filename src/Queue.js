@@ -51,13 +51,17 @@ class Queue {
 	// Once a process has received the alloted time, it needs to be dequeue'd and 
 	// then handled accordingly, depending on whether it has finished executing or not
 	manageTimeSlice(currentProcess, time) {
-		if (currentProcess.isStateChanged()) this.quantumClock = 0;
-		else this.quantumClock += time;
+		if (currentProcess.isStateChanged()) return;
+
+		this.quantumClock += time;
 
 		if (this.quantumClock >= this.quantum) {
 			this.quantumClock = 0;
-			if (currentProcess.isFinished()) this.dequeue();
-			else this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+			this.dequeue();
+		}
+
+		if (!currentProcess.isFinished()) {
+			this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
 		}
 	}
 
