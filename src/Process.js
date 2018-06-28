@@ -36,9 +36,12 @@ class Process {
   executeProcess(time) {
     if (this.blockingTimeNeeded !== 0) {
       // blocking queue
+      
     } else {
       this.cpuTimeNeeded -= time;
-      this.stateChanged = true;
+      if (this.cpuTimeNeeded < 0) {
+        this.cpuTimeNeeded = 0;
+      }
     }
   }
 
