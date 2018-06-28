@@ -40,13 +40,15 @@ class Scheduler {
     }
 
     addNewProcess(process) {
-
+        //adds new process to the scheduler
+        //will create instance of the project and insert it into the highest priority thing?
     }
 
 
     handleInterrupt(queue, process, interrupt) {
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
+        //this also handles interrupts from finished blocking processes to be moved back into the CPU queue
     }
 
     // Private function used for testing; DO NOT MODIFY
