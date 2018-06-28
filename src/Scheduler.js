@@ -28,17 +28,15 @@ class Scheduler {
     }
 
     allQueuesEmpty() {
-
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);    
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
     }
 
     // Private function used for testing; DO NOT MODIFY
