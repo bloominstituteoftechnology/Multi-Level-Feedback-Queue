@@ -31,10 +31,14 @@ class Process {
   // Make sure the `stateChanged` flag is toggled appropriately
   executeProcess(time) {
     if (this.blockingTimeNeeded === 0) {
-      this.cpuTimeNeeded = this.cpuTimeNeeded - time; // CPU time - input time
+      // CPU time - input time
+      this.cpuTimeNeeded = this.cpuTimeNeeded - time;
+      // Check to reset cpuTimeNeeded if < 0;
+      this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;
       this.stateChanged = false;
     } else {
-      // FILL THIS IN!
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+      this.stateChanged = true;
     }
   }
 
