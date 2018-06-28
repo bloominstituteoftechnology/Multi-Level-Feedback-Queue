@@ -26,34 +26,34 @@ class Scheduler {
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
   run() {
-    while (true) {
-      // Log current time
-      const currTime = Date.now();
-      // Take difference from currTime and last loop iteration
-      const workTime = currTime - this.clock;
+    // while (true) {
+    //   // Log current time
+    //   const currTime = Date.now();
+    //   // Take difference from currTime and last loop iteration
+    //   const workTime = currTime - this.clock;
 
-      // Update clock
-      this.clock = currTime;
+    //   // Update clock
+    //   this.clock = currTime;
 
-      // Check block queue to see if there are any processes
-      if (!this.blockingQueue.isEmpty()) {
-        this.blockingQueue.doBlockingWork(workTime);
-      }
+    //   // Check block queue to see if there are any processes
+    //   if (!this.blockingQueue.isEmpty()) {
+    //     this.blockingQueue.doBlockingWork(workTime);
+    //   }
 
-      // Do some work on running queues
-      for (let i = 0; i < PRIORITY_LEVELS; i++) {
-        const queue = this.runningQueues[i];
+    //   // Do some work on running queues
+    //   for (let i = 0; i < PRIORITY_LEVELS; i++) {
+    //     const queue = this.runningQueues[i];
 
-        if (!queue.isEmpty()) {
-          queue.doCPUWork(workTime);
-          break;
-        }
-      }
-      // Check if all queues are empty
-      if (this.allQueuesEmpty()) {
-        break;
-      }
-    }
+    //     if (!queue.isEmpty()) {
+    //       queue.doCPUWork(workTime);
+    //       break;
+    //     }
+    //   }
+    //   // Check if all queues are empty
+    //   if (this.allQueuesEmpty()) {
+    //     break;
+    //   }
+    // }
   }
 
   allQueuesEmpty() {
