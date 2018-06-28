@@ -30,38 +30,77 @@ class Scheduler {
     while (!this.allQueuesEmpty()) {
       // subtracting the current time from the clock, and setting that into the clock variable,
       const currentSlice = Date.now() - this.clock;
-      this.clock = Date.now();
+      this.clock -= currentSlice;
       // check if the blocking queue is not empty.
       if (!this.blockingQueue.isEmpty()) {
         // when the blocking queue is not empty call do blocking work and pass in the time variable
-        this.blockingQueue.doBlockingWork(currentSlice);
+        this.blockingQueue.doBlockingWork(this.clock);
       }
-       // iterate over the running queues.
-       
+      // iterate over the running queues.
+
       for (let i = 0; i < this.runningQueues.length; i++) {
-      // performing and if to check if running queues at the index of i is not empty
+        // performing and if to check if running queues at the index of i is not empty
         if (!this.runningQueues[i].isEmpty()) {
-     // if it is not then do cpu work at the index of i passing in the time variable
-          this.runningQueues[i].doCPUWork(currentSlice);
+          // if it is not then do cpu work at the index of i passing in the time variable
+          this.runningQueues[i].doCPUWork(this.clock);
         }
       }
     }
   }
 
   allQueuesEmpty() {
-      for (let i = 0; i < this.runningQueues.length; i++) {
-          if(!this.runningQueues[i].isEmpty()){
-            return false;
-          }
-          
+    // iterate over the running queues array while i is less than it
+    for (let i = 0; i < this.runningQueues.length; i++) {
+      // if runningqueues at index of i is not empty
+      if (!this.runningQueues[i].isEmpty()) {
+        // return false if it is there are any ques that are not empty
+        return false;
       }
+    }
+    // returns true if the blocking que is empty if all ques are empty, Hurrah!!
+    return this.blockingQueue.isEmpty();
   }
 
-  addNewProcess(process) {}
+  addNewProcess(process) {
+    this.runningQueues[0].enqueue(process);
+  }
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-  handleInterrupt(queue, process, interrupt) {}
+  handleInterrupt(queue, process, interrupt) {
+    switch (interrupt) {
+      // case for checking for the blocked interrupt
+      case "PROCESS_BLOCKED":
+        // if this case is true then enque into that
+        this.blockingQueue.enqueue(process);
+        break;
+      // if the interrupt string passed in is PROCESS_READY
+      case "PROCESS_READY":
+        // call the addNewProcess method and pass in the process
+        this.addNewProcess(process);
+        break;
+      // if the LOWER_PRIORITY intrerupt
+      case "LOWER_PRIORITY":
+        // if the que type matches blocking queue
+        if (queue.getQueueType() === QueueType.BLOCKING_QUEUE) {
+          // add the process to the que
+          this.blockingQueue.enqueue(process);
+        } else {
+          // else the priority level is  equals priority levels minus one,
+          if (queue.getPriorityLevel() === PRIORITY_LEVELS - 1) {
+            // add in the process at the current process
+            this.runningQueues[que.getPriorityLevel()].enqueue(process);
+          } else {
+            // else add it too the the next priority level.
+            this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process);
+          }
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
 
   // Private function used for testing; DO NOT MODIFY
   _getCPUQueue(priorityLevel) {
