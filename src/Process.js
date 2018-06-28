@@ -30,7 +30,10 @@ class Process {
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
       if (!blockingTimeNeeded) {
-
+        this.cpuTimeNeeded -= time;
+      } else {
+        SchedulerInterrupt.PROCESS_BLOCKED;
+        this.stateChanged = true;
       }
     }
 
