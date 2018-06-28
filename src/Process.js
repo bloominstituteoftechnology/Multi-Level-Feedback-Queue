@@ -34,7 +34,7 @@ class Process {
       this.cpuTimeNeeded = this.cpuTimeNeeded - time; // CPU time - input time
       this.stateChanged = false;
     } else {
-        
+      // FILL THIS IN!
     }
   }
 
