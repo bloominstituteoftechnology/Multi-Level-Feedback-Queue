@@ -19,7 +19,9 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+      process.setParentQue(this);
+      this.processes.push(process);
+      return process;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
