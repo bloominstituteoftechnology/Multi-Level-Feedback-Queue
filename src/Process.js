@@ -1,9 +1,9 @@
 const {SchedulerInterrupt} = require('./constants/index');
 
 // A class representation of a process that may be blocking or non-blocking. We
-// can specify how much CPU time a process needs in order to complete, or we can
-// specify if the process is blocking; if so, the amount of blocking time needed
-// is randomly determined.
+// can specify how much CPU time a process needs in order to complete, or we
+// can specify if the process is blocking; if so, the amount of blocking time
+// needed is randomly determined.
 class Process {
     constructor(pid, cpuTimeNeeded = null, blocking = false) {
         this._pid = pid;
@@ -35,14 +35,13 @@ class Process {
         //sest the statechanged to false
         this.stateChanged = false;
         if (this.blockingTimeNeeded === 0) {
-            this.cpuTimeNeeded -= time;
-            this.cpuTimeNeeded = this.cpuTimeNeeded > 0
-                ? this.cpuTimeNeeded
-                : 0;
+            if (this.cpuTimeNeeded - time < 0) {
+                this.cpuTimeNeeded = 0;
+            } else {
+                this.cpuTimeNeeded -= time;
+            }
         } else {
-            this
-                .queue
-                .emitInterrupt(this.SchedulerInterrupt.PROCESS_BLOCKCED);
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = true;
         }
     }
@@ -57,7 +56,7 @@ class Process {
             ? this.blockingTimeNeeded
             : 0;
 
-        if (!this.blockingTimeNeeded) {
+        if (this.blockingTimeNeeded === 0) {
             this
                 .queue
                 .emitInterrupt(this, 'Process is ready!');
