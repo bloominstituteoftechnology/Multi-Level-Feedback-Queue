@@ -25,7 +25,36 @@ class Scheduler {
   // time from the clock property. Don't forget to update the clock property afterwards.
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-  run() {}
+  run() {
+    while (true) {
+      // Log current time
+      const currTime = Date.now();
+      // Take difference from currTime and last loop iteration
+      const workTime = currTime - this.clock;
+
+      // Update clock
+      this.clock = currTime;
+
+      // Check block queue to see if there are any processes
+      if (!this.blockingQueue.isEmpty()) {
+        this.blockingQueue.doBlockingWork(workTime);
+      }
+
+      // Do some work on running queues
+      for (let i = 0; i < PRIORITY_LEVELS; i++) {
+        const queue = this.runningQueues[i];
+
+        if (!queue.isEmpty()) {
+          queue.doCPUWork(workTime);
+          break;
+        }
+      }
+      // Check if all queues are empty
+      if (this.allQueuesEmpty()) {
+        break;
+      }
+    }
+  }
 
   allQueuesEmpty() {
     return (
@@ -51,6 +80,17 @@ class Scheduler {
         this.addNewProcess(process);
         break;
       case "LOWER_PRIORITY":
+        if (queue.getQueueType() === QueueType.CPU_QUEUE) {
+          // Lower priority
+          // Determine priority level of next queue
+          const priorityLevel = Math.min(
+            PRIORITY_LEVELS - 1,
+            queue.getPriorityLevel() + 1
+          );
+          this.runningQueues[priorityLevel].enqueue(process);
+        } else {
+          this.blockingQueue.enqueue(process);
+        }
         break;
     }
   }
