@@ -28,20 +28,24 @@ class Scheduler {
   run() {
     let currentTime = Date.now();
     let workTime = currentTime - this.clock;
-    this.blockingQueue.doCPUWork(workTime);
-    for (let i = 0; i < this.runningQueues.length - 1; i++) {
-      currentTime = Date.now();
-      workTime = currentTime - this.clock;
-      this.runningQueues[i].doCPUWork(workTime);
+    this.clock = Date.now();
+    while (this.allQueuesEmpty() === false) {
+      this.blockingQueue.doBlockingWork(workTime);
+      for (let i = 0; i < this.runningQueues.length; i++) {
+        currentTime = Date.now();
+        workTime = currentTime - this.clock;
+        this.clock = Date.now();
+        this.runningQueues[i].doCPUWork(workTime);
+      }
     }
-    if (this.allQueuesEmpty() === false) {
-      this.run();
-    }
+    // if (this.allQueuesEmpty() === false) {
+    //   this.run();
+    // }
   }
 
   allQueuesEmpty() {
     if (this.runningQueues[0] === undefined) return true;
-    for (let i = 0; i < this.runningQueues.length - 1; i++) {
+    for (let i = 0; i < this.runningQueues.length; i++) {
       if (this.runningQueues[i].isEmpty() === false) {
         return false;
       }
@@ -65,7 +69,7 @@ class Scheduler {
       if (queue.priorityLevel === 2) {
         return;
       }
-      for (let i = 0; i < this.runningQueues.length - 1; i++) {
+      for (let i = 0; i < this.runningQueues.length; i++) {
         if (this.runningQueues[i].priorityLevel > queue.priorityLevel) {
           this.runningQueues[i].enqueue(process);
           return;

@@ -19,7 +19,8 @@ class Queue {
 
   // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
-    process.queue = this;
+    process.setParentQueue(this);
+    // process.queue = this;
     this.processes.push(process);
     return this.processes[this.processes.length - 1];
   }
@@ -97,7 +98,7 @@ class Queue {
     //     }
     //   }
     // }
-    for (let i = 0; i < this.processes.length - 1; i++) {
+    for (let i = 0; i < this.processes.length; i++) {
       if (this.processes[i]._pid === source._pid) {
         this.processes.splice(i, 1);
       }
