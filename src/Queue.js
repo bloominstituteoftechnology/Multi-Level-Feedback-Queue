@@ -57,7 +57,7 @@ class Queue {
         this.dequeue();
         this.quantumClock = 0;
         if (!currentProcess.isFinished()) {
-          this.emitInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+          this.emitInterrupt(currentProcess, "LOWER_PRIORITY");
         }
       }
     } else {
@@ -87,6 +87,7 @@ class Queue {
   emitInterrupt(source, interrupt) {
     this.processes.splice(this.processes.indexOf(source), 1);
     this.scheduler.handleInterrupt(this, source, interrupt);
+    source.isFinished() ? this.dequeue() : null;
   }
 }
 
