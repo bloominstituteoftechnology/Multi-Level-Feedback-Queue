@@ -19,13 +19,13 @@ class Queue {
 
   // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
-    console.log("this process:", this.processes);
-    return this.processes.push(process);
+    // console.log("this process:", this.processes);
+    return this.processes.push(process); // don't forget to return
   }
 
   // Dequeues the next process in the queue. Return the dequeue'd process
   dequeue() {
-    return this.processes.shift();
+    return this.processes.shift(); // don't forget to return
   }
 
   // Return the least-recently added process without removing it from the list of processes
@@ -49,7 +49,18 @@ class Queue {
   // Processes that have had their states changed should not be affected
   // Once a process has received the alloted time, it needs to be dequeue'd and
   // then handled accordingly, depending on whether it has finished executing or not
-  manageTimeSlice(currentProcess, time) {}
+  manageTimeSlice(currentProcess, time) {
+    console.log("Current process:", currentProcess);
+    if (currentProcess.stateChanged) {
+      this.quantumClock = 0; // if state is changed
+    } else if (currentProcess.cpuTimeNeeded - time > 0) { // time need > time alloted
+      currentProcess.cpuTimeNeeded = 0;
+      currentProcess.blockingTimeNeeded = currentProcess.cpuTimeNeeded - time;
+      this.quantumClock = time;
+    } else {
+        return; // when no blocking is needed
+    }
+  }
 
   // Execute the next non-blocking process (assuming this is a CPU queue)
   // This method should call `manageTimeSlice` as well as execute the next running process
