@@ -19,14 +19,14 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-      process.setParentQue(this);
+      process.setParentQueue(this);
       this.processes.push(process);
       return process;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-      return this.processes.unshift();
+      return process = this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
@@ -52,7 +52,7 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-
+      
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
