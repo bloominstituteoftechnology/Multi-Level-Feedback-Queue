@@ -33,13 +33,23 @@ class Process {
   // by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
   executeProcess(time) {
-    if (this.blockingTimeNeeded === 0) {
+    // use exe time difference to check for process completion
+    const timeDiff = this.cpuTimeNeeded - time;
+    if (timeDiff <= 0 && !this.stateChanged) {
+      // process is completed and non-blocking
+      this.cpuTimeNeeded = 0;
+    } else if (!this.isFinished() && !this.stateChanged) {
+      // process is not completed and non-blocking
       this.cpuTimeNeeded -= time;
-    } else {
-      // process is blocked
-      this.stateChanged = true;
-      return SchedulerInterrupt.PROCESS_BLOCKED;
     }
+
+    // if (this.blockingTimeNeeded === 0) {
+    //   this.cpuTimeNeeded -= time;
+    // } else {
+    //   // process is blocked
+    //   this.stateChanged = true;
+    //   return SchedulerInterrupt.PROCESS_BLOCKED;
+    // }
   }
 
   // If this process requires blocking time, decrement the amount of blocking
