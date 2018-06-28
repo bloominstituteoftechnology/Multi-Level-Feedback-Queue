@@ -26,7 +26,8 @@ class Queue {
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-
+        let temp = this.processes.shift();
+        return temp;
     }
 
     // Return the least-recently added process without removing it from the list of processes
