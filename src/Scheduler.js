@@ -24,10 +24,13 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-
+        //console.log(this.runningQueues); // this lists all the Queue objects
+        //console.log(`This is the block queue ${this.blockingQueue.processes}`);
     }
 
     allQueuesEmpty() {
+
+        
 
     }
 
@@ -38,7 +41,16 @@ class Scheduler {
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
+        
+    //     if(interrupt === 'PROCESS_BLOCKED') {
+    //         // DO SOMTHING
+    //     } else if(interrupt === 'PROCESS_READY') {
 
+    //     } else if(interrupt === 'LOWER_PRIORITY') {
+
+    //     } else {
+    //         console.log(`There was an errror in ${interrupt}`);
+    //     }
     }
 
     // Private function used for testing; DO NOT MODIFY
