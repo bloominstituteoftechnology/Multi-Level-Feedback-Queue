@@ -20,9 +20,11 @@ class Queue {
     // Enqueues the given process. Return the enqueue'd process
     // enqueue -> | 3 | 2 | 1 | -> dequeue
     enqueue(process) {
-        this.processes.unshift(process);
-        return process;
-    }
+		process.setParentQueue(this);
+		const length = this.processes.push(process);
+		return this.processes[length - 1];
+	}
+
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     // enqueue -> | 3 | 2 | 1 | -> dequeue
@@ -56,7 +58,6 @@ class Queue {
     manageTimeSlice(currentProcess, time) {
         if (currentProcess.isStateChanged()) {
             this.quantumClock = 0;
-            return;
         } else {
             // Gives time for process to execute
             this.quantumClock += time; 
