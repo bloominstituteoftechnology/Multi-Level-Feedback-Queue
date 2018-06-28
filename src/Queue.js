@@ -35,8 +35,7 @@ class Queue {
     }
 
     isEmpty() {
-      if (this.processes.length === 0) return true;
-      else return false;
+      return this.processes.length === 0;
     }
 
     getPriorityLevel() {
@@ -59,7 +58,7 @@ class Queue {
           if (currentProcess.isFinished()) {
             this.quantumClock = 0;
           } else {
-            this.scheduler.handleInterrupt(/* Not sure what to put here yet */);
+            this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
             this.quantumClock = 0;
           }
         }
