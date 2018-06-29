@@ -69,16 +69,16 @@ class Queue {
   // This method should call `manageTimeSlice` as well as execute the next running process
   doCPUWork(time) {
     const currentProcess = this.peek();
-    this.manageTimeSlice(currentProcess, time);
     currentProcess.executeProcess(time);
+    this.manageTimeSlice(currentProcess, time);
   }
 
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
   doBlockingWork(time) {
     const currentProcess = this.peek();
-    this.manageTimeSlice(currentProcess, time);
     currentProcess.executeBlockingProcess(time);
+    this.manageTimeSlice(currentProcess, time);
   }
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
@@ -87,7 +87,6 @@ class Queue {
   emitInterrupt(source, interrupt) {
     this.processes.splice(this.processes.indexOf(source), 1);
     this.scheduler.handleInterrupt(this, source, interrupt);
-    source.isFinished() ? this.dequeue() : null;
   }
 }
 

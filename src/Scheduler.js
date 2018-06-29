@@ -26,7 +26,28 @@ class Scheduler {
   // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
   run() {
-      
+    while (true) {
+      const time = Date.now();
+      const workTime = time - this.clock;
+      this.clock = time;
+
+      if (!this.blockingQueue.isEmpty()) {
+        this.blockingQueue.doBlockingWork(workTime);
+      }
+
+      for (let i = 0; i < PRIORITY_LEVELS; i++) {
+        const queue = this.runningQueues[i];
+        if (!queue.isEmpty()) {
+          queue.doCPUWork(workTime);
+          break;
+        }
+      }
+
+      if (this.allQueuesEmpty()) {
+        console.log("No more processes! I can sleep now.");
+        break;
+      }
+    }
   }
 
   allQueuesEmpty() {
@@ -45,27 +66,24 @@ class Scheduler {
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
   handleInterrupt(queue, process, interrupt) {
     if (interrupt === "PROCESS_BLOCKED") {
-      queue.dequeue();
       this.blockingQueue.enqueue(process);
     }
     if (interrupt === "PROCESS_READY") {
-      queue.dequeue();
       this.addNewProcess(process);
     }
     if (interrupt === "LOWER_PRIORITY") {
       if (queue.getQueueType() === QueueType.CPU_QUEUE) {
-        let priorityLevel = queue.getPriorityLevel();
+        const priorityLevel = queue.getPriorityLevel();
         if (priorityLevel < PRIORITY_LEVELS - 1) {
-          queue.dequeue();
           this.runningQueues[priorityLevel + 1].enqueue(process);
         } else {
-          queue.dequeue();
           this.runningQueues[priorityLevel].enqueue(process);
         }
       } else {
         this.blockingQueue.enqueue(process);
       }
     }
+    process.isFinished() ? queue.dequeue() : null;
   }
 
   // Private function used for testing; DO NOT MODIFY
