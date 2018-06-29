@@ -1,5 +1,5 @@
 const { SchedulerInterrupt } = require('./constants/index');
-const queue = require("./Queue");
+
 // A class representation of a process that may be blocking
 // or non-blocking. We can specify how much CPU time a process
 // needs in order to complete, or we can specify if the process
@@ -16,20 +16,11 @@ class Process {
     }
 
     setParentQueue(queue) {
-        return this.queue = queue;
-
+        this.queue = queue;
     }
 
     isFinished() {
-        if (this.cpuTimeNeeded === 0 && this._pid === 0 && this.blockingTimeNeeded === 0) {
-            return true;
-
-        }
-        else {
-            return false;
-        }
-
-
+        return (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0);
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -38,14 +29,15 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
+        this.stateChanged = false;
         if (this.blockingTimeNeeded === 0) {
-            this.cpuTimeNeeded = this.cpuTimeNeeded - time;
-            return SchedulerInterrupt.PROCESS_READY;
-        }
-        else {
-            !this.stateChanged;
+            this.cpuTimeNeeded -= time;
+            // this line ensures that cpuTimeNeeded never gets set below 0
+            this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;
+        } else {
+            // emit the PROCESS_BLOCKED interrupt
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-            return SchedulerInterrupt.PROCESS_BLOCKED;
+            this.stateChanged = true;
         }
     }
 
@@ -55,14 +47,13 @@ class Process {
     // top running queue by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-        if (this.blockingTimeNeeded > 0) {
-            this.blockingTimeNeeded = this.blockingTimeNeeded - time;
-        }
-        else {
-            !this.stateChanged;
-            return SchedulerInterrupt.PROCESS_READY;
-        }
+        this.blockingTimeNeeded -= time;
+        this.blockingTimeNeeded = this.blockingTimeNeeded > 0 ? this.blockingTimeNeeded : 0;
 
+        if (this.blockingTimeNeeded === 0) {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            this.stateChanged = true;
+        }
     }
 
     // Returns this process's stateChanged property
