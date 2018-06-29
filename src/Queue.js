@@ -67,8 +67,9 @@ class Queue {
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
         const PROC = this.peek();
-        this.manageTimeSlice(PROC, time);
         PROC.executeProcess(time);
+        this.manageTimeSlice(PROC, time);
+
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
