@@ -16,11 +16,11 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     isFinished() {
-
+        return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,7 +29,15 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        //this toggles the state and emits the interrupt for process blocked.
+        if (this.blockingTimeNeeded) {
+            this.stateChanged = true;
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+        } else {
+            // this deducts the input time from cpu and assures it doesn't go less than 0.
+            this.cpuTimeNeeded -= time;
+            if (this.cpuTimeNeeded < 0) this.cpuTimeNeeded = 0;
+        }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -38,16 +46,27 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+        // this reduces the blocking time by the input and makes every input lower than 0 to be changed to 0
+        this.blockingTimeNeeded -= time;
+        if (this.blockingTimeNeeded < 0) {
+            this.blockingTimeNeeded = 0;
+        }
+        //this changes the state and emits the interrupt for process ready
+        if (this.blockingTimeNeeded === 0) {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            this.stateChanged = true;
+        }
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        // changes the state of the statechange property
+        return this.stateChanged;
     }
 
     get pid() {
-
+        // returns the pid
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
