@@ -16,11 +16,11 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     isFinished() {
-
+        return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,7 +29,18 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        this.stateChanged = false; // I was getting wonky errors before I added this line
+        if (this.blockingTimeNeeded === 0) {
+            this.cpuTimeNeeded -=time;
+            if (this.cpuTimeNeeded < 0) {
+            this.cpuTimeNeeded = 0;
+            }
+// I had to add the part about cpuTimeNeeded < 0 for the tests to pass. I guess that makes sense because you can't really have negative time.
+        }
+        else {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.stateChanged = true;
+        }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -38,18 +49,26 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+        this.blockingTimeNeeded -= time;
+        if (this.blockingTimeNeeded < 0 ) {
+            this.blockingTimeNeeded = 0;
+        } 
+// same as above for cpuTimeNeeded - this avoids the problem of negative time
+        if (this.blockingTimeNeeded === 0) {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            this.stateChanged = true;
+        }
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged; 
     }
 
     get pid() {
-
+        return this._pid;
     }
-
+// It took me awhile to figure out I needed an underscore until I finally looked back up at the constructor :P 
     // Private function used for testing; DO NOT MODIFY
     _getParentQueue() {
         return this.queue;
