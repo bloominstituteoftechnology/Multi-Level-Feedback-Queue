@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "node src/main.js",
-        "test": "jest --verbose",
+        "test": "jest --verbose --watch",
         "lint": "eslint",
         "test:watch": "npm test --watch"
     },
