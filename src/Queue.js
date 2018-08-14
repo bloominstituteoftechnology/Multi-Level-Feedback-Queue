@@ -55,14 +55,14 @@ class Queue {
             this.quantumClock = 0;
             return;
         }
-
         this.quantumClock += time;
+        
         if(this.quantumClock >= this.quantum){
             this.quantumClock = 0;
             this.dequeue();
             
             if(!currentProcess.isFinished()) {
-                this.scheduler.handleInterrupt(currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+                this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
             }
         }
     }

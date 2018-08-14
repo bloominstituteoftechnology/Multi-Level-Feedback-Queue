@@ -24,24 +24,61 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-        while(this.blockingQueue.length > 0 && this.runningQueues[0].length > 0 && this.runningQueues[1].length > 0  && this.runningQueues[2].length > 0 ){
+        //while all queues aren't empty
+        while(this.allQueuesEmpty() === false){
+            //setup our time slice
+            const timeSlice = Date.now() - this.clock;
 
+            //if there are elements in the blockingQueue CPU will do blockingWork
+            if(!this.blockingQueue.isEmpty()) this.blockingQueue.doBlockingWork(timeSlice);
+
+            //else we go hunt through the other queues and do CPU work
+            this.runningQueues.forEach(e => {
+                if(!e.isEmpty()) e.doCPUWork(timeSlice);
+            })            
+            //once done, we reset the clock
+            this.clock = Date.now()
         }
-        this.allQueuesEmpty()
     }
 
     allQueuesEmpty() {
-
+        let empty = 0;
+        if(this.blockingQueue.isEmpty()) empty = 1;
+        this.runningQueues.forEach(e => {
+            if(!e.isEmpty()) empty = 0;
+        })
+        return empty === 1;
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
+        // if process is blocked, enqueue in blocked queue
+        if(interrupt === "PROCESS_BLOCKED"){
+            this.blockingQueue.enqueue(process);
+            return;
+        // if it is ready, enequeue into highest priority queue
+        }else if (interrupt === "PROCESS_READY"){
+            this.addNewProcess(process);
+            return;
+        } else{
+            // if it falls into lower priority, determine prio
+            const priority = queue.getPriorityLevel();
+            if(queue.getQueueType() === "BLOCKING_QUEUE"){
+                queue.enqueue(process);
+                return;
+            }else if (priority === PRIORITY_LEVELS - 1){
+                // if we are in lowest prio, to the back of the queue!
+                queue.enqueue(process);
+                return;
+            }
+            // else push it into the next lower
+            this.runningQueues[priority + 1].enqueue(process);
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY

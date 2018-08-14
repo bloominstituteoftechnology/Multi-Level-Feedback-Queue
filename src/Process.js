@@ -30,9 +30,10 @@ class Process {
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
         // If process is blocked, emit Scheduler interrupt!
+        this.stateChanged = false;
         if(this.blockingTimeNeeded > 0) {
-            this.stateChanged = true;
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.stateChanged = true;
         }
         // else, we decrement the amount of CPU needed by time
         this.cpuTimeNeeded -= time;
