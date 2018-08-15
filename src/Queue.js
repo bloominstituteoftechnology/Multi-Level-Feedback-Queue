@@ -38,9 +38,13 @@ class Queue {
     return this.processes.length ? false : true;
   }
 
-  getPriorityLevel() {}
+  getPriorityLevel() {
+    return this.priorityLevel;
+  }
 
-  getQueueType() {}
+  getQueueType() {
+    return this.queueType;
+  }
 
   // Manages a process's execution for the given amount of time
   // Processes that have had their states changed should not be affected
