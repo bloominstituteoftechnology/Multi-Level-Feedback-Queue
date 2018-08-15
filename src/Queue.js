@@ -19,14 +19,14 @@ class Queue {
 
   // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
-    this.processes.unshift(process);
+    this.processes.push(process);
     process.setParentQueue(this);
     return process;
   }
 
   // Dequeues the next process in the queue. Return the dequeue'd process
   dequeue() {
-    return this.processes.pop();
+    return this.processes.shift();
   }
 
   // Return the least-recently added process without removing it from the list of processes
@@ -63,7 +63,11 @@ class Queue {
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
   // The process also needs to be removed from the queue
-  emitInterrupt(source, interrupt) {}
+  emitInterrupt(source, interrupt) {
+    const removeIndex = this.processes.findIndex(process => process == source);
+    this.processes.splice(removeIndex, 1);
+    this.scheduler.handleInterrupt(this, source, interrupt);
+  }
 }
 
 module.exports = Queue;
