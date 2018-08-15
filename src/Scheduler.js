@@ -32,7 +32,7 @@ class Scheduler {
     }
 
     addNewProcess(process) {
-
+      this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
