@@ -9,18 +9,18 @@ class Process {
     constructor(pid, cpuTimeNeeded=null, blocking=false) {
         this._pid = pid;
         this.queue = null;
-        this.cpuTimeNeeded = (cpuTimeNeeded !== null) ? cpuTimeNeeded : Math.round(Math.random() * 1000);
+        this.cpuTimeNeeded = cpuTimeNeeded !== null ? cpuTimeNeeded : Math.round(Math.random() * 1000);
         this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
         // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
         this.stateChanged = false;
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     isFinished() {
-
+        return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,8 +29,17 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
-   }
+        // If process is blocked, emit Scheduler interrupt!
+        this.stateChanged = false;
+        if(this.blockingTimeNeeded > 0) {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+            this.stateChanged = true;
+        }
+        // else, we decrement the amount of CPU needed by time
+        this.cpuTimeNeeded -= time;
+        if(this.cpuTimeNeeded < 0) this.cpuTimeNeeded = 0;
+    }
+   
 
    // If this process requires blocking time, decrement the amount of blocking
    // time it needs by the input time
@@ -38,16 +47,21 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+        this.blockingTimeNeeded -= time;
+        if(this.blockingTimeNeeded < 0) this.blockingTimeNeeded = 0;
+        if(this.blockingTimeNeeded === 0){
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            this.stateChanged = true;
+        }
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
