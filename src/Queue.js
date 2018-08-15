@@ -1,4 +1,4 @@
-const { SchedulerInterrupt } = require('./constants/index');
+const { SchedulerInterrupt, QueueType } = require('./constants/index');
 
 // A class representation of a process queue that may hold either a
 // blocking or non-blocking process
@@ -46,7 +46,11 @@ class Queue {
         this.quantumClock = 0;
         this.dequeue();
         if (!currentProcess.isFinished()) {
-          this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+          this.scheduler.handleInterrupt(
+            this,
+            currentProcess,
+            SchedulerInterrupt.LOWER_PRIORITY
+          );
         }
       } else {
         this.quantumClock = time;
