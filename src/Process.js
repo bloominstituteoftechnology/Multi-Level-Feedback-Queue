@@ -25,13 +25,14 @@ class Process {
       : false;
   }
 
-  // If no blocking time is needed by this process, decrement the amount of
-  // CPU time it needs by the input time
-  // If blocking time is needed by this process, move it to the blocking queue
-  // by emitting the appropriate interrupt
-  // Make sure the `stateChanged` flag is toggled appropriately
   executeProcess(time) {
-
+    if (this.blockingTimeNeeded === 0) {
+      this.cpuTimeNeeded =
+        time > this.cpuTimeNeeded ? 0 : this.cpuTimeNeeded - time;
+    } else {
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+      this.stateChanged = !this.stateChanged;
+    }
   }
 
   // If this process requires blocking time, decrement the amount of blocking
