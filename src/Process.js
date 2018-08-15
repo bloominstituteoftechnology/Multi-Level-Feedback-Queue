@@ -40,7 +40,6 @@ class Process {
 
   }
 
-  // Returns this process's stateChanged property
   isStateChanged() {
     return this.stateChanged;
   }
@@ -49,7 +48,6 @@ class Process {
     return this._pid;
   }
 
-  // Private function used for testing; DO NOT MODIFY
   _getParentQueue() {
     return this.queue;
   }
