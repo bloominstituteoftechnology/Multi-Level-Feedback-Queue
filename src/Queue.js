@@ -74,10 +74,10 @@ class Queue {
     }
   }
 
-  // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
-  // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
-  // The process also needs to be removed from the queue
-  emitInterrupt(source, interrupt) {}
+  emitInterrupt(source, interrupt) {
+    this.processes = this.processes.filter(process => process.pid !== source.pid);
+    this.scheduler.handleInterrupt(this, source, interrupt);
+  }
 }
 
 module.exports = Queue;
