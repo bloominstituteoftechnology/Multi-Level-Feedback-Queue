@@ -1,5 +1,9 @@
 const Queue = require('./Queue');
-const { QueueType, PRIORITY_LEVELS } = require('./constants/index');
+const {
+  QueueType,
+  SchedulerInterrupt,
+  PRIORITY_LEVELS
+} = require('./constants/index');
 
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues
@@ -28,7 +32,10 @@ class Scheduler {
   run() {}
 
   allQueuesEmpty() {
-    return this.blockingQueue.isEmpty() && this.runningQueues.reduce((acc, queue) => acc && queue.isEmpty(), true);
+    return (
+      this.blockingQueue.isEmpty() &&
+      this.runningQueues.reduce((acc, queue) => acc && queue.isEmpty(), true)
+    );
   }
 
   addNewProcess(process) {
@@ -36,9 +43,29 @@ class Scheduler {
     topQueue.enqueue(process);
   }
 
-  // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
-  // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-  handleInterrupt(queue, process, interrupt) {}
+  handleInterrupt(queue, process, interrupt) {
+    switch (interrupt) {
+      case SchedulerInterrupt.PROCESS_BLOCKED:
+        queue.enqueue(process);
+        break;
+
+      case SchedulerInterrupt.PROCESS_READY:
+        this.addNewProcess(process);
+        break;
+
+      case SchedulerInterrupt.LOWER_PRIORITY:
+        if (
+          queue === this.blockingQueue ||
+          queue.getPriorityLevel() === PRIORITY_LEVELS - 1
+        ) {
+          queue.enqueue(process);
+        } else {
+          const nextQueue = queue.getPriorityLevel() + 1;
+          this.runningQueues[nextQueue].enqueue(process);
+        }
+        break;
+    }
+  }
 
   _getCPUQueue(priorityLevel) {
     return this.runningQueues[priorityLevel];
