@@ -138,6 +138,7 @@ describe('Queue', () => {
     });
 
     test("doBlockingWork method", () => {
+        queue.queueType = QueueType.BLOCKING_QUEUE;
         const process = new Process(0, 15);
         const processSpy = sinon.spy(process, 'executeBlockingProcess');
         const queueSpy1 = sinon.spy(queue, 'peek');
