@@ -12,7 +12,7 @@ class Scheduler {
     this.clock = Date.now();
     this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
     this.runningQueues = [];
-    // Initialize all the CPU running queues
+
     for (let i = 0; i < PRIORITY_LEVELS; i++) {
       this.runningQueues[i] = new Queue(this, 10 + i * 20, i, QueueType.CPU_QUEUE);
     }
@@ -41,12 +41,10 @@ class Scheduler {
 
   }
 
-  // Private function used for testing; DO NOT MODIFY
   _getCPUQueue(priorityLevel) {
     return this.runningQueues[priorityLevel];
   }
 
-  // Private function used for testing; DO NOT MODIFY
   _getBlockingQueue() {
     return this.blockingQueue;
   }
