@@ -33,7 +33,10 @@ class Queue {
     }
 
     isEmpty() {
-
+      if (this.processes.length === 0)
+        return true;
+      
+      return false;
     }
 
     getPriorityLevel() {
