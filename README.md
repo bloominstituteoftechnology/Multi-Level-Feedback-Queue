@@ -18,6 +18,7 @@ next lower priority queue to wait for its turn again. If the process completed d
 then it gets discarded and the scheduler moves on to the next process in line.  Queues are processed in
 first-in-first-out (FIFO) order.
 
+
 The time quantum is further divided into smaller amounts of time called `work time`.  A process is allowed to work
 for this work time, and then the scheduler will begin the loop over.  If the process has not finished, and has not
 become a blocking process, then it will be processed again for the work time.  The same process is repeatedly
