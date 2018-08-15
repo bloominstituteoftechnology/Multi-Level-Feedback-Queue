@@ -20,6 +20,9 @@ class Process {
     }
 
     isFinished() {
+      if (this.cpuTimeNeeded <= 0)
+        return true;
+      
       return false;
     }
 
