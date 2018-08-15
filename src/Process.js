@@ -29,12 +29,12 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-        if (this.blockingTimeNeeded){
-            this.stateChanged = true;
-            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);            
-        } else {
+        if (this.blockingTimeNeeded === 0){
             this.cpuTimeNeeded -= time;
-            this.cpuTimeNeeded = (this.cpuTimeNeeded = 0 ? 0 : this.cpuTimeNeeded)
+            this.cpuTimeNeeded = (this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0);          
+        } else if(this.blockingTimeNeeded > 0){
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);  
+            this.stateChanged = true;
         }
     
    }
@@ -45,25 +45,22 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+        if(this.blockingTimeNeeded > 0) {
+            this.blockingTimeNeeded -= time;
+            this.blockingTimeNeeded = this.blockingTimeNeeded > 0 ? this.blockingTimeNeeded : 0;
+        } 
+        else {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+            this.stateChanged = false;
+        }
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-        let process = new Process(blocking = false);
-        if(this.blockingTimeNeeded === 0){
-            this.stateChanged = true;
-            blocking = true;
-            return this.stateChanged;
-        }
-        else {
-            return this.stateChanged;
-        }
+        return this.stateChanged;
     }
-
     get pid() {
-        let process = new Process(this._pid);
-        return process._pid
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
