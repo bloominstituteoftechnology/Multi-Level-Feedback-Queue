@@ -30,13 +30,13 @@ class Process {
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
 
-   }
+    }
 
-   // If this process requires blocking time, decrement the amount of blocking
-   // time it needs by the input time
-   // Once it no longer needs to perform any blocking execution, move it to the 
-   // top running queue by emitting the appropriate interrupt
-   // Make sure the `stateChanged` flag is toggled appropriately
+    // If this process requires blocking time, decrement the amount of blocking
+    // time it needs by the input time
+    // Once it no longer needs to perform any blocking execution, move it to the 
+    // top running queue by emitting the appropriate interrupt
+    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
 
     }
