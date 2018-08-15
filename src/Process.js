@@ -45,7 +45,11 @@ class Process {
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
       if(this.blockingTimeNeeded !== 0) {
-        this.blockingTimeNeeded
+        this.blockingTimeNeeded-=time;
+        if(this.blockingTimeNeeded < 0)
+          this.blockingTimeNeeded = 0;
+      } else {
+        //TODO
       }
     }
 
