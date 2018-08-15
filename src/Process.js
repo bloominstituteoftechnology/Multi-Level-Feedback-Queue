@@ -20,7 +20,7 @@ class Process {
     }
 
     isFinished() {
-        if (this.cpuTimeNeeded <= 0) {
+        if (this.cpuTimeNeeded <= 0 && this.blockingTimeNeeded <= 0) {
             return true
         }
         return false;
@@ -33,9 +33,12 @@ class Process {
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
         if (this.blockingTimeNeeded == 0) {
+            if (time > this.cpuTimeNeeded) {
+                time = this.cpuTimeNeeded;
+            }
             this.cpuTimeNeeded -= time;
         } else {
-            this.queue = QueueType.BLOCKING_QUEUE;
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = !this.stateChanged;
         }
    }
@@ -47,7 +50,7 @@ class Process {
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
         if (this.blockingTimeNeeded > 0) {
-            this.blockingTimeNeeded -= timr
+            this.blockingTimeNeeded -= time;
         } else {
             this.queue = QueueType.CPU_QUEUE;
             this.stateChanged = !this.stateChanged;
