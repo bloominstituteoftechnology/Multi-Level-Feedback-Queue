@@ -19,6 +19,7 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
+      process.queue = this;
       this.processes.push(process);
     }
 
