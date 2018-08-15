@@ -59,7 +59,8 @@ class Queue {
         this.quantumClock = 0;
         this.dequeue();
         
-        this.scheduler.handleInterrupt(this, currentProcess, LOWER_PRIORITY);
+        if (!currentProcess.isFinished())
+          this.scheduler.handleInterrupt(this, currentProcess, LOWER_PRIORITY);
       }
       else
         this.quantumClock = time;
