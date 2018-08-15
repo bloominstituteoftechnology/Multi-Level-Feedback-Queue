@@ -34,8 +34,9 @@ class Process {
         if( this.cpuTimeNeeded < 0)
           this.cpuTimeNeeded = 0;
       } else {
-        //TODO
-      }
+        this.stateChanged = true;
+          //TODO emit interrupt and move to blocking queue
+        }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -44,12 +45,12 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-      if(this.blockingTimeNeeded !== 0) {
+      if(this.blockingTimeNeeded !== 0)
         this.blockingTimeNeeded-=time;
-        if(this.blockingTimeNeeded < 0)
+      if(this.blockingTimeNeeded <= 0){
           this.blockingTimeNeeded = 0;
-      } else {
-        //TODO
+          this.stateChanged = false;
+          //TODO emit interrupt and move to running queue
       }
     }
 
