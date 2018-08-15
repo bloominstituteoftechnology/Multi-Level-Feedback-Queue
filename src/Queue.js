@@ -36,7 +36,7 @@ class Queue {
     isEmpty() {
       if (this.processes.length === 0)
         return true;
-      
+
       return false;
     }
 
@@ -53,7 +53,10 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
+      if (currentProcess.stateChanged)
+        return this.quantumClock = 0;
 
+      return this.quantumClock = time;
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
