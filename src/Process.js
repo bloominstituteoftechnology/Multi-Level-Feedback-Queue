@@ -33,6 +33,8 @@ class Process {
         this.cpuTimeNeeded-=time;
         if( this.cpuTimeNeeded < 0)
           this.cpuTimeNeeded = 0;
+      } else {
+        //TODO
       }
    }
 
@@ -42,7 +44,9 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+      if(this.blockingTimeNeeded !== 0) {
+        this.blockingTimeNeeded
+      }
     }
 
     // Returns this process's stateChanged property
