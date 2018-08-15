@@ -46,16 +46,21 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
-
+        if (this.blockingTimeNeeded > 0) {
+            this.blockingTimeNeeded -= timr
+        } else {
+            this.queue = QueueType.CPU_QUEUE;
+            this.stateChanged = !this.stateChanged;
+        }
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
