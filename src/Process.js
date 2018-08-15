@@ -20,7 +20,7 @@ class Process {
     }
 
     isFinished() {
-
+      return this.cpuTimeNeeded >= 0 ? true : false;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,7 +29,11 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+      if(this.blockingTimeNeeded === 0) {
+        this.cpuTimeNeeded-=time;
+        if( this.cpuTimeNeeded < 0)
+          this.cpuTimeNeeded = 0;
+      }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
