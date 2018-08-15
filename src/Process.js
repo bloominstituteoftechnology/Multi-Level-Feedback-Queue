@@ -32,7 +32,12 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        if (this.blockingTimeNeeded == 0) {
+            this.cpuTimeNeeded -= time;
+        } else {
+            this.queue = QueueType.BLOCKING_QUEUE;
+            this.stateChanged = !this.stateChanged;
+        }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
