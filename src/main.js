@@ -18,6 +18,3 @@ const main = () => {
 };
 
 main();
-
-// Some comment...
-
