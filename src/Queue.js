@@ -58,8 +58,6 @@ class Queue {
     }
   }
 
-  // Execute the next non-blocking process (assuming this is a CPU queue)
-  // This method should call `manageTimeSlice` as well as execute the next running process
   doCPUWork(time) {
     if (this.queueType === QueueType.CPU_QUEUE) {
       const currentProcess = this.peek();
@@ -68,8 +66,6 @@ class Queue {
     }
   }
 
-  // Execute the next blocking process (assuming this is the blocking queue)
-  // This method should call `manageTimeSlice` as well as execute the next blocking process
   doBlockingWork(time) {
     if (this.queueType === QueueType.BLOCKING_QUEUE) {
       const currentProcess = this.peek();
