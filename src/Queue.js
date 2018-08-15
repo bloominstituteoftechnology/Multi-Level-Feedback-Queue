@@ -12,9 +12,10 @@ class Queue {
     this.queueType = queueType;
   }
 
-  // Enqueues the given process. Return the enqueue'd process
   enqueue(process) {
-
+    this.processes.push(process);
+    process.setParentQueue(this);
+    return process;
   }
 
   // Dequeues the next process in the queue. Return the dequeue'd process
@@ -22,9 +23,8 @@ class Queue {
 
   }
 
-  // Return the least-recently added process without removing it from the list of processes
   peek() {
-
+    return this.processes[0];
   }
 
   isEmpty() {
