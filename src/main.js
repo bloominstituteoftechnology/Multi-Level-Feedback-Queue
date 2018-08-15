@@ -4,8 +4,6 @@ const Process = require('./Process');
 // An example of a `main` function that adds a bunch of processes
 // to the scheduler, randomly determining if they a running or 
 // blocking process, and then runs the scheduler.
-// Feel free to edit this file to execute your scheduler implemetation
-// in a different way.
 const main = () => {
     const scheduler = new Scheduler();
     
