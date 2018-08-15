@@ -18,9 +18,8 @@ class Queue {
     return process;
   }
 
-  // Dequeues the next process in the queue. Return the dequeue'd process
   dequeue() {
-
+    return this.processes.shift();
   }
 
   peek() {
