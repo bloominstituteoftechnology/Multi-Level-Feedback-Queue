@@ -31,7 +31,7 @@ class Queue {
 
   // Return the least-recently added process without removing it from the list of processes
   peek() {
-    return this.processes[0];
+    return this.processes[0] ? this.processes[0] : undefined;
   }
 
   isEmpty() {
@@ -50,7 +50,21 @@ class Queue {
   // Processes that have had their states changed should not be affected
   // Once a process has received the alloted time, it needs to be dequeue'd and
   // then handled accordingly, depending on whether it has finished executing or not
-  manageTimeSlice(currentProcess, time) {}
+  manageTimeSlice(currentProcess, time) {
+    this.quantumClock = 0;
+    this.scheduler.handleInterrupt(
+      this, // Current Queue object
+      currentProcess, // current process
+      currentProcess.stateChanged
+        ? SchedulerInterrupt.PROCESS_BLOCKED
+        : currentProcess.isFinished()
+          ? SchedulerInterrupt.PROCESS_READY
+          : SchedulerInterrupt.PROCESS_BLOCKED // Call the appropiate method according to process's state. (Blocked or not blocked)
+    );
+    if (!currentProcess.stateChanged) {
+      this.quantumClock = this.quantum > time ? this.quantumClock + time : 0;
+    }
+  }
 
   // Execute the next non-blocking process (assuming this is a CPU queue)
   // This method should call `manageTimeSlice` as well as execute the next running process
