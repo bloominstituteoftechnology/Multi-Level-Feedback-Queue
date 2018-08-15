@@ -31,7 +31,7 @@ class Queue {
 
   // Return the least-recently added process without removing it from the list of processes
   peek() {
-    return this.processes[this.processes.length - 1];
+    return this.processes[0];
   }
 
   isEmpty() {
@@ -54,7 +54,11 @@ class Queue {
 
   // Execute the next non-blocking process (assuming this is a CPU queue)
   // This method should call `manageTimeSlice` as well as execute the next running process
-  doCPUWork(time) {}
+  doCPUWork(time) {
+    const process = this.peek();
+    process.executeProcess(time);
+    this.manageTimeSlice(process, time);
+  }
 
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
