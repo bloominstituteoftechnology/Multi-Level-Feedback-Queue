@@ -36,7 +36,7 @@ class Queue {
   }
 
   getQueueType() {
-
+    return this.queueType;
   }
 
   // Manages a process's execution for the given amount of time
