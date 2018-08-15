@@ -42,7 +42,7 @@ class Process {
 
   // Returns this process's stateChanged property
   isStateChanged() {
-
+    return this.stateChanged;
   }
 
   get pid() {
