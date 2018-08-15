@@ -19,37 +19,74 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+        process.setParentQueue(this);
+        this.processes.push(process);
+        return process;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+        return this.processes[0];
     }
 
     isEmpty() {
-
+        if (this.processes.length === 0) {
+            return true;
+        }
+        return false;
     }
 
     getPriorityLevel() {
-
+        return this.priorityLevel;
     }
 
     getQueueType() {
-
+        return this.queueType;
     }
 
-    // Manages a process's execution for the given amount of time
-    // Processes that have had their states changed should not be affected
+    // Manages a process's execution for the given amount of times that have had their states changed should not be affected
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
+        //if this.currentproces.statechanged === true{
+            //dont mess with it
+            //if time == this.quantum {
+                //dequeue the process
+                //emmit interrupt
+                // if its not finished
+                //we move to the next process in the queue 
+                // else if its finshed
+                // we remove it from the queue
+            //}
+        //}
+        const { LOWER_PRIORITY } = SchedulerInterrupt;
 
+        if (currentProcess.isStateChanged()) {
+            // Reset the quantum clock?
+            this.quantumClock = 0;
+        }
+        else {
+           //process takes time < quantum idk what i am saying! boobsboobsbobbosboosb 
+           if (this.quantumClock < time) {
+                this.quantumClock = time;
+            }
+
+            if (this.quantumClock > this.quantum) {
+                this.quantumClock = 0;
+
+                if (!currentProcess.isFinished()) {
+                    this.scheduler.handleInterrupt(this, currentProcess, LOWER_PRIORITY);
+                }
+                this.dequeue();
+            }
+
+        }
+        
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
