@@ -26,12 +26,12 @@ class Queue {
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-
+      return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+      return this.processes[0];
     }
 
     isEmpty() {
