@@ -18,13 +18,19 @@ class Queue {
   }
 
   // Enqueues the given process. Return the enqueue'd process
-  enqueue(process) {}
+  enqueue(process) {
+    this.processes.push(process);
+    process.setParentQueue(this);
+    return process;
+  }
 
   // Dequeues the next process in the queue. Return the dequeue'd process
   dequeue() {}
 
   // Return the least-recently added process without removing it from the list of processes
-  peek() {}
+  peek() {
+    return this.processes[this.processes.length - 1];
+  }
 
   isEmpty() {}
 
