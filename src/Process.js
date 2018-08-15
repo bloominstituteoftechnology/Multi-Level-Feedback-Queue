@@ -35,12 +35,15 @@ class Process {
     }
   }
 
-  // If this process requires blocking time, decrement the amount of blocking
-  // time it needs by the input time
-  // Once it no longer needs to perform any blocking execution, move it to the
-  // top running queue by emitting the appropriate interrupt
-  // Make sure the `stateChanged` flag is toggled appropriately
-  executeBlockingProcess(time) {}
+  executeBlockingProcess(time) {
+    this.blockingTimeNeeded =
+      time > this.blockingTimeNeeded ? 0 : this.blockingTimeNeeded - time;
+    
+    if (this.blockingTimeNeeded === 0) {
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
+      this.stateChanged = !this.stateChanged;
+    }
+  }
 
   isStateChanged() {
     return this.stateChanged;
