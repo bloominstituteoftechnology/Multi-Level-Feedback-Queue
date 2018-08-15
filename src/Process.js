@@ -9,7 +9,8 @@ class Process {
   constructor(pid, cpuTimeNeeded = null, blocking = false) {
     this._pid = pid;
     this.queue = null;
-    this.cpuTimeNeeded = (cpuTimeNeeded !== null) ? cpuTimeNeeded : Math.round(Math.random() * 1000);
+    this.cpuTimeNeeded =
+      cpuTimeNeeded !== null ? cpuTimeNeeded : Math.round(Math.random() * 1000);
     this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
     this.stateChanged = false; // blocking/non-blocking toggle
   }
@@ -19,10 +20,12 @@ class Process {
   }
 
   isFinished() {
-    return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0 ? true : false;
+    return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0
+      ? true
+      : false;
   }
 
-  // If no blocking time is needed by this process, decrement the amount of 
+  // If no blocking time is needed by this process, decrement the amount of
   // CPU time it needs by the input time
   // If blocking time is needed by this process, move it to the blocking queue
   // by emitting the appropriate interrupt
@@ -33,12 +36,10 @@ class Process {
 
   // If this process requires blocking time, decrement the amount of blocking
   // time it needs by the input time
-  // Once it no longer needs to perform any blocking execution, move it to the 
+  // Once it no longer needs to perform any blocking execution, move it to the
   // top running queue by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
-  executeBlockingProcess(time) {
-
-  }
+  executeBlockingProcess(time) {}
 
   isStateChanged() {
     return this.stateChanged;
