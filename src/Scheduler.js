@@ -12,6 +12,7 @@ class Scheduler {
         this.clock = Date.now();
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];
+        this.boost = 1000;
         // Initialize all the CPU running queues
         for (let i = 0; i < PRIORITY_LEVELS; i++) {
             this.runningQueues[i] = new Queue(this, 10 + i * 20, i, QueueType.CPU_QUEUE);
@@ -28,6 +29,7 @@ class Scheduler {
         while(this.allQueuesEmpty() === false){
             //setup our time slice
             const timeSlice = Date.now() - this.clock;
+            this.boost = this.boost - timeSlice;
 
             //if there are elements in the blockingQueue CPU will do blockingWork
             if(!this.blockingQueue.isEmpty()) this.blockingQueue.doBlockingWork(timeSlice);
@@ -36,11 +38,22 @@ class Scheduler {
             this.runningQueues.forEach(e => {
                 if(!e.isEmpty()) e.doCPUWork(timeSlice);
             })            
+            if(this.boost <= 0) {
+                    this.boost = 0;
+                    this.priorityBoost();
+                }
             //once done, we reset the clock
             this.clock = Date.now()
         }
     }
-
+    priorityBoost() {
+        for(let i = 0; i < this.runningQueues.length; i++){
+            while(!this.runningQueues[i].isEmpty()){
+                const process = this.runningQueues[i].dequeue();
+                if(process) this.addNewProcess(process);
+            }
+        }
+    }
     allQueuesEmpty() {
         if(!this.blockingQueue.isEmpty()) return false;
         return this.runningQueues.every(e => e.isEmpty());
