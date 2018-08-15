@@ -31,7 +31,7 @@ class Queue {
 
   // Return the least-recently added process without removing it from the list of processes
   peek() {
-    return this.processes[0] ? this.processes[0] : undefined;
+    return this.processes[0];
   }
 
   isEmpty() {
@@ -52,15 +52,20 @@ class Queue {
   // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
     this.quantumClock = 0;
-    this.scheduler.handleInterrupt(
-      this, // Current Queue object
-      currentProcess, // current process
-      currentProcess.stateChanged
-        ? SchedulerInterrupt.PROCESS_BLOCKED
-        : currentProcess.isFinished()
-          ? SchedulerInterrupt.PROCESS_READY
-          : SchedulerInterrupt.PROCESS_BLOCKED // Call the appropiate method according to process's state. (Blocked or not blocked)
-    );
+    if (this.quantum <= time) {
+      this.dequeue();
+
+      !currentProcess.isFinished() && // If current process is finished --> then call 'this.emitInterrup'
+        this.emitInterrupt(
+          currentProcess, // current process
+          currentProcess.stateChanged
+            ? SchedulerInterrupt.PROCESS_BLOCKED
+            : currentProcess.isFinished()
+              ? SchedulerInterrupt.PROCESS_READY
+              : SchedulerInterrupt.PROCESS_BLOCKED // Call the appropiate method according to process's state. (Blocked or not blocked)
+        );
+    }
+
     if (!currentProcess.stateChanged) {
       this.quantumClock = this.quantum > time ? this.quantumClock + time : 0;
     }
