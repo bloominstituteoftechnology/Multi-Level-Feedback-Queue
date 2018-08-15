@@ -70,7 +70,13 @@ class Queue {
 
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
-  doBlockingWork(time) {}
+  doBlockingWork(time) {
+    if (this.queueType === QueueType.BLOCKING_QUEUE) {
+      const currentProcess = this.peek();
+      currentProcess.executeBlockingProcess(time);
+      this.manageTimeSlice(currentProcess, time);
+    }
+  }
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
