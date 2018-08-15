@@ -30,10 +30,10 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-        this.stateChanged = !this.stateChanged;
+        this.stateChanged = false;
         if (this.blockingTimeNeeded === 0) {
             this.cpuTimeNeeded -= time;
-            this.cpuTimeNeeded = this.cpuTimeNeeded <= 0 ? 0 : this.cpuTimeNeeded;
+            this.cpuTimeNeeded = this.cpuTimeNeeded <= 0 ? 0 : this.cpuTimeNeeded;         
         } else {
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = true;
@@ -51,7 +51,7 @@ class Process {
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     get pid() {
