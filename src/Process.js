@@ -28,7 +28,7 @@ class Process {
     // If blocking time is needed by this process, move it to the blocking queue
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
-    executeProcess(time) {
+    executeProcess(cpuTimeNeeded) {
 
    }
 
@@ -37,17 +37,17 @@ class Process {
    // Once it no longer needs to perform any blocking execution, move it to the 
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
-    executeBlockingProcess(time) {
+    executeBlockingProcess(blockingTimeNeeded) {
 
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     get pid() {
-
+        return this._pid;
     }
 
     // Private function used for testing; DO NOT MODIFY
