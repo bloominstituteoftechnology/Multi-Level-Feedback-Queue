@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js run test Queue.test.js
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js run test Process.test.js
 
 PATH: 
   C:\Users\diveb\bin;D:\Program Files\Git\mingw64\bin;D:\Program Files\Git\usr\local\bin;D:\Program Files\Git\usr\bin;D:\Program Files\Git\usr\bin;D:\Program Files\Git\mingw64\bin;D:\Program Files\Git\usr\bin;C:\Users\diveb\bin;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Program Files\Oculus\Support\oculus-runtime;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;D:\Program Files\Git\cmd;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Yarn\bin;C:\Program Files\nodejs;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;D:\Program Files\Microsoft VS Code\bin;C:\Users\diveb\AppData\Local\Programs\Python\Python36\Scripts;C:\Users\diveb\AppData\Local\Programs\Python\Python36;C:\Users\diveb\AppData\Local\Programs\Python\Python37\Scripts;C:\Users\diveb\AppData\Local\Programs\Python\Python37;C:\Users\diveb\AppData\Local\Microsoft\WindowsApps;D:\Program Files\Microsoft VS Code\bin;C:\Users\diveb\AppData\Local\Yarn\bin;C:\Users\diveb\AppData\Roaming\npm;C:\Program Files\MongoDB\Server\3.6\bin;C:\Program Files\Heroku\bin;C:\Users\diveb\AppData\Roaming\Python\Python37\Scripts;D:\Program Files\Git\usr\bin\vendor_perl;D:\Program Files\Git\usr\bin\core_perl
@@ -3675,7 +3675,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: C:\WINDOWS\system32\cmd.exe
-  Arguments: /d /s /c jest --verbose Queue.test.js
+  Arguments: /d /s /c jest --verbose Process.test.js
   Directory: C:\Users\diveb\LambdaSchool\Week19\Multi-Level-Feedback-Queue
   Output:
   

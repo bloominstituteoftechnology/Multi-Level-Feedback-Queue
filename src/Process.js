@@ -37,7 +37,7 @@ class Process {
         }
         else {
             this.stateChanged = true;
-            return SchedulerInterrupt.PROCESS_BLOCKED;
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
         }
    }
 
@@ -51,7 +51,7 @@ class Process {
         if (this.blockingTimeNeeded - time <= 0) {
             this.blockingTimeNeeded = 0;
             this.stateChanged = true;
-            return SchedulerInterrupt.PROCESS_READY;
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
         }
         else this.blockingTimeNeeded -= time;
     }
