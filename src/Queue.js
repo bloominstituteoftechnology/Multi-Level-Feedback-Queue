@@ -1,6 +1,6 @@
 const { SchedulerInterrupt } = require('./constants/index');
 
-// A class representation of a process queue that may hold either a 
+// A class representation of a process queue that may hold either a
 // blocking or non-blocking process
 class Queue {
   constructor(scheduler, quantum, priorityLevel, queueType) {
@@ -38,32 +38,34 @@ class Queue {
     return this.queueType;
   }
 
-  // Manages a process's execution for the given amount of time
-  // Processes that have had their states changed should not be affected
-  // Once a process has received the alloted time, it needs to be dequeue'd and 
-  // then handled accordingly, depending on whether it has finished executing or not
   manageTimeSlice(currentProcess, time) {
-
+    if (currentProcess.isStateChanged()) {
+      this.quantumClock = 0;
+    } else {
+      if (time > this.quantum) {
+        this.quantumClock = 0;
+        this.dequeue();
+        if (!currentProcess.isFinished()) {
+          this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+        }
+      } else {
+        this.quantumClock = time;
+      }
+    }
   }
 
   // Execute the next non-blocking process (assuming this is a CPU queue)
   // This method should call `manageTimeSlice` as well as execute the next running process
-  doCPUWork(time) {
-
-  }
+  doCPUWork(time) {}
 
   // Execute the next blocking process (assuming this is the blocking queue)
   // This method should call `manageTimeSlice` as well as execute the next blocking process
-  doBlockingWork(time) {
-
-  }
+  doBlockingWork(time) {}
 
   // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
   // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
   // The process also needs to be removed from the queue
-  emitInterrupt(source, interrupt) {
-
-  }
+  emitInterrupt(source, interrupt) {}
 }
 
 module.exports = Queue;
