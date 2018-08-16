@@ -48,7 +48,7 @@ class Scheduler {
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
       if (interrupt === 'PROCESS_BLOCKED') {
-        queue.enqueue(process);
+        this.blockingQueue.enqueue(process);
       }
     }
 
