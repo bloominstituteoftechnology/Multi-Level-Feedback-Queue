@@ -14,7 +14,7 @@ class Process {
         // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
         this.stateChanged = false;
     }
-    
+
     setParentQueue(queue) {
         this.queue = queue;
 
