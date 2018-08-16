@@ -36,7 +36,40 @@ class Scheduler {
 
   // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
   // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-  handleInterrupt(queue, process, interrupt) {}
+  handleInterrupt(queue, process, interrupt) {
+    console.log({ queue, process, interrupt });
+    const queueType = queue.getQueueType();
+    const queuePriority = queue.getPriorityLevel();
+
+    if (queueType === QueueType.BLOCKING_QUEUE) {
+      switch (interrupt) {
+        case 'PROCESS_BLOCKED':
+          this.blockingQueue.enqueue(process);
+          break;
+        case 'PROCESS_READY':
+          break;
+        case 'LOWER_PRIORITY':
+          this.blockingQueue.enqueue(process);
+          break;
+      }
+    } else if (queueType === QueueType.CPU_QUEUE) {
+      switch (interrupt) {
+        case 'PROCESS_BLOCKED':
+          this.blockingQueue.enqueue(process);
+          break;
+        case 'PROCESS_READY':
+          this.addNewProcess(process);
+          break;
+        case 'LOWER_PRIORITY':
+          if (queuePriority < PRIORITY_LEVELS - 1) {
+            this.runningQueues[queuePriority + 1].enqueue(process);
+          } else {
+            this.runningQueues[queuePriority].enqueue(process);
+          }
+          break;
+      }
+    }
+  }
 
   // Private function used for testing; DO NOT MODIFY
   _getCPUQueue(priorityLevel) {
