@@ -24,21 +24,58 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
+        while(this.allQueuesEmpty() === false) {
+            const timeSlice = Date.now() - this.clock;
+            this.boost = this.boost - timeSlice;
 
+            if (!this.blockingQueue.isEmpty()) {
+                this.blockingQueue.doBlockingWork(timeSlice);
+            } 
+
+            this.runningQueues.forEach(x => {
+                if (!x.isEmpty()) x.doCPUWork(timeSlice);
+            }) 
+
+            if (this.boost <= 0) {
+                    this.boost = 0;
+                    this.priorityBoost();
+                }
+            this.clock = Date.now()
+        }
     }
 
     allQueuesEmpty() {
-
+        if(!this.blockingQueue.isEmpty()) {
+            return false;
+        } else {
+            return this.runningQueues.every(x => x.isEmpty());
+        }
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
+        if (interrupt === "PROCESS_BLOCKED") {
+            this.blockingQueue.enqueue(process);
+            return;
+        } else if (interrupt === "PROCESS_READY") {
+            this.addNewProcess(process);
+            return;
+        } else {
+            const priority = queue.getPriorityLevel();
+            if (queue.getQueueType() === "BLOCKING_QUEUE") {
+                queue.enqueue(process);
+                return;
+            } else if (priority === PRIORITY_LEVELS - 1) {
+                queue.enqueue(process);
+                return;
+            }
+            this.runningQueues[priority + 1].enqueue(process);
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
