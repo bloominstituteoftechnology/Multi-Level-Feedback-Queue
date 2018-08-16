@@ -121,7 +121,7 @@ class Queue {
             this.scheduler.handleInterrupt(this, source, interrupt);
         }
         else{
-
+            console.log("boo")
         }
         
     }
