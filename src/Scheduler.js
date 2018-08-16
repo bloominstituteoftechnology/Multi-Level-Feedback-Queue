@@ -28,7 +28,10 @@ class Scheduler {
     }
 
     allQueuesEmpty() {
-
+      return ( 
+        this.runningQueues.every(queue => queue.isEmpty()) && 
+        this.blockingQueue.isEmpty()
+      )
     }
 
     addNewProcess(process) {
