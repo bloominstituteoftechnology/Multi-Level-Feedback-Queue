@@ -39,6 +39,8 @@ class Process {
 
         if (this.cpuTimeNeeded > 0)
           this.stateChanged = !this.stateChanged;
+        else
+          this.cpuTimeNeeded = 0;
       }
    }
 
