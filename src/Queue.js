@@ -13,9 +13,8 @@ class Queue {
   }
 
   enqueue(process) {
-    this.processes.push(process);
     process.setParentQueue(this);
-    return process;
+    this.processes.push(process);
   }
 
   dequeue() {
@@ -41,19 +40,20 @@ class Queue {
   manageTimeSlice(currentProcess, time) {
     if (currentProcess.isStateChanged()) {
       this.quantumClock = 0;
-    } else {
-      if (time > this.quantum) {
-        this.quantumClock = 0;
-        this.dequeue();
-        if (!currentProcess.isFinished()) {
-          this.scheduler.handleInterrupt(
-            this,
-            currentProcess,
-            SchedulerInterrupt.LOWER_PRIORITY
-          );
-        }
-      } else {
-        this.quantumClock = time;
+      return;
+    }
+    
+    this.quantumClock = time;
+
+    if (time > this.quantum) {
+      this.quantumClock = 0;
+      this.dequeue();
+      if (!currentProcess.isFinished()) {
+        this.scheduler.handleInterrupt(
+          this,
+          currentProcess,
+          SchedulerInterrupt.LOWER_PRIORITY
+        );
       }
     }
   }
@@ -75,7 +75,9 @@ class Queue {
   }
 
   emitInterrupt(source, interrupt) {
-    this.processes = this.processes.filter(process => process.pid !== source.pid);
+    this.processes = this.processes.filter(
+      process => process.pid !== source.pid
+    );
     this.scheduler.handleInterrupt(this, source, interrupt);
   }
 }
