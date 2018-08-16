@@ -22,7 +22,7 @@ class Process {
     isFinished() {
         // console.log(this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0);
         // console.log(this.cpuTimeNeeded , this.blockingTimeNeeded);
-        return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0;
+        return (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0);
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -32,6 +32,7 @@ class Process {
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
         // console.log(this.cpuTimeNeeded)
+        this.stateChanged = false;
         if(this.blockingTimeNeeded > 0){
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = true;
@@ -42,6 +43,7 @@ class Process {
                 this.cpuTimeNeeded -= time;
             }
         }
+
    }
 
    // If this process requires blocking time, decrement the amount of blocking
@@ -58,6 +60,7 @@ class Process {
         }else{
             this.blockingTimeNeeded -= time;
         }
+
     }
 
     // Returns this process's stateChanged property

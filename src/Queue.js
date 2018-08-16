@@ -32,16 +32,12 @@ class Queue {
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        return this.processes[0]
+        return this.processes[0];
     }
 
     isEmpty() {
         // console.log(this.queueType, this.priorityLevel, this.processes.length)
-        if(this.processes.length === 0){
-            return true;
-        }else{
-            return false
-        }
+        return (this.processes.length === 0);
         
     }
 
@@ -68,10 +64,13 @@ class Queue {
             // !currentProcess.isFinished() ? this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY):null;
             if(!currentProcess.isFinished()){
                 this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY)
+                
             }
         }else{
             this.quantumClock += time;
+            
         }
+        return currentProcess;
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)

@@ -29,31 +29,34 @@ class Scheduler {
         // check this.blockingQueues.isEmpty() and run this.blockingQueues.doBlockingWork(time from subtraction)
         // run each this.runningQueues.doCPUWork(time from subtraction) Q
         // update this.clock with current time
-        // while(this.allQueuesEmpty() === false){
-        //     let forTimeSlice = Date.now() - this.clock;
+        while(this.allQueuesEmpty() === false){
+            const time = Date.now()
+            const forTimeSlice = time - this.clock;
+            // let forTimeSlice = Date.now() - this.clock;
             
-        //     if(!this.blockingQueue.isEmpty()){
-        //         this.blockingQueue.doBlockingWork(forTimeSlice);
-        //     }
-        //     else{
-        //         this.runningQueues.forEach(cpuQ =>{
-        //             if(!cpuQ.isEmpty()){
-        //                 cpuQ.doCPUWork(forTimeSlice);
-        //             }
-        //         })
-        //     }
-        //     this.clock = Date.now();
-        // }
-
+            if(!this.blockingQueue.isEmpty()){
+                this.blockingQueue.doBlockingWork(forTimeSlice);
+            }
+            else{
+                this.runningQueues.forEach(cpuQ =>{
+                    if(!cpuQ.isEmpty()){
+                        cpuQ.doCPUWork(forTimeSlice);
+                    }
+                })
+            }
+            // if to break if all are done.. if(this.)
+            this.clock = time;
+        }
+        
     }
 
     allQueuesEmpty() {
-        if(!this.blockingQueue.isEmpty()){
+        if(this.blockingQueue.processes.length !== 0){
             // console.log(this.blockingQueue.isEmpty())
             return false;
         }
-        for(let i = 0; i < this.runningQueues.length -1; i++){
-            if(!this.runningQueues[i].isEmpty()){
+        for(let i = 0; i < PRIORITY_LEVELS; i++){
+            if(this.runningQueues[i].processes.length !== 0){
                 // console.log("runingQ", i, this.runningQueues[i].isEmpty())
                 return false;
             }
