@@ -19,8 +19,9 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-        this.processes.push(process);
         process.setParentQueue(this);
+        this.processes.push(process);
+        return process;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
@@ -60,10 +61,10 @@ class Queue {
           // once a process has had it's time share on the cpu, dequeue
           if (this.quantumClock >= this.quantum) {
               this.quantumClock = 0; // reset for next process
-              this.dequeue();
+              const process = this.dequeue();
               // if dequeued process has not yet finished, move it down to next queue
-              if (!currentProcess.isFinished()) {
-                this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+              if (!process.isFinished()) {
+                this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
               }
           }
       }
