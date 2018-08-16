@@ -55,9 +55,17 @@ class Scheduler {
       }
       else {
         if (process.blockingTimeNeeded > 0) {
-          this.handleInterrupt(queue, process, 'PROCESS_BLOCKED');
+          return this.handleInterrupt(queue, process, 'PROCESS_BLOCKED');
         }
-        this.runningQueues[1].processes.push(process);
+        
+        const queueIndex = this.runningQueues.indexOf(queue);
+
+        if (this.runningQueues[ queueIndex + 1 ] === undefined) {
+          this.runningQueues[ queueIndex ].enqueue(process);
+        }
+        else {
+          this.runningQueues[ queueIndex + 1 ].processes.push(process);
+        }
       }
     }
 
