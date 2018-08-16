@@ -52,13 +52,25 @@ class Queue {
     manageTimeSlice(currentProcess, time) {
         if (currentProcess.isStateChanged()) {
             this.quantumClock = 0;
+        } else {
+            this.quantumClock += time;
+            if (this.quantumClock >= this.quantum) {
+                this.quantumClock = 0;
+                this.dequeue();
+                if (!currentProcess.isFinished()) {
+                    this.scheduler.handleInterrupt(this, currentProcess, this.SchedulerInterrupt.LOWER_PRIORITY)
+                }
+            }
         }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-
+        if (this.queueType = this.queueType.CPU_QUEUE) {
+            const current = this.peek;
+            return current;
+        };
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
