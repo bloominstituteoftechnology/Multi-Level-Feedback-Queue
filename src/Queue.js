@@ -42,10 +42,10 @@ class Queue {
       this.quantumClock = 0;
       return;
     }
-    
-    this.quantumClock = time;
 
-    if (time > this.quantum) {
+    this.quantumClock += time;
+
+    if (this.quantumClock >= this.quantum) {
       this.quantumClock = 0;
       this.dequeue();
       if (!currentProcess.isFinished()) {
@@ -71,6 +71,13 @@ class Queue {
       const currentProcess = this.peek();
       currentProcess.executeBlockingProcess(time);
       this.manageTimeSlice(currentProcess, time);
+    }
+  }
+
+  priorityBoost() {
+    while(!this.isEmpty()){
+      const process = this.dequeue();
+      this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.PRIORITY_BOOST);
     }
   }
 
