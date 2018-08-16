@@ -28,17 +28,45 @@ class Scheduler {
     }
 
     allQueuesEmpty() {
+      let empty = true;
+      
+      this.runningQueues.forEach(queue => {
+        if (queue.processes.length > 0)
+          empty = false;
+      });
 
+      return empty;
     }
 
     addNewProcess(process) {
+      const queue = this.runningQueues[0];
 
+      queue.enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
+      if (interrupt === 'PROCESS_BLOCKED') {
+        this.blockingQueue.enqueue(process);
+      }
+      else if (interrupt === 'PROCESS_READY') {
+        this.addNewProcess(process);
+      }
+      else {
+        if (process.blockingTimeNeeded > 0) {
+          return this.handleInterrupt(queue, process, 'PROCESS_BLOCKED');
+        }
+        
+        const queueIndex = this.runningQueues.indexOf(queue);
 
+        if (this.runningQueues[ queueIndex + 1 ] === undefined) {
+          this.runningQueues[ queueIndex ].enqueue(process);
+        }
+        else {
+          this.runningQueues[ queueIndex + 1 ].processes.push(process);
+        }
+      }
     }
 
     // Private function used for testing; DO NOT MODIFY
