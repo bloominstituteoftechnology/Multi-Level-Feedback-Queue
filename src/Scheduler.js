@@ -28,11 +28,20 @@ class Scheduler {
     }
 
     allQueuesEmpty() {
-
+        let empty = true;
+        for (let i = 0; i < PRIORITY_LEVELS; i++) {
+            if (this.runningQueues[i].isEmpty() === false) {
+                empty = false;
+            }
+        }
+        if (this.blockingQueue.isEmpty() === false) {
+            empty = false;
+        }
+        return empty;
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
