@@ -47,7 +47,15 @@ class Scheduler {
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
-
+        switch(interrupt) {
+            case "PROCESS_BLOCKED":
+                queue.dequeue(process);
+                process.setParentQueue(this.blockingQueue);
+                this.blockingQueue.enqueue(process);
+                break;
+            case "PROCESS_READY":
+                break;
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
