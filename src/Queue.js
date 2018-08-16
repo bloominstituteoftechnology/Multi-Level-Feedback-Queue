@@ -19,12 +19,12 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+        
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-
+        
     }
 
     // Return the least-recently added process without removing it from the list of processes
@@ -41,7 +41,7 @@ class Queue {
     }
 
     getQueueType() {
-
+        
     }
 
     // Manages a process's execution for the given amount of time
