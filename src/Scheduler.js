@@ -20,6 +20,7 @@ class Scheduler {
     }
   }
 
+
   // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
   // Calculate the time slice for the next iteration of the scheduler by subtracting the current
   // time from the clock property. Don't forget to update the clock property afterwards.
@@ -54,8 +55,6 @@ class Scheduler {
         console.log('No more Process to run, I am taking a break');
         break;
       }
-    }
-  }
 
   allQueuesEmpty() {
     return (
