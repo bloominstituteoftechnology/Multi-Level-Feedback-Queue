@@ -79,11 +79,9 @@ class Scheduler {
                 break;
             case "LOWER_PRIORITY":
                 const currentQueue = this.runningQueues.indexOf(queue);
-                queue.dequeue(process);
                 if (this.runningQueues[currentQueue + 1] && queue.getQueueType() === 'CPU_QUEUE') {
                     this.runningQueues[currentQueue + 1].enqueue(process);
                 } else {
-                    queue.dequeue(process);
                     queue.enqueue(process);
                 }
                 break;
