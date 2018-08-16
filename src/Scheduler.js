@@ -54,6 +54,9 @@ class Scheduler {
         this.addNewProcess(process);
       }
       else {
+        if (process.blockingTimeNeeded > 0) {
+          this.handleInterrupt(queue, process, 'PROCESS_BLOCKED');
+        }
         this.runningQueues[1].processes.push(process);
       }
     }
