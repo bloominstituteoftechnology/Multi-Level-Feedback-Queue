@@ -29,10 +29,11 @@ class Process {
     if (this.blockingTimeNeeded === 0) {
       this.cpuTimeNeeded =
         time > this.cpuTimeNeeded ? 0 : this.cpuTimeNeeded - time;
-    } else {
-      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
-      this.stateChanged = !this.stateChanged;
+      return;
     }
+
+    this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
+    this.stateChanged = !this.stateChanged;
   }
 
   executeBlockingProcess(time) {
