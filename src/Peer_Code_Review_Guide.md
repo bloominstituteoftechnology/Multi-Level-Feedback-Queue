@@ -9,7 +9,7 @@
 
 3. Show code and explain steps taken in implementing the project.
 
-4. Make sure project has complete features and works as expected.
+4. Make sure project has complete features and works as expected (e.g., passes tests).
 
 5. Make sure project shows/returns no errors or warnings.
 

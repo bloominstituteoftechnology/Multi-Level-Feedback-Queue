@@ -12,8 +12,8 @@ let queue, scheduler;
 
 describe('Scheduler', () => {
     beforeEach(() => {
-       scheduler = new Scheduler();
-       queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
+        scheduler = new Scheduler();
+        queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
     });
 
     it('should have the methods "run", "allQueuesEmpty", "addNewProcess", and "handleInterrupt"', () => {

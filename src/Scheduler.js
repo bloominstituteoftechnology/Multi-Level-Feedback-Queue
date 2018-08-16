@@ -29,16 +29,42 @@ class Scheduler {
     }
 
     allQueuesEmpty() {
-
+        let empty = true;
+        this.runningQueues.forEach(
+            queue => (!queue.isEmpty() ? (empty = false) : null),
+        );
+        return empty && this.blockingQueue.isEmpty;
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
+        if (interrupt === 'PROCESS_BLOCKED') {
+            queue.dequeue();
+            this.blockingQueue.enqueue(process);
+        }
+        if (interrupt === 'PROCESS_READY') {
+            queue.dequeue();
+            this.addNewProcess(process);
+        }
+        if (interrupt === 'LOWER_PRIORITY') {
+            if (queue.getQueueType() === QueueType.CPU_QUEUE) {
+                let priorityLevel = queue.getPriorityLevel();
+                if (priorityLevel < PRIORITY_LEVELS - 1) {
+                    queue.dequeue();
+                    this.runningQueues[priorityLevel + 1].enqueue(process);
+                } else {
+                    queue.dequeue();
+                    this.runningQueues[priorityLevel].enqueue(process);
+                }
+            } else {
+                this.blockingQueue.enqueue(process);
+            }
+        }
 
     }
 
