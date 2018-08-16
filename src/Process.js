@@ -60,7 +60,10 @@ class Process {
 
     // Returns this process's stateChanged property
     isStateChanged() {
+      if (this.stateChanged === true)
+        return true;
 
+      return false;
     }
 
     get pid() {
