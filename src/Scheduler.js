@@ -45,13 +45,12 @@ class Scheduler {
   allQueuesEmpty() {
     return (
       this.blockingQueue.isEmpty() &&
-      this.runningQueues.reduce((acc, queue) => acc && queue.isEmpty(), true)
+      this.runningQueues.every(queue => queue.isEmpty())
     );
   }
 
   addNewProcess(process) {
-    const topQueue = this.runningQueues[0];
-    topQueue.enqueue(process);
+    this.runningQueues[0].enqueue(process);
   }
 
   handleInterrupt(queue, process, interrupt) {
@@ -65,13 +64,13 @@ class Scheduler {
         break;
 
       case SchedulerInterrupt.LOWER_PRIORITY:
-        if (
-          queue === this.blockingQueue ||
-          queue.getPriorityLevel() === PRIORITY_LEVELS - 1
-        ) {
-          queue.enqueue(process);
+        if (queue.getQueueType() === QueueType.BLOCKING_QUEUE) {
+          this.blockingQueue.enqueue(process);
         } else {
-          const nextQueue = queue.getPriorityLevel() + 1;
+          const currQueue = queue.getPriorityLevel();
+          const lowestQueue = PRIORITY_LEVELS - 1;
+          const nextQueue =
+            currQueue === lowestQueue ? lowestQueue : currQueue + 1;
           this.runningQueues[nextQueue].enqueue(process);
         }
         break;
