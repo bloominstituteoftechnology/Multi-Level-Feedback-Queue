@@ -51,11 +51,14 @@ class Queue {
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
         //quantumClock = quantum ? 
-        if(currentProcess.isStateChanged()) {
+        if(currentProcess.isStateChanged()) { //if currentProcess is changed from block to running, quantumClock starts over
             this.quantumClock = 0;
             return;
         }
         this.quantumClock += time;
+        if(this.quantum - this.quantumClock > 0){
+            return this.quantum - this.quantumClock;
+        }
         this.dequeue();
         if(this.quantumClock >= this.quantum) {
             this.quantumClock = 0;
@@ -63,7 +66,9 @@ class Queue {
                 this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
             } 
 
-        }  
+        }  else if (this.quantum > process.cpuTimeNeeded){
+            return;
+        }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
