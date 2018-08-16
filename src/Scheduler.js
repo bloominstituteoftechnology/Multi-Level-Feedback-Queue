@@ -25,7 +25,24 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
+        // while(true) {
+        //     const currentTime = Date.now();
+        //     const deltaTime = currentTime - this.clock;
 
+        //     if (!this.blockingQueue.isEmpty()) {
+        //         this.blockingQueue.doBlockingWork(deltaTime);
+        //     } else {
+        //         for (let i = 0; i < PRIORITY_LEVELS; i++) {
+        //             if (!this.runningQueues[i].isEmpty())
+        //             this.runningQueues[i].doCPUWork(deltaTime);
+        //         }
+        //     }
+        //     if (this.allQueuesEmpty()) {
+        //         console.log("Success");
+        //         break;
+        //     }
+        //     this.clock = currentTime;
+        // }
     }
 
     allQueuesEmpty() {
@@ -33,7 +50,7 @@ class Scheduler {
         this.runningQueues.forEach(
             queue => (!queue.isEmpty() ? (empty = false) : null),
         );
-        return empty && this.blockingQueue.isEmpty;
+        return empty && this.blockingQueue.isEmpty();
     }
 
     addNewProcess(process) {
