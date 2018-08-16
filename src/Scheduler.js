@@ -27,6 +27,13 @@ class Scheduler {
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
         while (!this.allQueuesEmpty()) {
+            let log_string = "";
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                log_string += `queue ${i} is ${this.runningQueues[i].processes.length} long `;
+            }
+            console.log(log_string);
+
+
             const current = Date.now();
             const worktime = current - this.clock;
             this.time_since_reset += worktime;
@@ -46,7 +53,8 @@ class Scheduler {
             }
             this.clock = Date.now();
 
-            if (this.time_since_reset > 500) {
+            if (this.time_since_reset > 1000) {
+                console.log("\n\n*****************!!!RESET!!!*****************\n\n");
                 this.time_since_reset = 0;
                 for (let i = 1; i < PRIORITY_LEVELS; i++) {
                     while (!this.runningQueues[i].isEmpty()) {
