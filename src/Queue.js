@@ -57,7 +57,7 @@ class Queue {
         if(this.quantumClock > this.quantum) {
             this.quantumClock = 0;
             currentProcess = this.dequeue();
-            if(!currentProcess.process.isFinished()){
+            if(!process.isFinished()){
                 this.queue.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
                 currentProcess.priorityLevel += 1;
             }
@@ -83,7 +83,7 @@ class Queue {
     doBlockingWork(time) {
         const process = this.peek();
         if (this.queueType === QueueType.BLOCKING_QUEUE){
-            process.executeBlockingProcess(time);
+            this.process.executeBlockingProcess(time);
             this.manageTimeSlice(process, time);
         }
 

@@ -2,6 +2,7 @@ const Queue = require('./Queue');
 const { 
     QueueType,
     PRIORITY_LEVELS,
+    SchedulerInterrupt
 } = require('./constants/index');
 
 // A class representing the scheduler
@@ -25,8 +26,8 @@ class Scheduler {
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
         while(!this.allQueuesEmpty()){
-            current_t = Date.now();
-            sched_t = this.clock - current_t;
+            const current_t = Date.now();
+            const sched_t = this.clock - current_t;
             this.clock = current_t;
 
             if(!this.blockingQueue.isEmpty()){
@@ -42,16 +43,45 @@ class Scheduler {
 
     allQueuesEmpty() {
         //every queue length === 0
+        let count = 0;
+        this.runningQueues.forEach(queue => {
+            queue.isEmpty() === true ? 0 : count++;
+        });
+        this.blockingQueue.isEmpty() === true ? 0 : count++; 
+        return (count === 0); //returns true if all queues are 0
     }
 
     addNewProcess(process) {
         //enqueue
+        // this.runningQueues[0].enqueue(process);
+
+        
     }
 
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
         //switch statement!
+        switch(interrupt){
+            case SchedulerInterrupt.PROCESS_BLOCKED:
+                this.blockingQueue.enqueue(process);
+                break;
+            case SchedulerInterrupt.PROCESS_READY:
+                this.addNewProcess(process);
+                break;
+            case SchedulerInterrupt.LOWER_PRIORITY:
+                switch(queue.getQueueType()){
+                    case QueueType.CPU_QUEUE:
+                        let priority = queue.getPriorityLevel();
+                        priority = (priority === PRIORITY_LEVELS - 1) ? PRIORITY_LEVELS - 1: priority + 1;
+                        this.runningQueues[priority].enqueue(process);
+                        break;
+                    case QueueType.BLOCKING_QUEUE:
+                        this.blockingQueue.enqueue(process);
+                        break;
+                }
+                break;
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
