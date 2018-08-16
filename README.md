@@ -18,6 +18,7 @@ next lower priority queue to wait for its turn again. If the process completed d
 then it gets discarded and the scheduler moves on to the next process in line.  Queues are processed in
 first-in-first-out (FIFO) order.
 
+
 The time quantum is further divided into smaller amounts of time called `work time`.  A process is allowed to work
 for this work time, and then the scheduler will begin the loop over.  If the process has not finished, and has not
 become a blocking process, then it will be processed again for the work time.  The same process is repeatedly
@@ -27,7 +28,7 @@ to the back of the line in that queue.
 
 One thing to note is that processes in higher priority queues are allocated less CPU time than processes in a
 lower priority queue. The logic here is that the scheduler wants to get through as many of the short, high
-priority processes first, then the long, high priority processes, followed by the short low priority processes,
+priority processes first, then the long, high priority processes, followed by the short low priority 
 before finally getting around to the long, low priority processes. Oftentimes, these long-running low priority
 processes only get allocated CPU time when your computer is idle, because during high usage periods, new processes
 are constantly being added to the highest-priority queue by the scheduler.
