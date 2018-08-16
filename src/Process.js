@@ -20,6 +20,8 @@ class Process {
     }
 
     isFinished() {
+        // console.log(this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0);
+        // console.log(this.cpuTimeNeeded , this.blockingTimeNeeded);
         return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0;
     }
 
@@ -29,11 +31,12 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
+        // console.log(this.cpuTimeNeeded)
         if(this.blockingTimeNeeded > 0){
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
             this.stateChanged = true;
         }else{
-            if(this.cpuTimeNeeded - time < 0){
+            if(this.cpuTimeNeeded - time <= 0){
                 this.cpuTimeNeeded = 0;
             }else{
                 this.cpuTimeNeeded -= time;
@@ -47,6 +50,7 @@ class Process {
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
     executeBlockingProcess(time) {
+        // console.log(this.blockingTimeNeeded)
         if(this.blockingTimeNeeded - time <= 0){
             this.blockingTimeNeeded = 0;
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);

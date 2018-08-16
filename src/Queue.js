@@ -36,11 +36,13 @@ class Queue {
     }
 
     isEmpty() {
-        if(this.processes.length <= 0){
+        // console.log(this.queueType, this.priorityLevel, this.processes.length)
+        if(this.processes.length === 0){
             return true;
         }else{
-            return false;
+            return false
         }
+        
     }
 
     getPriorityLevel() {
@@ -63,7 +65,10 @@ class Queue {
         if(this.quantumClock + time >= this.quantum){
             this.quantumClock = 0;
             this.dequeue();
-            !currentProcess.isFinished() ? this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY):null;
+            // !currentProcess.isFinished() ? this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY):null;
+            if(!currentProcess.isFinished()){
+                this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY)
+            }
         }else{
             this.quantumClock += time;
         }
@@ -93,15 +98,16 @@ class Queue {
         // console.log("==========source========================", source.pid);
         // this is prob not the best way to find the index of the source that needs to be interrupted
         // consider refactor
-        let index = null;
-        let cindex = 0;
-        while(index === null){
-            if(this.processes[cindex].pid === source.pid){
-                index = cindex;
-            }else{
-                cindex++
-            }
-        }
+        // let index = null;
+        // let cindex = 0;
+        // while(index === null){
+        //     if(this.processes[cindex].pid === source.pid){
+        //         index = cindex;
+        //     }else{
+        //         cindex++
+        //     }
+        // }
+        let index = this.processes.indexOf(source);
         // console.log("==========index========================", index);
         this.processes.splice(index, 1);
         this.scheduler.handleInterrupt(this, source, interrupt);

@@ -25,22 +25,41 @@ class Scheduler {
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
         // while loop uing allQueuesEmpty === false;
-        // (not really sure if i'm reading instructions right)time slice by subtracting this.clock from Date.now()
+        // time slice by subtracting this.clock from Date.now()
         // check this.blockingQueues.isEmpty() and run this.blockingQueues.doBlockingWork(time from subtraction)
         // run each this.runningQueues.doCPUWork(time from subtraction) Q
         // update this.clock with current time
+        // while(this.allQueuesEmpty() === false){
+        //     let forTimeSlice = Date.now() - this.clock;
+            
+        //     if(!this.blockingQueue.isEmpty()){
+        //         this.blockingQueue.doBlockingWork(forTimeSlice);
+        //     }
+        //     else{
+        //         this.runningQueues.forEach(cpuQ =>{
+        //             if(!cpuQ.isEmpty()){
+        //                 cpuQ.doCPUWork(forTimeSlice);
+        //             }
+        //         })
+        //     }
+        //     this.clock = Date.now();
+        // }
+
     }
 
     allQueuesEmpty() {
         if(!this.blockingQueue.isEmpty()){
+            // console.log(this.blockingQueue.isEmpty())
             return false;
         }
-        for(let i = 0; i < this.runningQueues.length; i++){
+        for(let i = 0; i < this.runningQueues.length -1; i++){
             if(!this.runningQueues[i].isEmpty()){
+                // console.log("runingQ", i, this.runningQueues[i].isEmpty())
                 return false;
             }
         }
         return true;
+
     }
 
     addNewProcess(process) {
@@ -55,7 +74,24 @@ class Scheduler {
         // if LOWER_PRIORITY and if queue.getQueueType === BLOCKING_QUEUE, queue.enqueue(process)
         // if LOWER_PRIORITY and not blocking_queue check if we are in lowest Q
         // if in lowest queue.enqueue(process) 
-        // if not in lowest this.runningQueues[queue.getPriorityLevel() - 1].enqueue(process)
+        // if not in lowest this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process)
+        if(interrupt === "PROCESS_BLOCKED"){
+            this.blockingQueue.enqueue(process);
+        }else if(interrupt === "PROCESS_READY"){
+            this.addNewProcess(process);
+        }else if(interrupt === "LOWER_PRIORITY"){
+            if(queue.getQueueType() === "BLOCKING_QUEUE"){
+                queue.enqueue(process);
+            }else{
+                const plvl = queue.getPriorityLevel();
+                // console.log(plvl)
+                if(plvl === this.runningQueues.length - 1){
+                    queue.enqueue(process);
+                }else{
+                    this.runningQueues[plvl + 1].enqueue(process);
+                }
+            }
+        }
     }
 
     // Private function used for testing; DO NOT MODIFY
