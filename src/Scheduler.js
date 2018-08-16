@@ -25,21 +25,21 @@ class Scheduler {
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
 
     run() {
-        while (this.allQueuesEmpty() === false) {
-            this.clock -= Date.now();
-            if (this.blockingQueue.isEmpty() === false) {
-                this.blockingQueue.doBlockingWork(this.clock);
-            }
-            else if (this.runningQueues[0].isEmpty() === false) {
-                this.runningQueues[0].doCPUWork(this.clock);
-            }
-            else if (this.runningQueues[1].isEmpty() === false) {
-                this.runningQueues[1].doCPUWork(this.clock);
-            }
-            else if (this.runningQueues[2].isEmpty() === false) {
-                this.runningQueues[2].doCPUWork(this.clock);
-            }
-        }
+        // while (this.allQueuesEmpty() === false) {
+        //     this.clock -= Date.now();
+        //     if (this.blockingQueue.isEmpty() === false) {
+        //         this.blockingQueue.doBlockingWork(this.clock);
+        //     }
+        //     else if (this.runningQueues[0].isEmpty() === false) {
+        //         this.runningQueues[0].doCPUWork(this.clock);
+        //     }
+        //     else if (this.runningQueues[1].isEmpty() === false) {
+        //         this.runningQueues[1].doCPUWork(this.clock);
+        //     }
+        //     else if (this.runningQueues[2].isEmpty() === false) {
+        //         this.runningQueues[2].doCPUWork(this.clock);
+        //     }
+        // }
     }
 
     allQueuesEmpty() {
@@ -79,14 +79,14 @@ class Scheduler {
             this.addNewProcess(process);
         }
         else if (interrupt === "LOWER_PRIORITY") {
-            if (queue.queueType === "BLOCKING_QUEUE") {
+            if (queue.getQueueType() === "BLOCKING_QUEUE") {
                 queue.enqueue(process);
             }
-            else if (queue.priorityLevel === PRIORITY_LEVELS - 1) {
+            else if (queue.getPriorityLevel() === PRIORITY_LEVELS - 1) {
                 queue.enqueue(process);
             }
             else {
-                this.runningQueues[queue.priorityLevel + 1].enqueue(process);
+                this.runningQueues[queue.getPriorityLevel() + 1].enqueue(process);
             }
         }
     }

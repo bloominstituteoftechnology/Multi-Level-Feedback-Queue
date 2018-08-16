@@ -2,6 +2,7 @@ const { SchedulerInterrupt } = require('./constants/index');
 
 // A class representation of a process queue that may hold either a 
 // blocking or non-blocking process
+
 class Queue {
     constructor(scheduler, quantum, priorityLevel, queueType) {
         this.processes = [];
@@ -45,11 +46,11 @@ class Queue {
     }
 
     getPriorityLevel() {
-
+        return this.priorityLevel; 
     }
 
     getQueueType() {
-
+        return this.queueType; 
     }
 
     // Manages a process's execution for the given amount of time
