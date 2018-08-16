@@ -1,4 +1,5 @@
-const { SchedulerInterrupt } = require('./constants/index');
+const { SchedulerInterrupt, QueueType } = require('./constants/index');
+
 
 // A class representation of a process queue that may hold either a 
 // blocking or non-blocking process
@@ -19,8 +20,9 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
+        this.processes.push(process);
         process.setParentQueue(this);
-        return this.processes.push(process);
+        return process;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
@@ -50,18 +52,40 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
+        //quantumClock = quantum ? 
+        this.quantumClock += time;
+        if(this.quantumClock > this.quantum) {
+            this.quantumClock = 0;
+            currentProcess = this.dequeue();
+            if(!currentProcess.process.isFinished()){
+                this.queue.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+                currentProcess.priorityLevel += 1;
+            }
+        }  
 
+        
+
+            
+        
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-
+        const process = this.peek();
+        process.executeProcess(time);
+        this.manageTimeSlice(process, time);
+        
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
+        const process = this.peek();
+        if (this.queueType === QueueType.BLOCKING_QUEUE){
+            process.executeBlockingProcess(time);
+            this.manageTimeSlice(process, time);
+        }
 
     }
 
@@ -69,8 +93,23 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-
-    }
+        let index;
+        //find index of source
+        this.processes.forEach((proc, i) => {
+            if(proc._pid === source._pid){
+                index = i;
+            }
+        })
+        let extraction = this.processes.splice(index, 1); //remove source
+            if (interrupt = SchedulerInterrupt.PROCESS_READY){
+                this.scheduler.handleInterrupt(this, extraction[0], SchedulerInterrupt.PROCESS_READY);
+            } else if (interrupt = SchedulerInterrupt.PROCESS_BLOCKED){
+                this.scheduler.handleInterrupt(this, extraction[0], SchedulerInterrupt.PROCESS_BLOCKED);
+            }
+                
+                
+        }
+    
 }
 
 module.exports = Queue;

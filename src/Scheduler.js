@@ -26,7 +26,7 @@ class Scheduler {
     run() {
         while(!this.allQueuesEmpty()){
             current_t = Date.now();
-            sched_t = current_t - this.clock;
+            sched_t = this.clock - current_t;
             this.clock = current_t;
 
             if(!this.blockingQueue.isEmpty()){
