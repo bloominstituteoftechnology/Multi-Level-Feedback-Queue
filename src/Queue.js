@@ -5,12 +5,14 @@ const { SchedulerInterrupt } = require('./constants/index');
 class Queue {
     constructor(scheduler, quantum, priorityLevel, queueType) {
         this.processes = [];
-        // The queue's priority level; the lower the number, the higher the priority
+        // The queue's priority level; the lower the number, the higher the priority  
+        // My Comment: 0 priority for blocking queue and 0, 1, or 2 priorities for CPU queue 
         this.priorityLevel = priorityLevel;
         // The queue's parent scheduler
         this.scheduler = scheduler;
         // The queue's allotted time slice; each process in this queue is executed for this amount of time in total
         // This may be done over multiple scheduler iterations
+        // My Comment: 50 quantum time for blocking queue and 10, 30, and 50 quantum time for CPU queues respectively
         this.quantum = quantum;
         // A counter to keep track of how much time the queue has been executing so far
         this.quantumClock = 0;
@@ -19,21 +21,27 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+        this.processes.push(process);
+        return process; 
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-
+        return this.processes.shift(); 
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+        return this.processes[this.processes.length - 1]; 
     }
 
     isEmpty() {
-
+        if (this.processes.length === 0) {
+            return true; 
+        }
+        else {
+            return false; 
+        }
     }
 
     getPriorityLevel() {

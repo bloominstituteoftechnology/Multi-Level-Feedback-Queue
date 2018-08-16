@@ -16,7 +16,6 @@ class Process {
     }
     
     setParentQueue(queue) {
-
     }
 
     isFinished() {
@@ -29,7 +28,11 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        // if blocking time > 0 move to blocking queue 
+        // change statechanged to true 
+        // else 
+        // subtract cpu time by input time 
+        // **compare cpu time and input time to see which is bigger 
    }
 
    // If this process requires blocking time, decrement the amount of blocking
