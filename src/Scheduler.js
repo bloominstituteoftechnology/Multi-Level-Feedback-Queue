@@ -25,35 +25,46 @@ class Scheduler {
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
-        while(!this.allQueuesEmpty()){
+        while(true){
             const current_t = Date.now();
-            const sched_t = this.clock - current_t;
-            this.clock = current_t;
+            const sched_t = current_t - this.clock;
 
             if(!this.blockingQueue.isEmpty()){
                 this.blockingQueue.doBlockingWork(sched_t);
             }
-            this.runningQueues.forEach(queue => {
+            else{
+                this.runningQueues.forEach(queue => {
                 if(!queue.isEmpty()){
                     queue.doCPUWork(sched_t);
                 }
-            })
+                })
+            }
+            if(this.allQueuesEmpty() === true){
+                console.log("Good going!")
+                break;
+            }
+            this.clock = current_t;
+
         }
     }
 
-    allQueuesEmpty() {
+    allQueuesEmpty() { //this works
         //every queue length === 0
-        let count = 0;
-        this.runningQueues.forEach(queue => {
-            queue.isEmpty() === true ? 0 : count++;
-        });
-        this.blockingQueue.isEmpty() === true ? 0 : count++; 
-        return (count === 0); //returns true if all queues are 0
+        for(let i = 0; i < PRIORITY_LEVELS; i++){
+            if(!this.runningQueues[i].isEmpty()){
+                return false
+            if(!this.blockingQueue.isEmpty()) {
+                    return false;
+                }
+            }
+            return true;
+        
+        }
     }
 
     addNewProcess(process) {
         //enqueue
-        // this.runningQueues[0].enqueue(process);
+        this.runningQueues[0].enqueue(process);
 
         
     }
@@ -73,13 +84,18 @@ class Scheduler {
                 switch(queue.getQueueType()){
                     case QueueType.CPU_QUEUE:
                         let priority = queue.getPriorityLevel();
-                        priority = (priority === PRIORITY_LEVELS - 1) ? PRIORITY_LEVELS - 1: priority + 1;
-                        this.runningQueues[priority].enqueue(process);
-                        break;
+                        if (priority === PRIORITY_LEVELS - 1){
+                            queue.enqueue(process);
+                            break;
+                        } else {
+                            this.runningQueues[priority + 1].enqueue(process);
+                        }
                     case QueueType.BLOCKING_QUEUE:
                         this.blockingQueue.enqueue(process);
                         break;
+                        
                 }
+            default: 
                 break;
         }
     }

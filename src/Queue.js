@@ -1,5 +1,5 @@
 const { SchedulerInterrupt, QueueType } = require('./constants/index');
-
+const process = require('./Process');
 
 // A class representation of a process queue that may hold either a 
 // blocking or non-blocking process
