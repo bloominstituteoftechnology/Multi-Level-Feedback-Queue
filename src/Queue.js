@@ -50,18 +50,29 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-        if (this.quantum === time) {
-            this.dequeue(currentProcess);
-        }
-        if (currentProcess.cpuTimeNeeded > this.quantum) {
-            currentProcess.queue.priorityLevel -= 1;
-        }
+        // if it's a blocking process, it'll go to blocked queue, clock resets and next process gets cpu time
+      if (currentProcess.isStateChanged()) {
+          this.quantumClock = 0;
+          return;
+      }
+      else {
+          this.quantumClock += time;
+          // once a process has had it's time share on the cpu, dequeue
+          if (this.quantumClock >= this.quantum) {
+              this.quantumClock = 0; // reset for next process
+              this.dequeue();
+              // if dequeued process has not yet finished, move it down to next queue
+              if (!currentProcess.isFinished()) {
+                this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+              }
+          }
+      }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-
+        
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
@@ -74,7 +85,7 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-
+      
     }
 }
 
