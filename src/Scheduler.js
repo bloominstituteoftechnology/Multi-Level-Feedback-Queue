@@ -50,10 +50,10 @@ class Scheduler {
         switch(interrupt) {
             case "PROCESS_BLOCKED":
                 queue.dequeue(process);
-                process.setParentQueue(this.blockingQueue);
                 this.blockingQueue.enqueue(process);
                 break;
             case "PROCESS_READY":
+                this.addNewProcess(process);
                 break;
         }
     }
