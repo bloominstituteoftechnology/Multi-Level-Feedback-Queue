@@ -20,7 +20,8 @@ class Queue {
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
         process.setParentQueue(this);
-        return this.processes.push(process);
+        this.processes.push(process);
+        return;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
@@ -56,13 +57,13 @@ class Queue {
             return;
         }
         this.quantumClock += time;
-        if(this.quantum - this.quantumClock > 0){
-            this.dequeue();
-            return this.quantum - this.quantumClock;
-        }
-        const process = this.dequeue();
+        // if(this.quantum - this.quantumClock > 0){
+        //     this.dequeue();
+        //     return this.quantum - this.quantumClock;
+        // }
         if(this.quantumClock >= this.quantum) {
             this.quantumClock = 0;
+            const process = this.dequeue();
             if(!process.isFinished()){
                 this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
             } 
@@ -86,11 +87,9 @@ class Queue {
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-        if (this.queueType === QueueType.BLOCKING_QUEUE){
-            const process = this.peek();
-            process.executeBlockingProcess(time);
-            this.manageTimeSlice(process, time);
-        }
+        const process = this.peek();
+        process.executeBlockingProcess(time);
+        this.manageTimeSlice(process, time);
 
     }
 

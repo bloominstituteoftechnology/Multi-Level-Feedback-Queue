@@ -79,15 +79,11 @@ class Scheduler {
                 this.addNewProcess(process);
                 break;
             case SchedulerInterrupt.LOWER_PRIORITY:
-                if(this.queueType=== QueueType.CPU_QUEUE){
-                    let priority = queue.getPriorityLevel();
-                    for ( let i = 0; i < this.runningQueues.length; i++) {
-                        if(this.runningQueues[i].indexOf(process) && priority === PRIORITY_LEVELS-1){
-                            return this.runningQueues[PRIORITY_LEVELS - 1].enqueue(process);
-                        } else {
-                            return this.runningQueues[priority + 1].enqueue(process);
-                        }
-                    }
+                if(queue.queueType=== QueueType.CPU_QUEUE){
+                    let priorityLevel = Math.min(PRIORITY_LEVELS - 1, queue.getPriorityLevel() + 1);
+                    this.runningQueues[priorityLevel].enqueue(process);
+                        
+                    
                 } else{
                     return this.blockingQueue.enqueue(process);
                 }
