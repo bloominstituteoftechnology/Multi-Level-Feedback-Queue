@@ -100,11 +100,10 @@ class Queue {
     emitInterrupt(source, interrupt) {
         for (let index = 0; index < this.processes.length; index++) {
             if (this.processes[index]._pid === source._pid) {
-                this.processes.splice(index, 1);
+                this.scheduler.handleInterrupt(this, source, interrupt);  
                 break; 
             }
         }
-        this.scheduler.handleInterrupt(this, source, interrupt);  
     }
 }
 

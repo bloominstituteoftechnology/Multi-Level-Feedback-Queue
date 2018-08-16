@@ -27,7 +27,7 @@ class Scheduler {
     run() {
         while (this.allQueuesEmpty() === false) {
             const time = Date.now(); 
-            const workTime = time - this.clock(); 
+            const workTime = time - this.clock; 
             this.clock = time; 
             
             if (this.blockingQueue.isEmpty() === false) {
@@ -75,11 +75,34 @@ class Scheduler {
     // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
     // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
     handleInterrupt(queue, process, interrupt) {
+        
+        let process_in_queue; 
+
+        for (let index = 0; index < queue.processes.length; index++) {
+            if (queue.processes[index]._pid === process._pid) {
+                queue.processes.splice(index, 1); 
+                process_in_queue = true; 
+                break; 
+            }
+        }
+
         if (interrupt === "PROCESS_BLOCKED") {
-            queue.enqueue(process);
+
+            this.blockingQueue.enqueue(process);
         }
         else if (interrupt === "PROCESS_READY") {
-            this.addNewProcess(process);
+
+            if (process_in_queue) {
+                if (queue.priorityLevel >= 0 && queue.priorityLevel < 2) {
+                    this.runningQueues[queue.priorityLevel + 1].enqueue(process); 
+                }
+                else if (queue.priorityLevel === 2) {
+                    queue.enqueue(process); 
+                } 
+            }
+            else {
+                this.addNewProcess(process)
+            }
         }
         else if (interrupt === "LOWER_PRIORITY") {
             if (queue.getQueueType() === "BLOCKING_QUEUE") {
