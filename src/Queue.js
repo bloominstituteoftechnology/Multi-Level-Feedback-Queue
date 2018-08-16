@@ -57,18 +57,20 @@ class Queue {
         }
         this.quantumClock += time;
         if(this.quantum - this.quantumClock > 0){
+            this.dequeue();
             return this.quantum - this.quantumClock;
         }
-        this.dequeue();
+        const process = this.dequeue();
         if(this.quantumClock >= this.quantum) {
             this.quantumClock = 0;
-            if(!currentProcess.isFinished()){
-                this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            if(!process.isFinished()){
+                this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
             } 
 
-        }  else if (this.quantum > process.cpuTimeNeeded){
-            return;
+        }  else {
+            console.log("Process done")
         }
+        
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
@@ -105,7 +107,7 @@ class Queue {
                 this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
                 break;
             case SchedulerInterrupt.PROCESS_READY:
-            this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
             default:
                 break;
         }
