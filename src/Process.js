@@ -16,7 +16,7 @@ class Process {
     }
 
     setParentQueue(queue) {
-        this.queue = queue;
+        return this.queue = queue;
     }
 
     isFinished() {
@@ -37,7 +37,7 @@ class Process {
         }
         else {
             this.stateChanged = true;
-            this.queue.emitInterrupt(this, 'PROCESS_BLOCKED');
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
         }
         if (this.cpuTimeNeeded < 0) {
             this.cpuTimeNeeded = 0;
@@ -55,7 +55,7 @@ class Process {
         }
         if (this.blockingTimeNeeded <= 0) {
             this.stateChanged = true;
-            this.queue.emitInterrupt(this, 'PROCESS_READY');
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
             this.blockingTimeNeeded = 0;
         }
     }
