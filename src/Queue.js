@@ -20,9 +20,8 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-        this.processes.push(process);
         process.setParentQueue(this);
-        return process;
+        this.processes.push(process);
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
@@ -53,15 +52,20 @@ class Queue {
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
         //quantumClock = quantum ? 
-        this.quantumClock += time;
-        if(this.quantumClock > this.quantum) {
+        if(currentProcess.isStateChanged()) {
             this.quantumClock = 0;
-            currentProcess = this.dequeue();
-            if(!process.isFinished()){
-                this.queue.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
-                currentProcess.priorityLevel += 1;
-            }
+            return;
+        }
+        this.quantumClock += time;
+        this.dequeue();
+        if(this.quantumClock >= this.quantum) {
+            this.quantumClock = 0;
+            if(!currentProcess.isFinished()){
+                this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            } 
+
         }  
+        
 
         
 
