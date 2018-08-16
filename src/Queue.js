@@ -76,18 +76,19 @@ class Queue {
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-        const process = this.peek();
-        process.executeProcess(time);
-        this.manageTimeSlice(process, time);
-        
+        if(this.queueType === QueueType.CPU_QUEUE){
+            const process = this.peek();
+            process.executeProcess(time);
+            this.manageTimeSlice(process, time);
+        }
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-        const process = this.peek();
         if (this.queueType === QueueType.BLOCKING_QUEUE){
-            this.process.executeBlockingProcess(time);
+            const process = this.peek();
+            process.executeBlockingProcess(time);
             this.manageTimeSlice(process, time);
         }
 
@@ -97,20 +98,16 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-        let index;
-        //find index of source
-        this.processes.forEach((proc, i) => {
-            if(proc._pid === source._pid){
-                index = i;
-            }
-        })
-        let extraction = this.processes.splice(index, 1); //remove source
-            if (interrupt = SchedulerInterrupt.PROCESS_READY){
-                this.scheduler.handleInterrupt(this, extraction[0], SchedulerInterrupt.PROCESS_READY);
-            } else if (interrupt = SchedulerInterrupt.PROCESS_BLOCKED){
-                this.scheduler.handleInterrupt(this, extraction[0], SchedulerInterrupt.PROCESS_BLOCKED);
-            }
-                
+        // let index;
+        // //find index of source
+        // this.processes.forEach((proc, i) => {
+        //     if(proc._pid === source._pid){
+        //         index = i;
+        //     }
+        // })
+        // let extraction = this.processes.splice(index, 1); //remove source
+        //     this.scheduler.handleInterrupt(extraction, source, interrupt);
+        
                 
         }
     
