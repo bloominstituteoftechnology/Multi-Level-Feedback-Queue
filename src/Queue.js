@@ -71,7 +71,7 @@ class Queue {
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-        let currentProcess = this.peek;
+        let currentProcess = this.peek();
         currentProcess.executeProcess(time);
         this.manageTimeSlice(currentProcess, time);
     }
@@ -79,7 +79,7 @@ class Queue {
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-        let currentProcess = this.peek;
+        let currentProcess = this.peek();
         currentProcess.executeBlockingProcess(time);
         this.manageTimeSlice(currentProcess, time);
     }
