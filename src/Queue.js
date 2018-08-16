@@ -71,7 +71,7 @@ class Queue {
             this.quantumClock = 0;
         }
         else {
-           //process takes time < quantum idk what i am saying! boobsboobsbobbosboosb 
+           //process takes time < quantum idk what i am saying! 
            if (this.quantumClock < time) {
                 this.quantumClock = time;
             }
@@ -92,20 +92,38 @@ class Queue {
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-
+        let proc = this.peek()
+        proc.executeProcess(time);
+        this.manageTimeSlice(proc,time);
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-
+        let proc = this.peek()
+        proc.executeBlockingProcess(time);
+        this.manageTimeSlice(proc,time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
+        if (interrupt === SchedulerInterrupt.PROCESS_BLOCKED){
+            let index = this.processes.indexOf(source);
+            if (index > -1) {
+                this.processes.splice(index, 1);
+                this.scheduler.handleInterrupt(this, source, interrupt);
+            }
+        }
+        else if(interrupt === SchedulerInterrupt.PROCESS_READY){
+            this.enqueue(source);
+            this.scheduler.handleInterrupt(this, source, interrupt);
+        }
+        else{
 
+        }
+        
     }
 }
 
