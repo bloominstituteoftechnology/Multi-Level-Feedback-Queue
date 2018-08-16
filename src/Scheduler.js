@@ -30,17 +30,17 @@ class Scheduler {
 
     // console.log({ 'QUEUES EMPTY': this.allQueuesEmpty() });
     while (this.allQueuesEmpty() == false) {
-      console.log('\n\n', { 'blocking-queue length': this.blockingQueue.processes.length });
-      console.log({
-        'CURRENT QUEUE': currentQueueIndex,
-        length: this.runningQueues[currentQueueIndex].processes.length,
-        itemsInCurrentQueueToLoop,
-        newTime,
-        'BOOST TIME': this.boostTime,
-      });
+      // console.log('\n\n', { 'blocking-queue length': this.blockingQueue.processes.length });
+      // console.log({
+      //   'CURRENT QUEUE': currentQueueIndex,
+      //   length: this.runningQueues[currentQueueIndex].processes.length,
+      //   itemsInCurrentQueueToLoop,
+      //   newTime,
+      //   'BOOST TIME': this.boostTime,
+      // });
 
       if (this.boostTime <= 0) {
-        console.log('BOOSTING!');
+        // console.log('BOOSTING!');
 
         // Reset Boost time
         this.boostTime = BOOST_TIME;
@@ -59,7 +59,7 @@ class Scheduler {
       runningAllotedTime = newTime - this.clock;
       this.clock = newTime;
       this.boostTime -= newTime;
-      console.log({ boostTime: this.boostTime });
+      // console.log({ boostTime: this.boostTime });
 
       // console.log('BEFORE IF BLOCKING');
       if (!this.blockingQueue.isEmpty()) {
