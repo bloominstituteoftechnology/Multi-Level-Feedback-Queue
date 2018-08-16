@@ -50,6 +50,9 @@ class Scheduler {
       if (interrupt === 'PROCESS_BLOCKED') {
         this.blockingQueue.enqueue(process);
       }
+      else if (interrupt === 'PROCESS_READY') {
+        this.addNewProcess(process);
+      }
     }
 
     // Private function used for testing; DO NOT MODIFY
