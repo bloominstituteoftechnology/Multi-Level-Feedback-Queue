@@ -44,7 +44,6 @@ class Queue {
 
     getQueueType() {
         return this.queueType;
-
     }
 
     // Manages a process's execution for the given amount of time
@@ -52,13 +51,26 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
+        if (currentProcess.stateChanged) {
+            this.quantumClock = 0;
+            return;
+        }
 
+        this.quantumClock += time; 
+
+        if (this.quantumClock >= this.quantum) {
+            const process = this.dequeue();
+            this.quantumClock = 0;
+            if (!process.isFinished()) {
+                this.scheduler.handleInterrupt(this, process, SchedulerInterrupt.LOWER_PRIORITY);
+            } 
+        }
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-
+        
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
