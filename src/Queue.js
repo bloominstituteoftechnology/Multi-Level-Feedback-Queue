@@ -53,13 +53,13 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-      if (currentProcess.stateChanged) {
+      if (currentProcess.stateChanged || currentProcess.cpuTimeNeeded <= 0) {
         const { LOWER_PRIORITY } = SchedulerInterrupt;
         
         this.quantumClock = 0;
         this.dequeue();
         
-        if (!currentProcess.isFinished())
+        if (currentProcess.isFinished() === false)
           this.scheduler.handleInterrupt(this, currentProcess, LOWER_PRIORITY);
       }
       else
@@ -100,7 +100,7 @@ class Queue {
       if (interrupt === PROCESS_BLOCKED) {
         this.processes.splice(_pid, 1);
       }
-      
+
       this.scheduler.handleInterrupt(this, source, interrupt);
     }
 }
