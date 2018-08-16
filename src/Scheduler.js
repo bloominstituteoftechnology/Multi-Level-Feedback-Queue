@@ -24,12 +24,24 @@ class Scheduler {
     }
   }
 
-  // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
-  // Calculate the time slice for the next iteration of the scheduler by subtracting the current
-  // time from the clock property. Don't forget to update the clock property afterwards.
-  // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
-  // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-  run() {}
+  run() {
+    while(!this.allQueuesEmpty()){
+      const time = Date.now() - this.clock;
+
+      if (!this.blockingQueue.isEmpty()){
+        this.blockingQueue.doBlockingWork(time);
+      }
+
+      for(let i = 0; i < PRIORITY_LEVELS; i++) {
+        if (!this.runningQueues[i].isEmpty()){
+          this.runningQueues[i].doCPUWork(time);
+          break;
+        }
+      }
+
+      this.clock = Date.now();
+    }
+  }
 
   allQueuesEmpty() {
     return (
@@ -46,7 +58,7 @@ class Scheduler {
   handleInterrupt(queue, process, interrupt) {
     switch (interrupt) {
       case SchedulerInterrupt.PROCESS_BLOCKED:
-        queue.enqueue(process);
+        this.blockingQueue.enqueue(process);
         break;
 
       case SchedulerInterrupt.PROCESS_READY:
