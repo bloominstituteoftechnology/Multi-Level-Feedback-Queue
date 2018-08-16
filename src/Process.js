@@ -62,6 +62,7 @@ class Process {
       if (this.blockingTimeNeeded <= 0) {
         const { PROCESS_READY } = SchedulerInterrupt;
         
+        this.blockingTimeNeeded = 0;
         this.queue.emitInterrupt(this, PROCESS_READY);
         this.stateChanged = !this.stateChanged;
       }
