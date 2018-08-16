@@ -22,7 +22,11 @@ class Scheduler {
   // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
   run() {}
 
-  allQueuesEmpty() {}
+  allQueuesEmpty() {
+    return Boolean(
+      this.runningQueues.reduce((prev, queue) => prev + queue.isEmpty(), 0) + this.blockingQueue.isEmpty()
+    );
+  }
 
   addNewProcess(process) {}
 
