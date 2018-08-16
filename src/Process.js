@@ -68,6 +68,21 @@ class Process {
         this.queue.emitInterrupt(this, PROCESS_READY);
         this.stateChanged = !this.stateChanged;
       }
+      else {
+        // logic
+      }
+      
+      // if (this.blockingTimeNeeded <= 0) {
+      //   const { PROCESS_READY } = SchedulerInterrupt;
+        
+      //   this.blockingTimeNeeded = 0;
+      //   this.queue.emitInterrupt(this, PROCESS_READY);
+      //   this.stateChanged = !this.stateChanged;
+      // }
+      // else {
+      //   this.blockingTimeNeeded -= time;
+      //   this.executeBlockingProcess(time);
+      // }
     }
 
     // Returns this process's stateChanged property
