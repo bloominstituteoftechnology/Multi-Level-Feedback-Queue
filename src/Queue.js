@@ -98,6 +98,7 @@ class Queue {
       const { _pid } = source;
 
       if (interrupt === PROCESS_BLOCKED) {
+        this.scheduler.handleInterrupt(this, source, interrupt);
         this.processes.splice(_pid, 1);
       }
     }
