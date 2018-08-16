@@ -7,6 +7,7 @@ const {
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues 
 // for non-blocking processes
+// Basically, the Scheduler's job is to decide which process runs next.
 class Scheduler { 
     constructor() { 
         this.clock = Date.now();
