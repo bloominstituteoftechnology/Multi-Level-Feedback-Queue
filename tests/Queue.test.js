@@ -11,8 +11,8 @@ let queue, scheduler;
 
 describe('Queue', () => {
     beforeEach(() => {
-       scheduler = new Scheduler();
-       queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
+        scheduler = new Scheduler();
+        queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
     });
     
     it('should have the methods "enqueue", "dequeue", "peek", "getPriorityLevel", "getQueueType", "emitInterrupt", "isEmpty", "doCPUWork", "doBlockingWork", and "manageTimeSlice"', () => {
