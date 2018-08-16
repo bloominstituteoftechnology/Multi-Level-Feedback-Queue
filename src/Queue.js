@@ -54,15 +54,20 @@ class Queue {
     this.quantumClock = 0;
     if (this.quantum <= time) {
       this.dequeue();
+      // let interrupt_option;
+      // if (currentProcess.isFinished() == false) {
+      // }
+
+      // currentProcess.stateChanged // true:blocking
+      //   ? SchedulerInterrupt.PROCESS_BLOCKED
+      //   : currentProcess.isFinished()
+      //     ? SchedulerInterrupt.PROCESS_READY
+      //     : SchedulerInterrupt.PROCESS_BLOCKED; // Call the appropiate method according to process's state. (Blocked or not blocked)
 
       !currentProcess.isFinished() && // If current process is finished --> then call 'this.emitInterrup'
         this.emitInterrupt(
           currentProcess, // current process
-          currentProcess.stateChanged
-            ? SchedulerInterrupt.PROCESS_BLOCKED
-            : currentProcess.isFinished()
-              ? SchedulerInterrupt.PROCESS_READY
-              : SchedulerInterrupt.PROCESS_BLOCKED // Call the appropiate method according to process's state. (Blocked or not blocked)
+          SchedulerInterrupt.LOWER_PRIORITY
         );
     }
 

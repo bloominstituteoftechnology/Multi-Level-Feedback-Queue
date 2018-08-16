@@ -29,15 +29,16 @@ class Process {
   // by emitting the appropriate interrupt
   // Make sure the `stateChanged` flag is toggled appropriately
   executeProcess(time) {
+    this.stateChanged == false;
     if (this.blockingTimeNeeded > 0) {
       this.stateChanged = true;
-      return SchedulerInterrupt.PROCESS_BLOCKED;
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
     } else {
       this.cpuTimeNeeded -= time;
       if (this.cpuTimeNeeded < 0) {
         this.cpuTimeNeeded = 0;
       }
-      return this.cpuTimeNeeded ? SchedulerInterrupt.LOWER_PRIORITY : SchedulerInterrupt.PROCESS_READY;
+      // return this.cpuTimeNeeded ? SchedulerInterrupt.LOWER_PRIORITY : SchedulerInterrupt.PROCESS_READY;
     }
   }
 
@@ -49,10 +50,12 @@ class Process {
   executeBlockingProcess(time) {
     this.blockingTimeNeeded -= time;
     if (this.blockingTimeNeeded <= 0) {
-      this.stateChanged = false;
-      return SchedulerInterrupt.LOWER_PRIORITY;
+      this.blockingTimeNeeded = 0;
+      this.stateChanged = true;
+      this.queue.dequeue();
+      this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);
     } else {
-      return SchedulerInterrupt.PROCESS_BLOCKED;
+      // this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED);
     }
   }
 
