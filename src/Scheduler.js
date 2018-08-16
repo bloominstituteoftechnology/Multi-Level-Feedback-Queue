@@ -2,7 +2,8 @@ const Queue = require('./Queue');
 const {
   QueueType,
   SchedulerInterrupt,
-  PRIORITY_LEVELS
+  PRIORITY_LEVELS,
+  PRIORITY_BOOST
 } = require('./constants/index');
 
 // A class representing the scheduler
@@ -11,6 +12,7 @@ const {
 class Scheduler {
   constructor() {
     this.clock = Date.now();
+    this.priorityBoost = PRIORITY_BOOST;
     this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
     this.runningQueues = [];
 
@@ -26,11 +28,19 @@ class Scheduler {
 
   run() {
     while (!this.allQueuesEmpty()) {
-      const time = Date.now() - this.clock;
+      const time = Date.now() - this.clock === 0 ? 1 : Date.now() - this.clock;
       this.clock = Date.now();
+      this.priorityBoost -= time;
 
       if (!this.blockingQueue.isEmpty()) {
         this.blockingQueue.doBlockingWork(time);
+      }
+
+      if (this.priorityBoost <= 0) {
+        this.priorityBoost = PRIORITY_BOOST;
+        for (let i = PRIORITY_LEVELS - 1; i > 0; i--) {
+          this.runningQueues[i].priorityBoost();
+        }
       }
 
       for (let i = 0; i < PRIORITY_LEVELS; i++) {
@@ -60,6 +70,7 @@ class Scheduler {
         break;
 
       case SchedulerInterrupt.PROCESS_READY:
+      case SchedulerInterrupt.PRIORITY_BOOST:
         this.addNewProcess(process);
         break;
 
