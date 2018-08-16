@@ -53,19 +53,18 @@ class Queue {
     manageTimeSlice(currentProcess, time) {
         if (currentProcess.stateChanged) {
             this.quantumClock = 0;
-            this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.PROCESS_BLOCKED);
+            // this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.PROCESS_BLOCKED);
         }
-        else if (time < this.quantum) {
+        else {
             this.quantumClock += time;
-        }
-        if (time > this.quantum) {
-            if (currentProcess.cpuTimeNeeded != 0 && currentProcess.blockingTimeNeeded === 0) {
-                this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+            if (this.quantumClock >= this.quantum) {
                 this.quantumClock = 0;
+                this.dequeue();
+                if (!currentProcess.isFinished()) {
+                    this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+                }
             }
-            this.dequeue();
         }
-        return currentProcess;
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
@@ -74,7 +73,6 @@ class Queue {
         const current_process = this.peek();
         current_process.executeProcess(time);
         this.manageTimeSlice(current_process, time);
-
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
@@ -83,7 +81,6 @@ class Queue {
         const current_process = this.peek();
         current_process.executeBlockingProcess(time);
         this.manageTimeSlice(current_process, time);
-
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
@@ -93,7 +90,6 @@ class Queue {
         const sourceIndex = this.processes.indexOf(source);
         this.processes.splice(sourceIndex, 1);
         this.scheduler.handleInterrupt(this, source, interrupt);
-
     }
 }
 
