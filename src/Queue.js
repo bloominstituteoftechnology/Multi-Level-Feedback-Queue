@@ -19,18 +19,18 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-        this.processes.unshift(process);
-        process.queue = this;
+        this.processes.push(process);
+        process.setParentQueue(this);
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-        return this.processes.pop();
+        return this.processes.shift();
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-        return this.processes[this.processes.length-1];
+        return this.processes[0];
     }
 
     isEmpty() {
@@ -72,20 +72,26 @@ class Queue {
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
     doCPUWork(time) {
-        
+        const nextProcess = this.peek();
+        nextProcess.executeProcess(time);
+        this.manageTimeSlice(nextProcess, time);
     }
 
     // Execute the next blocking process (assuming this is the blocking queue)
     // This method should call `manageTimeSlice` as well as execute the next blocking process
     doBlockingWork(time) {
-
+        const nextBlockedProcess = this.peek();
+        nextBlockedProcess.executeBlockingProcess(time);
+        this.manageTimeSlice(nextBlockedProcess, time);
     }
 
     // The queue's interrupt handler for notifying when a process needs to be moved to a different queue
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-      
+        const sourceIndex = this.processes.indexOf(source);
+        this.processes.splice(sourceIndex, 1); 
+        this.scheduler.handleInterrupt(this, source, interrupt); 
     }
 }
 
