@@ -35,9 +35,6 @@ class Scheduler {
             if (!runningQueue.isEmpty())
               runningQueue.doCPUWork(worktime);
             });
-        if (this.allQueuesEmpty()) {
-            break;
-        }
         this.clock = Date.now();
       }
     }
