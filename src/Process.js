@@ -33,14 +33,23 @@ class Process {
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
       if (this.blockingTimeNeeded) {
+        const { PROCESS_BLOCKED } = SchedulerInterrupt;
+        
+        this.queue.emitInterrupt(this, PROCESS_BLOCKED);
+        this.stateChanged = true;
       }
       else {
         this.cpuTimeNeeded -= time;
 
-        if (this.cpuTimeNeeded > 0)
-          this.stateChanged = !this.stateChanged;
-        else
+        if (this.cpuTimeNeeded < 0) {
           this.cpuTimeNeeded = 0;
+        }
+
+        // if (this.cpuTimeNeeded > 0)
+        //   // this.stateChanged = !this.stateChanged;
+        //   console.log();
+        // else
+        //   this.cpuTimeNeeded = 0;
       }
    }
 
