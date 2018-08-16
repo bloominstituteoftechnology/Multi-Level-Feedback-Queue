@@ -35,7 +35,7 @@ class Queue {
     }
 
     isEmpty() {
-      return this.processes.length === 0 ? true : false; 
+      return this.processes.length === 0; 
     }
 
     getPriorityLevel() {
@@ -51,8 +51,20 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-
-    }
+      if (currentProcess.isStateChanged()) {
+          this.quantumClock = 0;
+      }
+      else {
+          this.quantumClock += time;
+          if (this.quantumClock >= this.quantum) {
+              this.quantumClock = 0;
+              this.dequeue();
+              if (!currentProcess.isFinished()) {
+                  this.scheduler.handleInterrupt(this, currentProcess, SchedulerInterrupt.LOWER_PRIORITY);
+              }
+          }
+      } 
+ }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
     // This method should call `manageTimeSlice` as well as execute the next running process
