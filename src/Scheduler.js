@@ -31,12 +31,10 @@ class Scheduler {
         if(!this.blockingQueue.isEmpty()) {
             this.blockingQueue.doBlockingWork(worktime);
         }
-        else {
-            this.runningQueues.forEach(runningQueue => {
-                if (!runningQueue.isEmpty())
-                    runningQueue.doCPUWork(worktime);
-            })
-        }
+        this.runningQueues.forEach(runningQueue => {
+            if (!runningQueue.isEmpty())
+              runningQueue.doCPUWork(worktime);
+            });
         if (this.allQueuesEmpty()) {
             break;
         }
