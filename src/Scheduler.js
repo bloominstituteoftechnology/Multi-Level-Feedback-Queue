@@ -53,6 +53,9 @@ class Scheduler {
       else if (interrupt === 'PROCESS_READY') {
         this.addNewProcess(process);
       }
+      else {
+        this.runningQueues[1].processes.push(process);
+      }
     }
 
     // Private function used for testing; DO NOT MODIFY
