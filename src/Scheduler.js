@@ -12,6 +12,7 @@ class Scheduler {
         this.clock = Date.now();
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];
+        this.time_since_reset = 0;
         // Initialize all the CPU running queues
         for (let i = 0; i < PRIORITY_LEVELS; i++) {
             this.runningQueues[i] = new Queue(this, 10 + i * 20, i, QueueType.CPU_QUEUE);
@@ -25,9 +26,14 @@ class Scheduler {
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
     run() {
         while (this.allQueuesEmpty() === false) {
+            let log_string = "";
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                log_string += `queue ${i} is ${this.runningQueues[i].processes.length} long `;
+            }
+            console.log(log_string);
             const current = Date.now();
             const worktime = current - this.clock;
-            this.clock = current;
+            this.time_since_reset += worktime;
 
             if (this.blockingQueue.isEmpty() === false) {
                 this.blockingQueue.doBlockingWork(worktime);
@@ -41,6 +47,18 @@ class Scheduler {
             }
             if (this.allQueuesEmpty()) {
                 break;
+            }
+            this.clock = Date.now();
+
+            if (this.time_since_reset >= 500) {
+                console.log("\n\n*****************!!!RESET!!!*****************\n\n");
+
+                for (let i = 1; i < PRIORITY_LEVELS; i++) {
+                    while (!this.runningQueues[i].isEmpty()) {
+                        this.addNewProcess(this.runningQueues[i].dequeue());
+                    }
+                }
+                this.time_since_reset = 0;
             }
         }
     }
