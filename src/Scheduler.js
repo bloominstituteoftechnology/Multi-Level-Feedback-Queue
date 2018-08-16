@@ -1,5 +1,6 @@
 const Queue = require('./Queue');
 const { QueueType, PRIORITY_LEVELS } = require('./constants/index');
+const BOOST_TIME = 1534463145708 * 8;
 
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues
@@ -13,6 +14,7 @@ class Scheduler {
     for (let i = 0; i < PRIORITY_LEVELS; i++) {
       this.runningQueues[i] = new Queue(this, 10 + i * 20, i, QueueType.CPU_QUEUE);
     }
+    this.boostTime = BOOST_TIME;
   }
 
   // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
@@ -26,18 +28,38 @@ class Scheduler {
       currentQueueIndex = 0, // Set this value to point to the first queue
       itemsInCurrentQueueToLoop = this.runningQueues[currentQueueIndex].processes.length; // Set this value with the number of processes in the first queue.
 
-    console.log({ 'QUEUES EMPTY': this.allQueuesEmpty() });
+    // console.log({ 'QUEUES EMPTY': this.allQueuesEmpty() });
     while (this.allQueuesEmpty() == false) {
-      // console.log('\n\n', { 'blocking-queue length': this.blockingQueue.processes.length });
-      // console.log({
-      //   'CURRENT QUEUE': currentQueueIndex,
-      //   length: this.runningQueues[currentQueueIndex].processes.length,
-      //   itemsInCurrentQueueToLoop,
-      // });
+      console.log('\n\n', { 'blocking-queue length': this.blockingQueue.processes.length });
+      console.log({
+        'CURRENT QUEUE': currentQueueIndex,
+        length: this.runningQueues[currentQueueIndex].processes.length,
+        itemsInCurrentQueueToLoop,
+        newTime,
+        'BOOST TIME': this.boostTime,
+      });
+
+      if (this.boostTime <= 0) {
+        console.log('BOOSTING!');
+
+        // Reset Boost time
+        this.boostTime = BOOST_TIME;
+
+        // if true -> move all processes to the high priority Queue
+        for (let i = 1; i < this.runningQueues.length; i++) {
+          if (!this.runningQueues[i].isEmpty()) {
+            while (this.runningQueues[i].isEmpty()) {
+              this.addNewProcess(this.runningQueues[i].dequeue());
+            }
+          }
+        }
+      }
 
       newTime = Date.now();
       runningAllotedTime = newTime - this.clock;
       this.clock = newTime;
+      this.boostTime -= newTime;
+      console.log({ boostTime: this.boostTime });
 
       // console.log('BEFORE IF BLOCKING');
       if (!this.blockingQueue.isEmpty()) {
@@ -115,3 +137,32 @@ class Scheduler {
 }
 
 module.exports = Scheduler;
+
+// run() {
+//   let runningAllotedTime = 0,
+//     newTime,
+//     currentQueueIndex = 0, // Set this value to point to the first queue
+//     itemsInCurrentQueueToLoop = this.runningQueues[currentQueueIndex].processes.length; // Set this value with the number of processes in the first queue.
+
+//   while (this.allQueuesEmpty() == false) {
+//     newTime = Date.now();
+//     runningAllotedTime = newTime - this.clock;
+//     this.clock = newTime;
+
+//     if (!this.blockingQueue.isEmpty()) {
+//       this.blockingQueue.doBlockingWork(runningAllotedTime);
+//     }
+
+//     /* Set current Queue number of items to loop through. */
+//     // Reset this variable
+//     itemsInCurrentQueueToLoop = this.runningQueues[currentQueueIndex].processes.length;
+//     if (itemsInCurrentQueueToLoop > 0) {
+//       this.runningQueues[currentQueueIndex].doCPUWork(runningAllotedTime);
+//     } else if (itemsInCurrentQueueToLoop == 0) {
+//       // if there are no more items to loop through, then:
+//       // Go down a level in priority  (Move to a lower priority queue).
+//       // if the level is the lower one, jump back to the highest priority queue.
+//       currentQueueIndex = ++currentQueueIndex % PRIORITY_LEVELS;
+//     }
+//   }
+// }
