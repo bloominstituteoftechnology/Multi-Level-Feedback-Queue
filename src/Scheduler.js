@@ -25,21 +25,24 @@ class Scheduler {
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
 
     run() {
-        // while (this.allQueuesEmpty() === false) {
-        //     this.clock -= Date.now();
-        //     if (this.blockingQueue.isEmpty() === false) {
-        //         this.blockingQueue.doBlockingWork(this.clock);
-        //     }
-        //     else if (this.runningQueues[0].isEmpty() === false) {
-        //         this.runningQueues[0].doCPUWork(this.clock);
-        //     }
-        //     else if (this.runningQueues[1].isEmpty() === false) {
-        //         this.runningQueues[1].doCPUWork(this.clock);
-        //     }
-        //     else if (this.runningQueues[2].isEmpty() === false) {
-        //         this.runningQueues[2].doCPUWork(this.clock);
-        //     }
-        // }
+        while (this.allQueuesEmpty() === false) {
+            const time = Date.now(); 
+            const workTime = time - this.clock(); 
+            this.clock = time; 
+            
+            if (this.blockingQueue.isEmpty() === false) {
+                this.blockingQueue.doBlockingWork(workTime);
+            }
+            else if (this.runningQueues[0].isEmpty() === false) {
+                this.runningQueues[0].doCPUWork(workTime);
+            }
+            else if (this.runningQueues[1].isEmpty() === false) {
+                this.runningQueues[1].doCPUWork(workTime);
+            }
+            else if (this.runningQueues[2].isEmpty() === false) {
+                this.runningQueues[2].doCPUWork(workTime);
+            }
+        }
     }
 
     allQueuesEmpty() {
