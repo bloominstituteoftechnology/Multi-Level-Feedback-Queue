@@ -1,5 +1,4 @@
 const { SchedulerInterrupt, QueueType } = require('./constants/index');
-const process = require('./Process');
 
 // A class representation of a process queue that may hold either a 
 // blocking or non-blocking process
@@ -21,7 +20,7 @@ class Queue {
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
         process.setParentQueue(this);
-        this.processes.push(process);
+        return this.processes.push(process);
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
@@ -65,12 +64,6 @@ class Queue {
             } 
 
         }  
-        
-
-        
-
-            
-        
     }
 
     // Execute the next non-blocking process (assuming this is a CPU queue)
@@ -98,19 +91,20 @@ class Queue {
     // Should handle PROCESS_BLOCKED and PROCESS_READY interrupts
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
-        // let index;
+        let index = this.processes.indexOf(source);
         // //find index of source
-        // this.processes.forEach((proc, i) => {
-        //     if(proc._pid === source._pid){
-        //         index = i;
-        //     }
-        // })
-        // let extraction = this.processes.splice(index, 1); //remove source
-        //     this.scheduler.handleInterrupt(extraction, source, interrupt);
-        
-                
+        this.processes.splice(index, 1); //remove source from queue
+
+        switch(interrupt){
+            case SchedulerInterrupt.PROCESS_BLOCKED:
+                this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_BLOCKED);
+                break;
+            case SchedulerInterrupt.PROCESS_READY:
+            this.scheduler.handleInterrupt(this, source, SchedulerInterrupt.PROCESS_READY);
+            default:
+                break;
         }
     
+    }
 }
-
 module.exports = Queue;
