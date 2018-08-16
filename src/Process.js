@@ -16,11 +16,16 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue; 
     }
 
     isFinished() {
-
+        if (this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0) {
+            return true; 
+        }
+        else {
+            return false; 
+        }
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -28,26 +33,64 @@ class Process {
     // If blocking time is needed by this process, move it to the blocking queue
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
+
+    // if blocking time > 0 move to blocking queue 
+    // change statechanged to true 
+    // else 
+    // subtract cpu time by input time 
+    // **compare cpu time and input time to see which is bigger 
+
     executeProcess(time) {
 
-   }
+        // time is the amount of time cpu has to execute the process 
 
-   // If this process requires blocking time, decrement the amount of blocking
-   // time it needs by the input time
-   // Once it no longer needs to perform any blocking execution, move it to the 
-   // top running queue by emitting the appropriate interrupt
-   // Make sure the `stateChanged` flag is toggled appropriately
+        this.cpuTimeNeeded -= time; 
+
+        if (this.cpuTimeNeeded <= 0) {
+            this.cpuTimeNeeded = 0; 
+        }
+
+        if (this.blockingTimeNeeded > 0) {
+            if (this.queue === null) {
+                return "The process is currently not in a queue."; 
+            }
+            else {
+                this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED); 
+                this.stateChanged = !this.stateChanged;      
+            }
+        }
+    }
+    
+    // If this process requires blocking time, decrement the amount of blocking
+    // time it needs by the input time
+    // Once it no longer needs to perform any blocking execution, move it to the 
+    // top running queue by emitting the appropriate interrupt
+    // Make sure the `stateChanged` flag is toggled appropriately
+    
     executeBlockingProcess(time) {
+        
+        // time is the amount of time cpu has to execute the process 
+        
+        this.blockingTimeNeeded -= time; 
 
+        if (this.blockingTimeNeeded <= 0) {
+            this.blockingTimeNeeded = 0; 
+
+            if (this.cpuTimeNeeded > 0) {
+                this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY); 
+                this.stateChanged = !this.stateChanged; 
+            }     
+        }
     }
 
     // Returns this process's stateChanged property
+    
     isStateChanged() {
-
+        return this.stateChanged; 
     }
 
     get pid() {
-
+        return this._pid; 
     }
 
     // Private function used for testing; DO NOT MODIFY

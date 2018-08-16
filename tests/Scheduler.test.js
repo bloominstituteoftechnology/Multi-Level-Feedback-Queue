@@ -91,8 +91,8 @@ describe('Scheduler', () => {
 
     test("run method runs until all processes have completed execution", () => {
         const process1 = new Process(0);
-        const process2 = new Process(1, 0, true);
-        const process3 = new Process(2, 500);
+        const process2 = new Process(1, 0, true); // blocking process
+        const process3 = new Process(2, 500); // cpu process 
 
         const blockingQueue = scheduler._getBlockingQueue();
         const queue1 = scheduler._getCPUQueue(0);
@@ -103,7 +103,7 @@ describe('Scheduler', () => {
         const blockingQueueSpy = sinon.spy(blockingQueue, 'doBlockingWork');
         const queue1Spy = sinon.spy(queue1, 'doCPUWork');
 
-        scheduler.addNewProcess(process1)
+        scheduler.addNewProcess(process1); 
         scheduler.addNewProcess(process2);
         scheduler.addNewProcess(process3);
         scheduler.run();
