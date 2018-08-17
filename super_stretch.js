@@ -38,14 +38,15 @@ class Scheduler {
             for (let i = 0; i < this.processes.length; i++) {
                 this.allocate_tickets(this.processes[i])
             }
-            let current = Date.now();
-            let worktime = current - this.time;
-            console.log(`Worktime: ${worktime}`)
+
             this.select_winner();
             for (let i = 0; i < this.processes.length; i++) {
                 if (this.processes[i].tickets.includes(this.winner)) {
                     console.log(`The winner is ${this.processes[i]._pid}\n`)
                     console.log(`CPUTimeNeeded for winner before execution is: ${this.processes[i].cpuTimeNeeded}\n`)
+                    let current = Date.now() + .001;
+                    let worktime = current - this.time;
+                    console.log(`Worktime: ${worktime}`)
                     this.processes[i].executeProcess(worktime);
                     console.log(`CPUTimeNeeded for winner after execution is: ${this.processes[i].cpuTimeNeeded}\n`)
                     if (this.processes[i].isFinished()) {
@@ -105,12 +106,12 @@ class Scheduler {
     }
 }
 
-const p1 = new Process(1);
-const p2 = new Process(2);
-const p3 = new Process(3);
+const process1 = new Process(0);
+const process2 = new Process(1, 0);
+const process3 = new Process(2, 500);
 const scheduler = new Scheduler();
-scheduler.add_process(p1)
-scheduler.add_process(p2);
-scheduler.add_process(p3);
+scheduler.add_process(process1)
+scheduler.add_process(process2);
+scheduler.add_process(process3);
 console.log(`***************Start of function**************`)
 scheduler.run();
