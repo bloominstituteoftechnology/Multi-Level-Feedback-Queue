@@ -6,7 +6,9 @@ const { QueueType, PRIORITY_LEVELS } = require('./constants/index');
 // for non-blocking processes
 class Scheduler {
   constructor() {
+    //Date.now returns ms since epoch
     this.clock = Date.now();
+    //(scheduler, quantum, priorityLevel, queueType)
     this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
     this.runningQueues = [];
     // Initialize all the CPU running queues
@@ -80,10 +82,10 @@ class Scheduler {
         if (priority === PRIORITY_LEVELS - 1) {
           queue.enqueue(process);
           break;
+        } else {
+          this.runningQueues[priority + 1].enqueue(process);
+          break;
         }
-
-        this.runningQueues[priority + 1].enqueue(process);
-        break;
       default:
         break;
     }

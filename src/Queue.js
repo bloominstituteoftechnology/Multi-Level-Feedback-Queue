@@ -91,24 +91,26 @@ class Queue {
     const sourceIndex = this.processes.indexOf(source);
     this.processes.splice(sourceIndex, 1);
 
-    switch (interrupt) {
-      case 'PROCESS_BLOCKED':
-        this.scheduler.handleInterrupt(
-          this,
-          source,
-          SchedulerInterrupt.PROCESS_BLOCKED
-        );
-        break;
-      case 'PROCESS_READY':
-        this.scheduler.handleInterrupt(
-          this,
-          source,
-          SchedulerInterrupt.PROCESS_READY
-        );
-        break;
-      default:
-        break;
-    }
+    this.scheduler.handleInterrupt(this, source, interrupt);
+
+    // switch (interrupt) {
+    //   case 'PROCESS_BLOCKED':
+    //     this.scheduler.handleInterrupt(
+    //       this,
+    //       source,
+    //       SchedulerInterrupt.PROCESS_BLOCKED
+    //     );
+    //     break;
+    //   case 'PROCESS_READY':
+    //     this.scheduler.handleInterrupt(
+    //       this,
+    //       source,
+    //       SchedulerInterrupt.PROCESS_READY
+    //     );
+    //     break;
+    //   default:
+    //     break;
+    // }
   }
 }
 
