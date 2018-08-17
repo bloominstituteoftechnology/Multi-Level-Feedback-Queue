@@ -20,7 +20,8 @@ class Queue {
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
         process.setParentQueue(this);
-        return this.processes.push(process);
+        this.processes.push(process);
+        return process;
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
@@ -34,11 +35,7 @@ class Queue {
     }
 
     isEmpty() {
-        if (this.processes.length <= 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.processes.length === 0;
     }
 
     getPriorityLevel() {
@@ -54,17 +51,19 @@ class Queue {
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
     manageTimeSlice(currentProcess, time) {
-        if (!currentProcess.stateChanged) {
-            this.quantumClock += time;
-            if (this.quantumClock > this.quantum) {
-                this.dequeue();
-                this.quantumClock = 0;
-                if (!currentProcess.isFinished()) {
-                    this.emitInterrupt(currentProcess, 'LOWER_PRIORITY');
-                }
-            }
-        } else {
+        if (currentProcess.isStateChanged()) {
             this.quantumClock = 0;
+            return;
+        }
+
+        this.quantumClock += time;
+        if (this.quantumClock >= this.quantum) {
+            this.quantumClock = 0;
+            const process = this.dequeue();
+
+            if (!process.isFinished()) {
+                this.scheduler.handleInterrupt(this, process, SchedulerInterrupt)
+            }
         }
     }
 
