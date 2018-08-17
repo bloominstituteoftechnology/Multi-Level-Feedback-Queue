@@ -27,7 +27,6 @@ class Queue {
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-        // do we setParentQueue(null)?
         return this.processes.shift();
     }
 
@@ -37,7 +36,7 @@ class Queue {
     }
 
     isEmpty() {
-        return this.processes == 0;
+        return this.processes.length === 0;
     }
 
     getPriorityLevel() {

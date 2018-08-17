@@ -20,12 +20,14 @@ class Process {
     }
 
     isFinished() {
-        if (this.blockingTimeNeeded) {
-            return false;
-        }
-        else {
-            return this.cpuTimeNeeded <= 0;
-        }
+        // if (this.blockingTimeNeeded) {
+        //     return false;
+        // }
+        // else {
+        //     return this.cpuTimeNeeded <= 0;
+        // }
+        // credit to AD Faris
+        return this.blockingTimeNeeded <= 0 && this.cpuTimeNeeded <= 0;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
