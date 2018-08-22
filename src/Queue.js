@@ -4,7 +4,7 @@ const { SchedulerInterrupt } = require('./constants/index');
 // blocking or non-blocking process
 class Queue {
     constructor(scheduler, quantum, priorityLevel, queueType) {
-        this.processes = [];
+        this.processes = [];    // create a storage for the array 
         // The queue's priority level; the lower the number, the higher the priority
         this.priorityLevel = priorityLevel;
         // The queue's parent scheduler
@@ -18,13 +18,17 @@ class Queue {
     }
 
     // Enqueues the given process. Return the enqueue'd process
-    enqueue(process) {
+    enqueue(process) {  // puts the item into the queue
+        this.storage.add_to_tail(process);  // add to tail
 
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
-    dequeue() {
-
+    dequeue() { // removes the item from the queue FIFO
+        const item = this.storage.remove_from_head();
+        if(this.isEmpty() !== true) {
+            // onl do this if the item is not null
+            this.length--;
     }
 
     // Return the least-recently added process without removing it from the list of processes
@@ -33,6 +37,7 @@ class Queue {
     }
 
     isEmpty() {
+        return this.length === 0;   // to check if empty
 
     }
 
