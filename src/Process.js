@@ -31,8 +31,11 @@ class Process {
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
         this.sateChanged = false;
-        if (this.blockingTimeNeeded === 0){
-            this.cpuTimedNeeded
+        if (this.blockingTimeNee == 0){
+            this.cpuTimedNeeded = (time > this.cpuTimeNeeded) ? 0 : this.cpTimeNeeded -time
+            return;
+        }else{
+            this.queue.emitInterrupt
         }
    }
 
