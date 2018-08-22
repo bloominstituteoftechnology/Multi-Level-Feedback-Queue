@@ -19,21 +19,25 @@ class Queue {
 
     // Enqueues the given process. Return the enqueue'd process
     enqueue(process) {
-
+        return this.process.push(process);
     }
 
     // Dequeues the next process in the queue. Return the dequeue'd process
     dequeue() {
-
+        if (this.isEmpty) {
+            console.log("Error: Unable to dequeue. The queue is empty.")
+        } else {
+            return this.process.shift();
+        }
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+        return this.process[-1];
     }
 
     isEmpty() {
-
+        return this.process.length === 0
     }
 
     getPriorityLevel() {
