@@ -29,11 +29,12 @@ class Queue {
         if(this.isEmpty() !== true) {
             // onl do this if the item is not null
             this.length--;
+        }
     }
 
     // Return the least-recently added process without removing it from the list of processes
     peek() {
-
+        return this.processes[0];
     }
 
     isEmpty() {
