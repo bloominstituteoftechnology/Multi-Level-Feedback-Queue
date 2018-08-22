@@ -108,3 +108,11 @@ the multi-level feedback queue:
 
 Also this link to some dude's copious notes on the topic of process scheduling on Unix kernels: https://notes.shichao.io/lkd/ch4/
 
+**** tasks ****
+* [x] run npm install and any setup
+* [ ] setup blocking Queue
+* [ ] setup cpu Queue
+* [ ] implement 3 classes
+* [ ] make sure MVP is achieved
+* [ ] stretch goals
+
