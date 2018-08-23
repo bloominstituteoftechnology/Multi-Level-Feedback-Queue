@@ -7,12 +7,12 @@ const { SchedulerInterrupt } = require('./constants/index');
 // randomly determined.
 class Process {
     constructor(pid, cpuTimeNeeded=null, blocking=false) {
-        this._pid = pid;
-        this.queue = null;
-        this.cpuTimeNeeded = (cpuTimeNeeded !== null) ? cpuTimeNeeded : Math.round(Math.random() * 1000);
+        this._pid = pid;    // means each prcocess/ process id
+        this.queue = null;  // has a queue attached to it 
+        this.cpuTimeNeeded = (cpuTimeNeeded !== null) ? cpuTimeNeeded : Math.round(Math.random() * 1000);   // time needed the process needs to execute 
         this.blockingTimeNeeded = blocking ? Math.round(Math.random() * 100) : 0;
         // A bool representing whether this process was toggled from blocking to non-blocking or vice versa
-        this.stateChanged = false;
+        this.stateChanged = false;  // toggle between block and non-block state
     }
     
     setParentQueue(queue) {
@@ -35,7 +35,7 @@ class Process {
         this.stateChanged = false;  
         if (this.blockingTimeNeeded === 0) {    // no blocking time is needed by the process
             this.cpuTimeNeeded -= time; // decrement cpu time by the input time
-            this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded: 0;    // if blocking time is needed as stated by blockingTimeNeeded > 0
+            this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded: 0;    // if blocking time is needed as stated by blockingTimeNeeded > 0; if it time needes is 0 or a negative value, set it to 0
         } else {
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED); // call interrupt function and move to Blocking/Blocked queue
             this.stateChanged = true;   // toggle state to true
@@ -50,7 +50,7 @@ class Process {
 
     executeBlockingProcess(time) {  // if process requires blocking time
         this.blockingTimeNeeded -= time;    // decrement blocking time by the input time
-        this.blockingTimeNeeded = this.blockingTimeNeeded > 0 ? this.blockingTimeNeeded: 0;
+        this.blockingTimeNeeded = this.blockingTimeNeeded > 0 ? this.blockingTimeNeeded: 0; // setting blockingTimeNeeded as either 0 or positive value
 
         if (this.blockingTimeNeeded === 0) {    // if blocking time/execution is finished/ no longer needed
             this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);   // call interrupt function and move it to top cpu queue

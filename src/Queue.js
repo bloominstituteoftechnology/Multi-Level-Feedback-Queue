@@ -4,16 +4,16 @@ const { SchedulerInterrupt } = require('./constants/index');
 // blocking or non-blocking process
 class Queue {
     constructor(scheduler, quantum, priorityLevel, queueType) {
-        this.processes = [];    // create a storage for the array 
+        this.processes = [];    // an array for all processes  
         // The queue's priority level; the lower the number, the higher the priority
-        this.priorityLevel = priorityLevel;
+        this.priorityLevel = priorityLevel; // keeps track of the processes' priority levels
         // The queue's parent scheduler
-        this.scheduler = scheduler;
+        this.scheduler = scheduler; // communicate directly with scheduler via interrrupts
         // The queue's allotted time slice; each process in this queue is executed for this amount of time in total
         // This may be done over multiple scheduler iterations
-        this.quantum = quantum;
+        this.quantum = quantum; // mirrors the function cpuTimeNeeded; a process is done when quantum clock hits this quantum
         // A counter to keep track of how much time the queue has been executing so far
-        this.quantumClock = 0;
+        this.quantumClock = 0;  
         this.queueType = queueType;
     }
 
@@ -33,12 +33,12 @@ class Queue {
     }
 
     // Return the least-recently added process without removing it from the list of processes
-    peek() {
+    peek() {    // gives the process a reference number; only dequeues the process once it's done or have to be moved to the next priority queue    
         return this.processes[0];
     }
 
     isEmpty() {
-        return this.length === 0;   // to check if empty
+        return this.length === 0;   // to check if queue is empty
 
     }
 
@@ -54,7 +54,7 @@ class Queue {
     // Processes that have had their states changed should not be affected
     // Once a process has received the alloted time, it needs to be dequeue'd and 
     // then handled accordingly, depending on whether it has finished executing or not
-    manageTimeSlice(currentProcess, time) {
+    manageTimeSlice(currentProcess, time) { // manages and keeps track of how much time has elapsed; similar to the function executeProcess in Process.js
 
     }
 
