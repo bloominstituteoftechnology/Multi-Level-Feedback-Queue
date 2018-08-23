@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files\Yarn\bin\yarn.js run test Process.test.js
+  C:\Program Files\nodejs\node.exe C:\Program Files\Yarn\bin\yarn.js run test Scheduler.test.js
 
 PATH: 
   C:\Users\windows7\bin;C:\Program Files\Git\mingw32\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw32\bin;C:\Program Files\Git\usr\bin;C:\Users\windows7\bin;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Program Files\Lenovo\Bluetooth Software;C:\Program Files\QuickTime\QTSystem;C:\Program Files\Skype\Phone;C:\Program Files\nodejs;C:\Program Files\Yarn\bin;C:\Users\windows7\AppData\Local\Yarn\bin;C:\Users\windows7\AppData\Local\Programs\Python\Python36-32\Scripts;C:\Users\windows7\AppData\Local\Programs\Python\Python36-32;C:\Users\windows7\AppData\Local\Programs\Python\Python37-32\Scripts;C:\Users\windows7\AppData\Local\Programs\Python\Python37-32;C:\Program Files\Microsoft VS Code\bin;C:\Program Files\Microsoft VS Code\bin;C:\Program Files\MongoDB\Server\3.2\bin;C:\Users\windows7\AppData\Roaming\Python\Python37\Scripts;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
@@ -3675,7 +3675,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: C:\Windows\system32\cmd.exe
-  Arguments: /d /s /c jest --verbose Process.test.js
+  Arguments: /d /s /c jest --verbose Scheduler.test.js
   Directory: C:\Users\windows7\LambdaSchool\Multi-Level-Feedback-Queue
   Output:
   
