@@ -90,9 +90,9 @@ class Queue {
     // The process also needs to be removed from the queue
     emitInterrupt(source, interrupt) {
         const sourceIndex = this.processes.indexOf(source);
-        console.log("LOOK HERE:", sourceIndex);
-        console.log(this.processes)
-        this.processess.splice(sourceIndex, 1);
+        // console.log("LOOK HERE:", sourceIndex);
+        // console.log(this.processes)
+        this.processes.splice(sourceIndex, 1);
         this.scheduler.handleInterrupt(this, source, interrupt);
     }
 }
