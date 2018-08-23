@@ -4,7 +4,7 @@ const { SchedulerInterrupt } = require('./constants/index');
 // blocking or non-blocking process
 class Queue {
     constructor(scheduler, quantum, priorityLevel, queueType) {
-        this.processes = [];
+        this.processes = []; //this is the storage for the queue
         // The queue's priority level; the lower the number, the higher the priority
         this.priorityLevel = priorityLevel;
         // The queue's parent scheduler
