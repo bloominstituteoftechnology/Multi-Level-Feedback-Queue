@@ -16,11 +16,12 @@ class Process {
     }
     
     setParentQueue(queue) {
+        this.queue =queue;
 
     }
 
     isFinished() {
-
+       return(this.cpuTimedNeeded === 0 && this.blockingTimeNeeded === 0) ? true : false;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -29,7 +30,13 @@ class Process {
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
     executeProcess(time) {
-
+        this.sateChanged = false;
+        if (this.blockingTimeNee == 0){
+            this.cpuTimedNeeded = (time > this.cpuTimeNeeded) ? 0 : this.cpTimeNeeded -time
+            return;
+        }else{
+            this.queue.emitInterrupt
+        }
    }
 
    // If this process requires blocking time, decrement the amount of blocking
