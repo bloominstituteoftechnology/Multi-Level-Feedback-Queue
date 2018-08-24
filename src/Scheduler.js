@@ -1,5 +1,6 @@
-const Queue = require('./Queue'); 
-const { 
+const Queue = require('./Queue');
+const {
+    SchedulerInterrupt,
     QueueType,
     PRIORITY_LEVELS,
 } = require('./constants/index');
@@ -7,9 +8,9 @@ const {
 // A class representing the scheduler
 // It holds a single blocking queue for blocking processes and three running queues 
 // for non-blocking processes
-class Scheduler { 
-    constructor() { 
-        this.clock = Date.now();
+class Scheduler {
+    constructor() {
+        this.clock = Date.now(); // log the time that the last iteration finished  
         this.blockingQueue = new Queue(this, 50, 0, QueueType.BLOCKING_QUEUE);
         this.runningQueues = [];
         // Initialize all the CPU running queues
@@ -18,28 +19,49 @@ class Scheduler {
         }
     }
 
-    // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
-    // Calculate the time slice for the next iteration of the scheduler by subtracting the current
-    // time from the clock property. Don't forget to update the clock property afterwards.
     // On every iteration of the scheduler, if the blocking queue is not empty, blocking work
     // should be done. Once the blocking work has been done, perform some CPU work in the same iteration.
-    run() {
 
+    run() { // represents the entire thing running
+        while (true) { // Executes the scheduler in an infinite loop as long as there are processes in any of the queues
+
+            const time = Date.now();
+                // Calculate the time slice for the next iteration of the scheduler by subtracting the current
+                // time from the clock property.
+                // represents how much time from the last iteration has elapsed with the time right now/ current time
+            const timeSlice = time - this.clock; 
+                // Don't forget to update the clock property afterwards.
+            this.clock = time;
+
+            if (!this.blockingQueue.isEmpty()) { // if blocking queue is not empty
+                this.blockingQueue.doBlockingWork(timeSlice); // call doBlocingWork with time slice/ input
+            }
+
+            for (let i = 0; i < PRIORITY_LEVELS; i++) {
+                const queue = this.runningQueues[i]; // grab the running queue
+                if (!queue.isEmpty()) { 
+                    queue.doCPUWork(timeSlice);
+                    break; 
+                }
+            }
+
+            if (this.allQueuesEmpty()) { // checking if all queues are empty
+                console.log('Done!');
+                break;
+            }
+        }
     }
 
     allQueuesEmpty() {
-
+        return this.runningQueues.every((queue) => queue.isEmpty()) && this.blockingQueue.isEmpty(); // use every array method; takes in a call back on every element in the array of the running queue
     }
 
     addNewProcess(process) {
-
+        this.runningQueues[0].enqueue(process);
     }
 
-    // The scheduler's interrupt handler that receives a queue, a process, and an interrupt string constant
-    // Should handle PROCESS_BLOCKED, PROCESS_READY, and LOWER_PRIORITY interrupts.
-    handleInterrupt(queue, process, interrupt) {
-
-    }
+    
+   
 
     // Private function used for testing; DO NOT MODIFY
     _getCPUQueue(priorityLevel) {

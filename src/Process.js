@@ -16,11 +16,11 @@ class Process {
     }
     
     setParentQueue(queue) {
-
+        this.queue = queue;
     }
 
     isFinished() {
-
+        return this.cpuTimeNeeded === 0 && this.blockingTimeNeeded === 0;
     }
 
     // If no blocking time is needed by this process, decrement the amount of 
@@ -28,22 +28,37 @@ class Process {
     // If blocking time is needed by this process, move it to the blocking queue
     // by emitting the appropriate interrupt
     // Make sure the `stateChanged` flag is toggled appropriately
-    executeProcess(time) {
 
-   }
+    executeProcess(time) {
+        this.stateChanged = false;
+        if (this.blockingTimeNeeded === 0) {    // no blocking time is needed by the process
+            this.cpuTimeNeeded -= time; // decrement cpu time by the input time
+            this.cpuTimeNeeded = this.cpuTimeNeeded > 0 ? this.cpuTimeNeeded : 0;    // if blocking time is needed as stated by blockingTimeNeeded > 0
+        } else {
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_BLOCKED); // call interrupt function and move to Blocking/Blocked queue
+            this.stateChanged = true;   // toggle state to true
+        }
+    }
 
    // If this process requires blocking time, decrement the amount of blocking
    // time it needs by the input time
    // Once it no longer needs to perform any blocking execution, move it to the 
    // top running queue by emitting the appropriate interrupt
    // Make sure the `stateChanged` flag is toggled appropriately
-    executeBlockingProcess(time) {
 
+    executeBlockingProcess(time) {  // if process requires blocking time
+        this.blockingTimeNeeded -= time;    // decrease blocking time by time
+        this.blockingTimeNeeded = this.blockingTimeNeeded > 0 ? this.blockingTimeNeeded : 0;
+
+        if (this.blockingTimeNeeded === 0) {    // if blockingTime is 0, then it's finished
+            this.queue.emitInterrupt(this, SchedulerInterrupt.PROCESS_READY);   // call interrupt function and move it to top cpu queue
+            this.stateChanged = true;   
+        }
     }
 
     // Returns this process's stateChanged property
     isStateChanged() {
-
+        return this.stateChanged;
     }
 
     get pid() {
