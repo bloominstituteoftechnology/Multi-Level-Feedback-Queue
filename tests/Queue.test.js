@@ -1,200 +1,215 @@
-const sinon = require('sinon');
-const Queue = require('../src/Queue');
-const Process = require('../src/Process');
-const Scheduler = require('../src/Scheduler');
-const { 
-    SchedulerInterrupt,
-    QueueType,
-} = require('../src/constants/index');
+const sinon = require("sinon");
+const Queue = require("../src/Queue");
+const Process = require("../src/Process");
+const Scheduler = require("../src/Scheduler");
+const { SchedulerInterrupt, QueueType } = require("../src/constants/index");
 
 let queue, scheduler;
 
-describe('Queue', () => {
-    beforeEach(() => {
-       scheduler = new Scheduler();
-       queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
-    });
-    
-    it('should have the methods "enqueue", "dequeue", "peek", "getPriorityLevel", "getQueueType", "emitInterrupt", "isEmpty", "doCPUWork", "doBlockingWork", and "manageTimeSlice"', () => {
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('enqueue')).toBe(true);
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('dequeue')).toBe(true);
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('peek')).toBe(true);
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('getPriorityLevel')).toBe(true);
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('getQueueType')).toBe(true);
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('emitInterrupt')).toBe(true);
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('isEmpty')).toBe(true);
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('doCPUWork')).toBe(true);
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('doBlockingWork')).toBe(true);
-        expect(Object.getPrototypeOf(queue).hasOwnProperty('manageTimeSlice')).toBe(true);
-    });
+describe("Queue", () => {
+  beforeEach(() => {
+    scheduler = new Scheduler();
+    queue = new Queue(scheduler, 50, 0, QueueType.CPU_QUEUE);
+  });
 
-    test("getQueueType method", () => {
-        expect(queue.getQueueType()).toBe(QueueType.CPU_QUEUE);
-        queue = new Queue(scheduler, 50, 0, QueueType.BLOCKING_QUEUE);
-        expect(queue.getQueueType()).toBe(QueueType.BLOCKING_QUEUE);
-    });
+  it('should have the methods "enqueue", "dequeue", "peek", "getPriorityLevel", "getQueueType", "emitInterrupt", "isEmpty", "doCPUWork", "doBlockingWork", and "manageTimeSlice"', () => {
+    expect(Object.getPrototypeOf(queue).hasOwnProperty("enqueue")).toBe(true);
+    expect(Object.getPrototypeOf(queue).hasOwnProperty("dequeue")).toBe(true);
+    expect(Object.getPrototypeOf(queue).hasOwnProperty("peek")).toBe(true);
+    expect(
+      Object.getPrototypeOf(queue).hasOwnProperty("getPriorityLevel")
+    ).toBe(true);
+    expect(Object.getPrototypeOf(queue).hasOwnProperty("getQueueType")).toBe(
+      true
+    );
+    expect(Object.getPrototypeOf(queue).hasOwnProperty("emitInterrupt")).toBe(
+      true
+    );
+    expect(Object.getPrototypeOf(queue).hasOwnProperty("isEmpty")).toBe(true);
+    expect(Object.getPrototypeOf(queue).hasOwnProperty("doCPUWork")).toBe(true);
+    expect(Object.getPrototypeOf(queue).hasOwnProperty("doBlockingWork")).toBe(
+      true
+    );
+    expect(Object.getPrototypeOf(queue).hasOwnProperty("manageTimeSlice")).toBe(
+      true
+    );
+  });
 
-    test("getPriorityLevel method", () => {
-        expect(queue.getPriorityLevel()).toEqual(0);
-        queue = new Queue(scheduler, 5, 3, QueueType.CPU_QUEUE);
-        expect(queue.getPriorityLevel()).toEqual(3);
-    });
+  test("getQueueType method", () => {
+    expect(queue.getQueueType()).toBe(QueueType.CPU_QUEUE);
+    queue = new Queue(scheduler, 50, 0, QueueType.BLOCKING_QUEUE);
+    expect(queue.getQueueType()).toBe(QueueType.BLOCKING_QUEUE);
+  });
 
-    test("isEmpty method returns true when called on an empty queue", () => {
-        expect(queue.isEmpty()).toBe(true);
-        const process = new Process(0);
-        queue.enqueue(process);
-        expect(queue.isEmpty()).toBe(false);
-    });
+  test("getPriorityLevel method", () => {
+    expect(queue.getPriorityLevel()).toEqual(0);
+    queue = new Queue(scheduler, 5, 3, QueueType.CPU_QUEUE);
+    expect(queue.getPriorityLevel()).toEqual(3);
+  });
 
-    test("enqueue method adds a process and set its parent queue property", () => {
-        const process = new Process(0);
-        queue.enqueue(process);
-        expect(process._getParentQueue()).toBe(queue);
-        expect(queue.peek()).toBe(process);
-    });
+  test("isEmpty method returns true when called on an empty queue", () => {
+    expect(queue.isEmpty()).toBe(true);
+    const process = new Process(0);
+    queue.enqueue(process);
+    expect(queue.isEmpty()).toBe(false);
+  });
 
-    test("peek method returns the least recently added process", () => {
-        const process1 = new Process(0);
-        const process2 = new Process(1);
-        queue.enqueue(process1);
-        queue.enqueue(process2);
-        expect(queue.peek()).toBe(process1);
-    });
+  test("enqueue method adds a process and set its parent queue property", () => {
+    const process = new Process(0);
+    queue.enqueue(process);
+    expect(process._getParentQueue()).toBe(queue);
+    expect(queue.peek()).toBe(process);
+  });
 
-    test("dequeue method removes processes in FIFO order", () => {
-        const process1 = new Process(0);
-        const process2 = new Process(1);
-        queue.enqueue(process1);
-        queue.enqueue(process2);
-        expect(queue.dequeue()).toBe(process1);
-        expect(queue.peek()).toBe(process2);
-        expect(queue.dequeue()).toBe(process2);
-        expect(queue.peek()).toBeUndefined();
-    });
+  test("peek method returns the least recently added process", () => {
+    const process1 = new Process(0);
+    const process2 = new Process(1);
+    queue.enqueue(process1);
+    queue.enqueue(process2);
+    expect(queue.peek()).toBe(process1);
+  });
 
-    test("manageTimeSlice resets queue's clock for a process whose state has changed", () => {
-        const process = new Process(0, 60);
-        process.stateChanged = true;
+  test("dequeue method removes processes in FIFO order", () => {
+    const process1 = new Process(0);
+    const process2 = new Process(1);
+    queue.enqueue(process1);
+    queue.enqueue(process2);
+    expect(queue.dequeue()).toBe(process1);
+    expect(queue.peek()).toBe(process2);
+    expect(queue.dequeue()).toBe(process2);
+    expect(queue.peek()).toBeUndefined();
+  });
 
-        queue.enqueue(process);
-        queue.manageTimeSlice(process, 10);
-        
-        expect(queue.quantumClock).toBe(0);
-    });
+  test("manageTimeSlice resets queue's clock for a process whose state has changed", () => {
+    const process = new Process(0, 60);
+    process.stateChanged = true;
 
-    test("manageTimeSlice method on process that hasn't received more time than the queue's time quantum", () => {
-        const process = new Process(0, 60);
+    queue.enqueue(process);
+    queue.manageTimeSlice(process, 10);
 
-        queue.enqueue(process);
-        queue.manageTimeSlice(process, 49);
+    expect(queue.quantumClock).toBe(0);
+  });
 
-        expect(queue.quantumClock).toBe(49);
-        expect(queue.peek()).toBe(process);
-    });
+  test("manageTimeSlice method on process that hasn't received more time than the queue's time quantum", () => {
+    const process = new Process(0, 60);
 
-    test("manageTimeSlice method on process that receives more time than the queue's time quantum but process has not completed", () => {
-        const schedulerSpy = sinon.spy(scheduler, 'handleInterrupt'); 
-        const process = new Process(0, 60);
+    queue.enqueue(process);
+    queue.manageTimeSlice(process, 49);
 
-        queue.enqueue(process);
-        process.executeProcess(51);
-        queue.manageTimeSlice(process, 51);
+    expect(queue.quantumClock).toBe(49);
+    expect(queue.peek()).toBe(process);
+  });
 
-        expect(queue.quantumClock).toBe(0);
-        expect(process.isFinished()).toBe(false);
-        expect(queue.peek()).toBeUndefined();
+  test("manageTimeSlice method on process that receives more time than the queue's time quantum but process has not completed", () => {
+    const schedulerSpy = sinon.spy(scheduler, "handleInterrupt");
+    const process = new Process(0, 60);
 
-        expect(schedulerSpy.calledOnce).toBe(true);
-    });
+    queue.enqueue(process);
+    process.executeProcess(51);
+    queue.manageTimeSlice(process, 51);
 
-    test("manageTimeSlice method on process that receives more time than the queue's time quantum but process has completed", () => {
-        const schedulerSpy = sinon.spy(scheduler, 'handleInterrupt'); 
-        const process = new Process(0, 60);
+    expect(queue.quantumClock).toBe(0);
+    expect(process.isFinished()).toBe(false);
+    expect(queue.peek()).toBeUndefined();
 
-        queue.enqueue(process);
-        process.executeProcess(60);
-        queue.manageTimeSlice(process, 60);
+    expect(schedulerSpy.calledOnce).toBe(true);
+  });
 
-        expect(queue.quantumClock).toBe(0);
-        expect(process.isFinished()).toBe(true);
-        expect(queue.peek()).toBeUndefined();
+  test("manageTimeSlice method on process that receives more time than the queue's time quantum but process has completed", () => {
+    const schedulerSpy = sinon.spy(scheduler, "handleInterrupt");
+    const process = new Process(0, 60);
 
-        expect(schedulerSpy.notCalled).toBe(true);
-    });
+    queue.enqueue(process);
+    process.executeProcess(60);
+    queue.manageTimeSlice(process, 60);
 
-    test("doCPUWork method", () => {
-        const process = new Process(0, 15);
-        const processSpy = sinon.spy(process, 'executeProcess');
-        const queueSpy1 = sinon.spy(queue, 'peek');
-        const queueSpy2 = sinon.spy(queue, 'manageTimeSlice');
-    
-        queue.enqueue(process);
-        queue.doCPUWork(10);
+    expect(queue.quantumClock).toBe(0);
+    expect(process.isFinished()).toBe(true);
+    expect(queue.peek()).toBeUndefined();
 
-        expect(processSpy.calledWith(10)).toBe(true);
-        expect(queueSpy1.calledOnce).toBe(true);
-        expect(queueSpy2.calledWith(process, 10)).toBe(true);
-    });
+    expect(schedulerSpy.notCalled).toBe(true);
+  });
 
-    test("doBlockingWork method", () => {
-        const process = new Process(0, 15);
-        const processSpy = sinon.spy(process, 'executeBlockingProcess');
-        const queueSpy1 = sinon.spy(queue, 'peek');
-        const queueSpy2 = sinon.spy(queue, 'manageTimeSlice');
-        
-        queue.enqueue(process);
-        queue.doBlockingWork(10);
+  test("doCPUWork method", () => {
+    const process = new Process(0, 15);
+    const processSpy = sinon.spy(process, "executeProcess");
+    const queueSpy1 = sinon.spy(queue, "peek");
+    const queueSpy2 = sinon.spy(queue, "manageTimeSlice");
 
-        expect(processSpy.calledWith(10)).toBe(true);
-        expect(queueSpy1.calledOnce).toBe(true);
-        expect(queueSpy2.calledWith(process, 10)).toBe(true);
-    });
+    queue.enqueue(process);
+    queue.doCPUWork(10);
 
-    it("should properly manage a child process that completed execution during the allotted time quantum", () => {
-        const schedulerSpy = sinon.spy(scheduler, 'handleInterrupt');
-        const queueSpy = sinon.spy(queue, 'manageTimeSlice');
-        const process = new Process(0, 49);
+    expect(processSpy.calledWith(10)).toBe(true);
+    expect(queueSpy1.calledOnce).toBe(true);
+    expect(queueSpy2.calledWith(process, 10)).toBe(true);
+  });
 
-        queue.enqueue(process);
-        queue.doCPUWork(51);
+  test("doBlockingWork method", () => {
+    const process = new Process(0, 15);
+    const processSpy = sinon.spy(process, "executeBlockingProcess");
+    const queueSpy1 = sinon.spy(queue, "peek");
+    const queueSpy2 = sinon.spy(queue, "manageTimeSlice");
 
-        expect(queueSpy.calledWith(process, 51)).toBe(true);
-        expect(schedulerSpy.getCalls().length).toBe(0);
-    });
+    queue.enqueue(process);
+    queue.doBlockingWork(10);
 
-    test("emitInterrupt method removes the source process from the queue", () => {
-        const process1 = new Process(0);
-        const process2 = new Process(1);
-        const process3 = new Process(2);
+    expect(processSpy.calledWith(10)).toBe(true);
+    expect(queueSpy1.calledOnce).toBe(true);
+    expect(queueSpy2.calledWith(process, 10)).toBe(true);
+  });
 
-        queue.enqueue(process1);
-        queue.enqueue(process2); 
-        queue.enqueue(process3);
+  it("should properly manage a child process that completed execution during the allotted time quantum", () => {
+    const schedulerSpy = sinon.spy(scheduler, "handleInterrupt");
+    const queueSpy = sinon.spy(queue, "manageTimeSlice");
+    const process = new Process(0, 49);
 
-        queue.emitInterrupt(process2, SchedulerInterrupt.PROCESS_BLOCKED);
-        expect(queue.processes.length).toBe(2);
-        expect(queue.processes[0]).toBe(process1);
-        expect(queue.processes[1]).toBe(process3);
-    });
+    queue.enqueue(process);
+    queue.doCPUWork(51);
 
-    test("emitInterrupt method notifies the scheduler appropriately when the queue emits a PROCESS_BLOCKED interrupt", () => {
-        const schedulerSpy = sinon.spy(scheduler, 'handleInterrupt');
-        const process = new Process(0);
+    expect(queueSpy.calledWith(process, 51)).toBe(true);
+    expect(schedulerSpy.getCalls().length).toBe(0);
+  });
 
-        queue.enqueue(process);
-        queue.emitInterrupt(process, SchedulerInterrupt.PROCESS_BLOCKED);
+  test("emitInterrupt method removes the source process from the queue", () => {
+    const process1 = new Process(0);
+    const process2 = new Process(1);
+    const process3 = new Process(2);
 
-        expect(schedulerSpy.calledWith(queue, process, SchedulerInterrupt.PROCESS_BLOCKED)).toBe(true);
-    });
+    queue.enqueue(process1);
+    queue.enqueue(process2);
+    queue.enqueue(process3);
 
-    test("emitInterrupt method notifies the scheduler appropriately when the queue emits a PROCESS_READY interrupt", () => {
-        const schedulerSpy = sinon.spy(scheduler, 'handleInterrupt');
-        const process = new Process(0);
+    queue.emitInterrupt(process2, SchedulerInterrupt.PROCESS_BLOCKED);
+    expect(queue.processes.length).toBe(2);
+    expect(queue.processes[0]).toBe(process1);
+    expect(queue.processes[1]).toBe(process3);
+  });
 
-        queue.enqueue(process);
-        queue.emitInterrupt(process, SchedulerInterrupt.PROCESS_READY);
+  test("emitInterrupt method notifies the scheduler appropriately when the queue emits a PROCESS_BLOCKED interrupt", () => {
+    const schedulerSpy = sinon.spy(scheduler, "handleInterrupt");
+    const process = new Process(0);
 
-        expect(schedulerSpy.calledWith(queue, process, SchedulerInterrupt.PROCESS_READY)).toBe(true);
-    });
+    queue.enqueue(process);
+    queue.emitInterrupt(process, SchedulerInterrupt.PROCESS_BLOCKED);
+
+    expect(
+      schedulerSpy.calledWith(
+        queue,
+        process,
+        SchedulerInterrupt.PROCESS_BLOCKED
+      )
+    ).toBe(true);
+  });
+
+  test("emitInterrupt method notifies the scheduler appropriately when the queue emits a PROCESS_READY interrupt", () => {
+    const schedulerSpy = sinon.spy(scheduler, "handleInterrupt");
+    const process = new Process(0);
+
+    queue.enqueue(process);
+    queue.emitInterrupt(process, SchedulerInterrupt.PROCESS_READY);
+
+    expect(
+      schedulerSpy.calledWith(queue, process, SchedulerInterrupt.PROCESS_READY)
+    ).toBe(true);
+  });
 });
