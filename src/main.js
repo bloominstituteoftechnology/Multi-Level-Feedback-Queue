@@ -11,6 +11,7 @@ const main = () => {
     
     for (let i = 1; i < 101; i++) {
         let rollForBlockingProcess = Math.random() < 0.25;
+        // (pid, cpuTimeNeeded = null, blocking = false)
         scheduler.addNewProcess(new Process(i + 1000, null, rollForBlockingProcess));
     }
 
